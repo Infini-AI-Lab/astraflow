@@ -101,7 +101,7 @@ your response.
   `docs/generate_cli_docs.py`.
 - `docker/` — `Dockerfile.sglang`, the published image (astraflow +
   SGLang + flash-attn). See `docker/README.md` for build details.
-- `assets/` — Figures and animations referenced by the README and docs.
+- `docs/assets/` — Figures and animations referenced by the README and docs.
 
 ## Architecture (four components)
 

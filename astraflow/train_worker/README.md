@@ -56,7 +56,7 @@ customization layers clean and intuitive by isolating them from complex backend
 implementation details. Users can define custom agentic training workflows and
 algorithms entirely within a single entry point file.
 
-![layers](../assets/astraflow_lite_layers.png)
+![layers](../../docs/assets/astraflow_lite_layers.png)
 
 #### 1. API Layer (`api/`)
 
