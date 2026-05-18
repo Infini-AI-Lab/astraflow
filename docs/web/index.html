@@ -1034,7 +1034,7 @@
     </div>
 
     <!-- Finding 3 -->
-    <h3 id="finding-cross-region">Cross-region: Trainer never blocks on a slow remote pool</h3>
+    <h3 id="finding-cross-region">Cross-region & Heterogeneous: Trainer never blocks on a slow remote pool</h3>
     <p>
       Three RaaS pools at 100% / 60% / 30% relative throughput (induced by 700W / 400W / 250W per-GPU power caps), two of them remote and shaped to 4 Gbit/s + 300 ms RTT. <b>All three pools contribute every iteration.</b> AstraFlow reaches 67.6 average math accuracy — comparable to a homogeneous local baseline. The trainer's downtime is essentially flat; even when remote pools finish weight transfer late, ongoing training masks the cost.
     </p>
