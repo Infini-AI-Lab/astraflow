@@ -37,11 +37,10 @@ templates_path = ["_templates"]
 
 html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
-html_logo = "_static/logo.jpg"
+# TODO: restore image logo once _static/logo.jpg is fixed.
 html_theme_options = {
     "logo": {
-        "image_light": "_static/logo.jpg",
-        "image_dark": "_static/logo.jpg",
+        "text": "AstraFlow",
     },
     "max_navbar_depth": 1,
 }
