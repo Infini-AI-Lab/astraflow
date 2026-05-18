@@ -2,6 +2,7 @@
 <h1>AstraFlow: Dataflow-Oriented Reinforcement Learning for Agentic LLMs</h1>
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.15565-b31b1b.svg)](https://arxiv.org/abs/2605.15565)
+[![Website](https://img.shields.io/badge/website-online-9cf.svg)](https://haizhongzheng.github.io/astraflow/)
 [![Docs Site](https://img.shields.io/badge/docs-github%20pages-blue)](https://haizhongzheng.github.io/astraflow/docs/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](./LICENSE)
 
@@ -9,6 +10,7 @@
 
 <!-- <p align="center">
 <a href="https://arxiv.org/abs/2605.15565"><b>Paper</b></a> |
+<a href="https://haizhongzheng.github.io/astraflow/"><b>Website</b></a> |
 <a href="https://haizhongzheng.github.io/astraflow/docs/"><b>Documentation</b></a> |
 <a href="./docs/en/recipes/"><b>Recipes</b></a> |
 <a href="#citation"><b>Citation</b></a>
