@@ -1,0 +1,717 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Delta Weight Transfer &#8212; AstraFlow 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=96ea4a36" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/delta-weight-transfer';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="AstraFlow 0.1.0 documentation - Home"/>
+    <img src="../_static/logo.jpg" class="logo__image only-dark pst-js-only" alt="AstraFlow 0.1.0 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quickstart</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Components</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="astraflow.html">AstraFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="raas.html">RaaS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-trainer.html">Custom Trainer Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-raas.html">Custom RaaS Integration</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search (ASearcher)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/architecture/delta-weight-transfer.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Delta Weight Transfer</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-works">How It Works</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-delta">Enabling Delta</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mode-decision">Mode Decision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparse-format">Sparse Format</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-computation">Delta Computation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-application-raas">Delta Application (RaaS)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#buffer-layout">Buffer Layout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#guard-barrier">Guard Barrier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeline">Timeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#measured-performance-1-7b-model-20-steps">Measured Performance (1.7B model, 20 steps)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wandb-metrics">Wandb Metrics</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="delta-weight-transfer">
+<h1>Delta Weight Transfer<a class="headerlink" href="#delta-weight-transfer" title="Link to this heading">#</a></h1>
+<p>Delta weight transfer is an optional mode that sends only changed
+bf16 elements instead of the full model. After a single RL optimizer
+step, &gt;98% of weights are bit-identical, so the delta is typically
+30-40x smaller than the full model.</p>
+<section id="how-it-works">
+<h2>How It Works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h2>
+<p>The trainer config declares supported strategies (<code class="docutils literal notranslate"><span class="pre">[&quot;full&quot;,</span> <span class="pre">&quot;delta&quot;]</span></code>).
+RaaS decides which mode to use per pull based on sender capabilities
+and its own state.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Trainer                SenderAgent (subprocess)           RaaS
+  │                         │                              │
+  offload()                 │                              │
+  (GPU→CPU copy, ~0.5s)    │                              │
+  notify_buffer_ready ────► │                              │
+                     swap + ack immediately                │
+  ◄──── ack ─────────────── │                              │
+  save checkpoint           │ _compute_delta() [async]     │
+  wait_delta_ready()        │ compare halves (numpy)       │
+  ◄──── metrics ────────────│ encode sparse → delta shm    │
+                            │ set delta_done_event         │
+  notify_version ──────────────────────────────────────► │
+                            │         GET /get_capabilities │
+                            │ ◄──────── delta_ready? ──────│
+                            │         POST /request_transfer│
+                            │ ◄──────── mode=delta ────────│
+                            │ TCP sendfile(delta) ────────►│
+                            │ ZMQ done ───────────────────►│
+                            │              mmap patch + load│
+</pre></div>
+</div>
+</section>
+<section id="enabling-delta">
+<h2>Enabling Delta<a class="headerlink" href="#enabling-delta" title="Link to this heading">#</a></h2>
+<p><strong>Trainer</strong> — set the environment variable:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">WEIGHT_TRANSFER_STRATEGIES</span><span class="o">=</span><span class="s2">&quot;full,delta&quot;</span>
+</pre></div>
+</div>
+<p><strong>RaaS</strong> — add to the YAML config under the <code class="docutils literal notranslate"><span class="pre">raas</span></code> section:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">raas</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">delta_full_sync_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w">   </span><span class="c1"># full resync every 10 steps</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">delta_full_sync_interval</span></code> is 0 (default), RaaS uses delta
+whenever available and never forces full. A non-zero value causes
+a periodic full transfer for resync (e.g. every 10th step).</p>
+</section>
+<section id="mode-decision">
+<h2>Mode Decision<a class="headerlink" href="#mode-decision" title="Link to this heading">#</a></h2>
+<p>RaaS decides per-pull in <code class="docutils literal notranslate"><span class="pre">_choose_transfer_mode()</span></code>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Condition</p></th>
+<th class="head"><p>Mode</p></th>
+<th class="head"><p>Reason</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>First pull (local_v=0)</p></td>
+<td><p>full</p></td>
+<td><p>No local weights to patch</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">delta</span></code> not in sender strategies</p></td>
+<td><p>full</p></td>
+<td><p>Sender only supports full</p></td>
+</tr>
+<tr class="row-even"><td><p>Delta not ready</p></td>
+<td><p>full</p></td>
+<td><p>Async compute not finished</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">local_v</span> <span class="pre">%</span> <span class="pre">full_sync_interval</span> <span class="pre">==</span> <span class="pre">0</span></code></p></td>
+<td><p>full</p></td>
+<td><p>Periodic resync</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">local_v</span> <span class="pre">!=</span> <span class="pre">delta_base_version</span></code></p></td>
+<td><p>full</p></td>
+<td><p>Version mismatch (&gt;1 step behind)</p></td>
+</tr>
+<tr class="row-odd"><td><p>All checks pass</p></td>
+<td><p>delta</p></td>
+<td><p>Apply sparse patch</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sparse-format">
+<h2>Sparse Format<a class="headerlink" href="#sparse-format" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span> <span class="mi">16</span> <span class="nb">bytes</span><span class="p">][</span><span class="n">indices</span><span class="p">][</span><span class="n">values</span><span class="p">]</span>
+
+<span class="n">Header</span><span class="p">:</span>
+  <span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>   <span class="n">num_nonzero</span>     <span class="p">(</span><span class="n">uint64</span><span class="p">)</span>
+  <span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>  <span class="n">element_size</span>    <span class="p">(</span><span class="n">uint16</span><span class="p">,</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">bf16</span><span class="p">)</span>
+  <span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span> <span class="n">flags</span>           <span class="p">(</span><span class="n">uint16</span><span class="p">,</span> <span class="n">bit</span> <span class="mi">0</span> <span class="o">=</span> <span class="n">uint64</span> <span class="n">indices</span><span class="p">)</span>
+  <span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span> <span class="n">reserved</span>
+
+<span class="n">Indices</span><span class="p">:</span>  <span class="n">num_nonzero</span> <span class="n">x</span> <span class="mi">4</span> <span class="nb">bytes</span> <span class="p">(</span><span class="n">uint32</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">8</span> <span class="nb">bytes</span> <span class="p">(</span><span class="n">uint64</span><span class="p">)</span>
+<span class="n">Values</span><span class="p">:</span>   <span class="n">num_nonzero</span> <span class="n">x</span> <span class="n">element_size</span> <span class="nb">bytes</span> <span class="p">(</span><span class="n">raw</span> <span class="n">bf16</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The indices are element offsets into the flat weight buffer (same
+layout as the safetensors data section). Values are the <strong>new</strong> element
+values (not deltas) — the receiver overwrites at each index.</p>
+</section>
+<section id="delta-computation">
+<h2>Delta Computation<a class="headerlink" href="#delta-computation" title="Link to this heading">#</a></h2>
+<p>Runs in the sender agent subprocess (CPU, numpy), asynchronously
+after acking the trainer:</p>
+<ol class="arabic simple">
+<li><p>View both buffer halves as <code class="docutils literal notranslate"><span class="pre">uint16</span></code> arrays (bf16 representation)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">diff_mask</span> <span class="pre">=</span> <span class="pre">new_arr</span> <span class="pre">!=</span> <span class="pre">old_arr</span></code> — vectorized comparison</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nonzero_indices</span> <span class="pre">=</span> <span class="pre">np.where(diff_mask)</span></code> — find changed elements</p></li>
+<li><p>Encode header + indices + values into the delta shm buffer</p></li>
+</ol>
+<p>Typical performance for a 1.7B model: ~1.8s compute, ~99% sparsity,
+~95 MB delta (vs 3.9 GB full = 40x compression).</p>
+</section>
+<section id="delta-application-raas">
+<h2>Delta Application (RaaS)<a class="headerlink" href="#delta-application-raas" title="Link to this heading">#</a></h2>
+<p>RaaS applies the delta via mmap in-place patching:</p>
+<ol class="arabic simple">
+<li><p>Open the existing safetensors file in <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> with <code class="docutils literal notranslate"><span class="pre">mmap</span></code></p></li>
+<li><p>Create a numpy view of the weight data section</p></li>
+<li><p>Vectorized scatter write: <code class="docutils literal notranslate"><span class="pre">weight_2d[indices]</span> <span class="pre">=</span> <span class="pre">values</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mmap.flush()</span></code> — data is ready for SGLang to load</p></li>
+</ol>
+<p>No read-copy-write cycle — only the changed elements are touched.
+Typical time: ~1.1s for 1.7B.</p>
+</section>
+<section id="buffer-layout">
+<h2>Buffer Layout<a class="headerlink" href="#buffer-layout" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/dev/shm/astraflow_buffer_XXXX  (2x model, same as full transfer)
+┌─────────────┬─────────────┐
+│   Half 0    │   Half 1    │
+└─────────────┴─────────────┘
+
+/dev/shm/astraflow_delta_XXXX   (1x model, for sparse delta)
+┌─────────────────────────────┐
+│  [header][indices][values]  │
+└─────────────────────────────┘
+</pre></div>
+</div>
+<p>The double buffer trick provides both current and previous versions
+for the delta comparison. No extra “previous copy” buffer is needed.</p>
+</section>
+<section id="guard-barrier">
+<h2>Guard Barrier<a class="headerlink" href="#guard-barrier" title="Link to this heading">#</a></h2>
+<p>The delta computation reads the inactive half asynchronously. A guard
+barrier at the start of <code class="docutils literal notranslate"><span class="pre">offload()</span></code> prevents all ranks from writing
+to the inactive half until the previous delta finishes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In offload():</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_wait_previous_delta</span><span class="p">()</span>   <span class="c1"># rank 0 waits on delta_done_event</span>
+<span class="n">dist</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>                 <span class="c1"># all ranks sync before writing</span>
+</pre></div>
+</div>
+<p>Normally instant (&lt;5ms). Only blocks if the training step is faster
+than delta compute — unlikely for models larger than 1.7B.</p>
+</section>
+<section id="timeline">
+<h2>Timeline<a class="headerlink" href="#timeline" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Time ──────────────────────────────────────────────────────────────────────►
+
+TRAINER (GPU)
+  │ train_step N               │guard│offload│save│wait │notify│ train_step
+  │[===========================][---][======]│chkp│delta│async │[==========
+  │ forward/backward/optim     │~3ms│~0.5s  │    │ready│      │
+  │                            │    │       │    │     │      │
+
+SENDER AGENT (CPU)
+  │ · · · · · · · · · · · · · ·│swap│ack│ delta compute      │done│ · · · ·
+  │         idle               │idx │   │[==================]│evt │   idle
+  │                            │    │   │ ~1.8s (overlapped) │    │
+
+RAAS (GPU)
+  │ generating · · · · · · · · · · · · · · │choose│delta│pause│load│resume
+  │                                        │mode  │pull │[===]│[==]│
+  │                                        │      │~1.1s│3.0s │0.7s│
+</pre></div>
+</div>
+</section>
+<section id="measured-performance-1-7b-model-20-steps">
+<h2>Measured Performance (1.7B model, 20 steps)<a class="headerlink" href="#measured-performance-1-7b-model-20-steps" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Full</p></th>
+<th class="head"><p>Delta</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Trainer offload (blocking)</p></td>
+<td><p>0.5s</p></td>
+<td><p>0.5s (same)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Delta compute (async)</p></td>
+<td><p>—</p></td>
+<td><p>1.8s (overlapped)</p></td>
+</tr>
+<tr class="row-even"><td><p>Guard barrier</p></td>
+<td><p>—</p></td>
+<td><p>&lt;5ms</p></td>
+</tr>
+<tr class="row-odd"><td><p>TCP transfer</p></td>
+<td><p>1.0s</p></td>
+<td><p>0.025s</p></td>
+</tr>
+<tr class="row-even"><td><p>Save/Patch on RaaS</p></td>
+<td><p>1.4s</p></td>
+<td><p>1.1s</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pull total</strong></p></td>
+<td><p><strong>2.4s</strong></p></td>
+<td><p><strong>1.1s</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Sparsity</p></td>
+<td><p>—</p></td>
+<td><p>98.4-99.2%</p></td>
+</tr>
+<tr class="row-odd"><td><p>Compression ratio</p></td>
+<td><p>1x</p></td>
+<td><p>21-43x</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="wandb-metrics">
+<h2>Wandb Metrics<a class="headerlink" href="#wandb-metrics" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Metric</p></th>
+<th class="head"><p>Source</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">weight_transfer/offload_guard_time</span></code></p></td>
+<td><p>trainer</p></td>
+<td><p>Guard barrier wait</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">weight_transfer/offload_copy_time</span></code></p></td>
+<td><p>trainer</p></td>
+<td><p>GPU→CPU copy</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">weight_transfer/offload_total_time</span></code></p></td>
+<td><p>trainer</p></td>
+<td><p>End-to-end offload</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">weight_transfer/delta_sparsity</span></code></p></td>
+<td><p>sender agent</p></td>
+<td><p>Fraction unchanged</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">weight_transfer/delta_size_mb</span></code></p></td>
+<td><p>sender agent</p></td>
+<td><p>Sparse delta size</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">weight_transfer/delta_compute_time</span></code></p></td>
+<td><p>sender agent</p></td>
+<td><p>Async compute time</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">weight_transfer/use_full</span></code></p></td>
+<td><p>RaaS via AstraFlow</p></td>
+<td><p>0=delta, 1=full</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-works">How It Works</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-delta">Enabling Delta</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mode-decision">Mode Decision</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparse-format">Sparse Format</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-computation">Delta Computation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delta-application-raas">Delta Application (RaaS)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#buffer-layout">Buffer Layout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#guard-barrier">Guard Barrier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeline">Timeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#measured-performance-1-7b-model-20-steps">Measured Performance (1.7B model, 20 steps)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wandb-metrics">Wandb Metrics</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By AstraFlow Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, AstraFlow Team.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

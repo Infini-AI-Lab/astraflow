@@ -1,0 +1,670 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>System Overview &#8212; AstraFlow 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=96ea4a36" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/overview';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="AstraFlow" href="astraflow.html" />
+    <link rel="prev" title="Quickstart" href="../get-started/quickstart.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="AstraFlow 0.1.0 documentation - Home"/>
+    <img src="../_static/logo.jpg" class="logo__image only-dark pst-js-only" alt="AstraFlow 0.1.0 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quickstart</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Components</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="astraflow.html">AstraFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="raas.html">RaaS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-trainer.html">Custom Trainer Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-raas.html">Custom RaaS Integration</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search (ASearcher)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/architecture/overview.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>System Overview</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components">Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture">Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inter-component-call-graph">Inter-Component Call Graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-raas-pool">Dynamic RaaS Pool</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-model-multi-trainer">Multi-Model, Multi-Trainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-loop">Training Loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-execution-model">Async Execution Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-tracking-and-staleness">Version Tracking and Staleness</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fault-tolerance">Fault Tolerance</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="system-overview">
+<h1>System Overview<a class="headerlink" href="#system-overview" title="Link to this heading">#</a></h1>
+<p>AstraFlow is a fully asynchronous reinforcement learning system where inference, training, and data orchestration run as independent services coordinated via HTTP. The system is designed for distributed GPU clusters and supports elastic scaling of both inference and training.</p>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">#</a></h2>
+<p>The system has four cooperating components:</p>
+<ol class="arabic simple">
+<li><p><strong>AstraFlow</strong> — Central orchestrator. Manages a global pool of RaaS instances, acquires rollout data, buffers and serves training batches, and coordinates weight synchronization.</p></li>
+<li><p><strong>RaaS</strong> (Remote Agentic Serving) — Inference service. Launches and manages vLLM/SGLang engines, executes rollout workflows with reward functions, and loads updated weights. Multiple RaaS instances can run in parallel, and instances can join or leave dynamically.</p></li>
+<li><p><strong>Trainer</strong> — Distributed training engine (FSDP/Megatron). Fetches batches from AstraFlow, runs RL algorithm updates (GRPO, PPO, M2PO, etc.), and pushes updated weights. Multiple trainers can run in parallel for multi-model training.</p></li>
+<li><p><strong>WeightManager</strong> — Weight transfer subsystem. Copies FSDP weights to shared-memory buffers and transfers them to RaaS via TCP or NCCL.</p></li>
+</ol>
+</section>
+<section id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────┐
+│                       AstraFlow                         │
+│                (Orchestration + Buffering)              │
+│                                                         │
+│       ┌──────────────┐          ┌──────────────┐        │
+│       │     Data     │          │     Data     │        │
+│       │ Acquisition  │          │   Serving    │        │
+│       └──────┬───────┘          └──────┬───────┘        │
+└──────────────┼─────────────────────────┼────────────────┘
+               │                         │
+submit / pull  │                         │  get_batch
+        ┌──────┴──────┐          ┌───────┴──────┐
+        │             │          │              │
+┌───────▼───────┐ ┌───▼───────┐ ┌▼───────────┐ ┌▼──────────┐
+│   RaaS #1     │ │  RaaS #2  │ │  Trainer   │ │  Trainer  │
+│   (SGLang)    │ │  (SGLang) │ │  (model0)  │ │  (model1) │
+│    4 GPUs     │ │   4 GPUs  │ │   2 GPUs   │ │   2 GPUs  │
+└───────┬───────┘ └───┬───────┘ └─────┬──────┘ └──────┬────┘
+        │             │               │               │
+        │      weight sync (TCP or NCCL)              │
+        ◄─────────────────────────────┘───────────────┘
+</pre></div>
+</div>
+</section>
+<section id="inter-component-call-graph">
+<h2>Inter-Component Call Graph<a class="headerlink" href="#inter-component-call-graph" title="Link to this heading">#</a></h2>
+<p>All HTTP calls between the three components, organized by phase.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│       Trainer        │     │      AstraFlow       │     │        RaaS         │
+│  (train_worker/)     │     │    (astraflow/)      │     │      (raas/)        │
+└─────────┬───────────┘     └──────────┬──────────┘     └──────────┬──────────┘
+          │                            │                           │
+    ╔═════╧════════════════════════════╧═══════════════════════════╧═════╗
+    ║  STARTUP                                                         ║
+    ╚═════╤════════════════════════════╤═══════════════════════════╤═════╝
+          │                            │                           │
+          │                            │  POST /register_raas   │
+          │                            │ &lt;─────────────────────────┤
+          │                            │                           │
+          │                            │  POST /register_workflow
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │  POST /ready            │                           │
+          ├───────────────────────────&gt;│                           │
+          │                            │                           │
+    ╔═════╧════════════════════════════╧═══════════════════════════╧═════╗
+    ║  TRAINING LOOP (each iteration)                                  ║
+    ╚═════╤════════════════════════════╤═══════════════════════════╤═════╝
+          │                            │                           │
+          │                            │  GET /availability     │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │                            │  POST /submit          │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │                            │  POST /pull            │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │  GET /batch             │                           │
+          ├───────────────────────────&gt;│                           │
+          │                            │                           │
+          │       ... trainer runs RL update ...                   │
+          │                            │                           │
+          │  POST /notify_version   │                           │
+          ├───────────────────────────&gt;│                           │
+          │                            │                           │
+          │                            │  POST /notify_version     │
+          │                            │  (one call per model      │
+          │                            │   per RaaS instance)      │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │          POST /register_sglang_instance  (first pull)  │
+          │ &lt;─────────────────────────────────────────────────────┤
+          │                            │                           │
+          │          POST /request_transfer   (each pull)          │
+          │ &lt;─────────────────────────────────────────────────────┤
+          │                            │                           │
+    ╔═════╧════════════════════════════╧═══════════════════════════╧═════╗
+    ║  EVALUATION (triggered after weight sync)                        ║
+    ╚═════╤════════════════════════════╤═══════════════════════════╤═════╝
+          │                            │                           │
+          │                            │  POST /eval_start      │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │                            │  POST /eval_submit     │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │                            │  POST /eval_pull       │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │                            │  POST /eval_end        │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+    ╔═════╧════════════════════════════╧═══════════════════════════╧═════╗
+    ║  LIFECYCLE                                                       ║
+    ╚═════╤════════════════════════════╤═══════════════════════════╤═════╝
+          │                            │                           │
+          │                            │  GET /status           │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+          │                            │  POST /shutdown        │
+          │                            ├──────────────────────────&gt;│
+          │                            │                           │
+</pre></div>
+</div>
+<p>Arrow direction indicates who initiates the HTTP call. During weight sync, RaaS calls Trainer directly (bypassing AstraFlow) for the bulk TCP transfer.</p>
+</section>
+<section id="dynamic-raas-pool">
+<h2>Dynamic RaaS Pool<a class="headerlink" href="#dynamic-raas-pool" title="Link to this heading">#</a></h2>
+<p>RaaS instances are managed by a global <code class="docutils literal notranslate"><span class="pre">RaaSPool</span></code> shared across all agents. Instances register and deregister at runtime via HTTP:</p>
+<ul class="simple">
+<li><p><strong>Join</strong>: A new RaaS instance calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code>. The pool initializes the engine, catches it up to the current weight version (so it never serves stale rollouts), then adds it to the live pool.</p></li>
+<li><p><strong>Leave</strong>: An instance can deregister via <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/deregister_raas</span></code>, or the pool automatically detects failures via heartbeat monitoring.</p></li>
+<li><p><strong>Failure detection</strong>: Data-path calls (submit, pull) mark failing instances as <em>suspect</em>. A background heartbeat thread confirms via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> (which reflects actual engine health, not a trivial OK) and deregisters dead instances. This two-phase approach avoids false positives from transient network issues.</p></li>
+<li><p><strong>Capacity-based routing</strong>: <code class="docutils literal notranslate"><span class="pre">submit_auto</span></code> routes each rollout request to the RaaS instance with the most available slots, balancing load across the pool.</p></li>
+<li><p><strong>Parallel collect</strong>: <code class="docutils literal notranslate"><span class="pre">pull_completed</span></code> fans out to all live instances in parallel and merges results.</p></li>
+</ul>
+<p>This means you can scale inference throughput by adding more RaaS instances at any time — no restart required.</p>
+</section>
+<section id="multi-model-multi-trainer">
+<h2>Multi-Model, Multi-Trainer<a class="headerlink" href="#multi-model-multi-trainer" title="Link to this heading">#</a></h2>
+<p>AstraFlow supports training multiple models simultaneously (e.g., a solver and a verifier in solve-and-verify). Each model has:</p>
+<ul class="simple">
+<li><p>Its own <strong>Trainer</strong> process with dedicated GPUs and a separate weight transfer port.</p></li>
+<li><p>Its own <strong>buffer</strong> inside AstraFlow with independent staleness filtering.</p></li>
+<li><p>Its own <strong>SGLang engine</strong> inside RaaS (e.g., <code class="docutils literal notranslate"><span class="pre">sglang[model0]:d2+sglang[model1]:d2</span></code>).</p></li>
+</ul>
+<p>Coordination uses a <strong>version barrier</strong>: each trainer independently notifies its version after a training step. Weight sync to RaaS is triggered only after all models reach the same version. The last trainer to arrive becomes the “leader” and initiates the coordinated weight load across all RaaS instances. Other trainers block until the leader completes.</p>
+</section>
+<section id="training-loop">
+<h2>Training Loop<a class="headerlink" href="#training-loop" title="Link to this heading">#</a></h2>
+<p>Each iteration proceeds as follows:</p>
+<ol class="arabic simple">
+<li><p><strong>Data Acquisition</strong> (background, continuous): AstraFlow checks RaaS pool availability, submits prompts to the least-loaded instance, and collects completed rollouts from all instances in parallel. Rollouts are filtered by staleness and reward distribution, then buffered.</p></li>
+<li><p><strong>Batch Fetch</strong>: Trainer requests a batch from AstraFlow via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code>. AstraFlow mixes fresh rollouts and replay data according to <code class="docutils literal notranslate"><span class="pre">replay_ratio</span></code>, applies staleness filtering, and returns a padded batch.</p></li>
+<li><p><strong>Train Step</strong>: Trainer runs forward/backward pass with the RL algorithm (PPO/GRPO/M2PO), computes loss, and updates model weights.</p></li>
+<li><p><strong>Weight Sync</strong>:</p>
+<ul class="simple">
+<li><p>Trainer stages new weights to shared memory (via <code class="docutils literal notranslate"><span class="pre">WeightManager.offload</span></code>) and calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> on AstraFlow.</p></li>
+<li><p>In multi-model setups, AstraFlow’s Python-side version barrier waits until every registered <code class="docutils literal notranslate"><span class="pre">model_id</span></code> reports the same version. For non-eval steps, each per-model weight load is fired asynchronously (fire-and-forget) and the staleness filter absorbs briefly-stale rollouts. For eval steps, the weight load is deferred to the barrier leader so every model updates atomically.</p></li>
+<li><p>The leader (or each async firer) fans out one <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> per model to every live RaaS instance via <code class="docutils literal notranslate"><span class="pre">RaaSPool.notify_version()</span></code>. Each RaaS pulls the model’s weights over TCP from the sender agent, pauses that model’s engine, loads from <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>, and resumes.</p></li>
+</ul>
+</li>
+<li><p><strong>Repeat</strong> with the next iteration.</p></li>
+</ol>
+</section>
+<section id="async-execution-model">
+<h2>Async Execution Model<a class="headerlink" href="#async-execution-model" title="Link to this heading">#</a></h2>
+<p>Each component runs as a separate process:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Execution Model</p></th>
+<th class="head"><p>Typical GPUs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>AstraFlow</p></td>
+<td><p>Threaded (Flask + ThreadPoolExecutor)</p></td>
+<td><p>CPU-only</p></td>
+</tr>
+<tr class="row-odd"><td><p>RaaS (×N)</p></td>
+<td><p>Async (FastAPI + asyncio)</p></td>
+<td><p>4+ GPUs each</p></td>
+</tr>
+<tr class="row-even"><td><p>Trainer (×M)</p></td>
+<td><p>Synchronous (PyTorch DDP/FSDP)</p></td>
+<td><p>2–8 GPUs each</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Data acquisition runs two background threads inside AstraFlow:</p>
+<ul class="simple">
+<li><p><strong>Submit thread</strong>: Checks pool availability, gathers prompts, submits in parallel via ThreadPoolExecutor.</p></li>
+<li><p><strong>Collect thread</strong>: Polls all RaaS instances for completed rollouts, applies filtering, ingests into buffer.</p></li>
+</ul>
+<p>This decoupling means inference and training overlap — while the trainer processes one batch, the next batch of rollouts is already being generated across all RaaS instances.</p>
+</section>
+<section id="version-tracking-and-staleness">
+<h2>Version Tracking and Staleness<a class="headerlink" href="#version-tracking-and-staleness" title="Link to this heading">#</a></h2>
+<p>Every rollout is tagged with the model weight version that produced it. During batch retrieval, samples older than <code class="docutils literal notranslate"><span class="pre">current_version</span> <span class="pre">-</span> <span class="pre">max_staleness</span></code> are dropped. This prevents training on outdated rollouts while allowing a configurable lag for throughput.</p>
+<p>When a new RaaS instance joins mid-training, the pool sends it the current weight version and sender endpoints so it loads the latest weights before serving any traffic.</p>
+</section>
+<section id="fault-tolerance">
+<h2>Fault Tolerance<a class="headerlink" href="#fault-tolerance" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>RaaS heartbeat</strong>: Background thread monitors all instances via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> every 10s. Two consecutive failures trigger deregistration. The pool continues operating with remaining instances.</p></li>
+<li><p><strong>Suspect-and-confirm</strong>: Data-path failures mark instances as suspect (skipped for routing) but don’t immediately deregister — the heartbeat thread confirms via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> first.</p></li>
+<li><p><strong>Empty pool</strong>: If all RaaS instances fail, submit/collect become no-ops until a new instance registers. Training pauses at the next <code class="docutils literal notranslate"><span class="pre">get_batch</span></code> call (blocks until data is available).</p></li>
+<li><p><strong>Checkpointing</strong>: Both model weights and buffer state can be saved and restored. On recovery, trainers report their recovered version so staleness filtering works correctly.</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../get-started/quickstart.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Quickstart</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="astraflow.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">AstraFlow</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components">Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture">Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inter-component-call-graph">Inter-Component Call Graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-raas-pool">Dynamic RaaS Pool</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-model-multi-trainer">Multi-Model, Multi-Trainer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-loop">Training Loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#async-execution-model">Async Execution Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-tracking-and-staleness">Version Tracking and Staleness</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fault-tolerance">Fault Tolerance</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By AstraFlow Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, AstraFlow Team.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

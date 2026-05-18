@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Custom Trainer Integration &#8212; AstraFlow 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=96ea4a36" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/custom-trainer';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Custom RaaS Integration" href="custom-raas.html" />
+    <link rel="prev" title="WeightManager" href="weight-manager.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.1.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.jpg" class="logo__image only-light" alt="AstraFlow 0.1.0 documentation - Home"/>
+    <img src="../_static/logo.jpg" class="logo__image only-dark pst-js-only" alt="AstraFlow 0.1.0 documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Overview</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quickstart</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Components</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="astraflow.html">AstraFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="raas.html">RaaS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Custom Trainer Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom-raas.html">Custom RaaS Integration</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search (ASearcher)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer-guide/contributing.html">Contributing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/architecture/custom-trainer.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Custom Trainer Integration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture">Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wire-formats">Wire formats</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer-astraflow-outbound">Trainer → AstraFlow (outbound)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-post-ready">Registration: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#data-get-batch">Data: <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-post-notify-version">Weights: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#raas-trainer-inbound-weight-sender">RaaS → Trainer (inbound, weight sender)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#get-get-buffer-info"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/get_buffer_info</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-register-sglang-instance"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_sglang_instance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-request-transfer"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/request_transfer</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connection-lifecycle">Connection Lifecycle</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-transfer-double-buffer-design">Weight Transfer: Double-Buffer Design</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-example">Complete Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-summary">API Summary</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="custom-trainer-integration">
+<h1>Custom Trainer Integration<a class="headerlink" href="#custom-trainer-integration" title="Link to this heading">#</a></h1>
+<p>AstraFlow’s trainer is a swappable component. You can replace the built-in
+PPO trainer with your own training framework as long as it speaks the
+correct HTTP protocol. This guide documents the minimal API your custom
+trainer must implement.</p>
+<p>This guide assumes <strong>TCP weight transfer mode</strong>, which is the recommended
+mode for custom trainers because the trainer only needs to talk to
+AstraFlow — no direct RaaS communication required for data or coordination.</p>
+<section id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h2>
+<p>A trainer has two communication surfaces:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ┌───────────────────────┐
+   Outbound HTTP   │                       │   Inbound HTTP
+   (3 endpoints)   │    Custom Trainer     │   (3 endpoints)
+                   │                       │
+  Trainer ────────►│                       │◄──────── RaaS
+  calls AstraFlow  │  ┌─────────────────┐  │  calls trainer&#39;s
+                   │  │  Sender Agent   │  │  weight sender
+                   │  │  (reusable lib) │  │
+                   │  └─────────────────┘  │
+                   └───────────────────────┘
+
+  Registration ──►  AstraFlow             RaaS  ──► Weight connection
+  Data pull    ──►  Service               instances  Weight pull
+  Version notify►                         (1..N)
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Outbound (trainer → AstraFlow)</strong>: 3 HTTP calls for registration, data,
+and version notification.</p></li>
+<li><p><strong>Inbound (RaaS → trainer)</strong>: 3 HTTP endpoints served by the weight
+sender agent. RaaS connects to pull updated weights via TCP.</p></li>
+</ul>
+<p>The weight sender agent (<code class="docutils literal notranslate"><span class="pre">astraflow.train_worker.weight_transfer.sender_agent</span></code>)
+is provided as a reusable library. Custom trainers do not need to reimplement
+the TCP/ZMQ transfer machinery.</p>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<section id="wire-formats">
+<h3>Wire formats<a class="headerlink" href="#wire-formats" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Pickle / cloudpickle</strong> (<code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/octet-stream</span></code>) —
+all three Trainer → AstraFlow endpoints. Payload is a Python dict
+before <code class="docutils literal notranslate"><span class="pre">cloudpickle.dumps</span></code>.</p></li>
+<li><p><strong>JSON</strong> — all three RaaS → Trainer sender endpoints.</p></li>
+</ul>
+<p>Note on envelope shapes: unlike RaaS, AstraFlow’s pickle endpoints do
+<strong>not</strong> use a nested <code class="docutils literal notranslate"><span class="pre">{ok,</span> <span class="pre">result}</span></code> wrapper. Responses are flat dicts
+with an <code class="docutils literal notranslate"><span class="pre">ok</span></code> field alongside whatever other keys the endpoint returns.
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code> returns its payload with no <code class="docutils literal notranslate"><span class="pre">ok</span></code> at all — the HTTP status
+is the only success signal. Below, <code class="docutils literal notranslate"><span class="pre">python</span></code> code fences show the
+Python dict before pickling; <code class="docutils literal notranslate"><span class="pre">json</span></code> fences show literal JSON text.</p>
+</section>
+<section id="trainer-astraflow-outbound">
+<h3>Trainer → AstraFlow (outbound)<a class="headerlink" href="#trainer-astraflow-outbound" title="Link to this heading">#</a></h3>
+<p>These are HTTP calls your trainer makes to the AstraFlow service.</p>
+<section id="registration-post-ready">
+<h4>Registration: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code><a class="headerlink" href="#registration-post-ready" title="Link to this heading">#</a></h4>
+<p>Signal that the trainer is ready to receive data. AstraFlow starts data
+acquisition only after both RaaS and trainer have signalled readiness.</p>
+<p>Request fields:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">train_batch_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Number of examples per training batch</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">model_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Model identifier for multi-model setups</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sender_endpoint</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>Yes (TCP)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;host:port&quot;</span></code> of the trainer’s weight sender HTTP server</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">recovered_version</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Weight version to resume from after checkpoint recovery</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Request</strong> (Python dict, pickled):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;train_batch_size&quot;</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+    <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>              <span class="c1"># omit for single-model</span>
+    <span class="s2">&quot;sender_endpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.1:18861&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;recovered_version&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>            <span class="c1"># omit for fresh start</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong> (flat, no envelope — pickled):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="data-get-batch">
+<h4>Data: <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code><a class="headerlink" href="#data-get-batch" title="Link to this heading">#</a></h4>
+<p>Pull a training batch. <strong>Blocks</strong> until sufficient data is available in
+the buffer.</p>
+<p>Query parameters (not a pickle body — real URL query string):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Param</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Which model’s data to pull (multi-model)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">version</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Trainer’s current version (used for multi-model barrier sync)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Request</strong> — a plain HTTP GET:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET /batch?model_id=model0&amp;version=42
+</pre></div>
+</div>
+<p><strong>Response</strong> — pickled Python dict, <strong>no envelope</strong> (the payload is
+the batch directly):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;batch&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>         <span class="c1"># [batch, seq_len]</span>
+        <span class="s2">&quot;rewards&quot;</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>           <span class="c1"># [batch, seq_len]</span>
+        <span class="s2">&quot;logprobs&quot;</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>          <span class="c1"># [batch, seq_len]</span>
+        <span class="s2">&quot;loss_mask&quot;</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span>         <span class="c1"># [batch, seq_len]</span>
+        <span class="c1"># ... other fields depending on workflow</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;buffer_stats&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;buffer/size&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+        <span class="s2">&quot;buffer/staleness_mean&quot;</span><span class="p">:</span> <span class="mf">1.2</span><span class="p">,</span>
+        <span class="c1"># ... other buffer/filter metrics for wandb</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="weights-post-notify-version">
+<h4>Weights: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code><a class="headerlink" href="#weights-post-notify-version" title="Link to this heading">#</a></h4>
+<p>Notify AstraFlow that new weights are available. AstraFlow’s Python-side
+barrier waits until every registered <code class="docutils literal notranslate"><span class="pre">model_id</span></code> has reported the same
+version, then fans out one <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> per model to every
+live RaaS instance.</p>
+<p>Request fields:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">version</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>New model version after training step</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">run_eval</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>No</p></td>
+<td><p>If <code class="docutils literal notranslate"><span class="pre">true</span></code>, AstraFlow runs eval and blocks until complete</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Model identifier (multi-model)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Request</strong> (Python dict, pickled):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+    <span class="s2">&quot;run_eval&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>    <span class="c1"># omit for single-model</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong> (flat, no nested envelope — pickled):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Non-eval step</span>
+<span class="p">{</span>
+    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;eval_results&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s2">&quot;weight_transfer_info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;use_full&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>   <span class="c1"># only present for TCP mode</span>
+<span class="p">}</span>
+
+<span class="c1"># Eval step</span>
+<span class="p">{</span>
+    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;eval_results&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;math/acc&quot;</span><span class="p">:</span> <span class="mf">0.512</span><span class="p">,</span>
+        <span class="s2">&quot;math/pass@1&quot;</span><span class="p">:</span> <span class="mf">0.47</span><span class="p">,</span>
+        <span class="c1"># ... benchmark-specific keys</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;weight_transfer_info&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;use_full&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="raas-trainer-inbound-weight-sender">
+<h3>RaaS → Trainer (inbound, weight sender)<a class="headerlink" href="#raas-trainer-inbound-weight-sender" title="Link to this heading">#</a></h3>
+<p>These are HTTP endpoints that RaaS calls on the trainer’s weight sender
+server. The sender agent library handles these automatically — listed here
+for completeness.</p>
+<section id="get-get-buffer-info">
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/get_buffer_info</span></code><a class="headerlink" href="#get-get-buffer-info" title="Link to this heading">#</a></h4>
+<p>RaaS queries the trainer’s model tensor layout to allocate its receive
+buffer. Called <strong>once</strong> when a RaaS instance first connects.</p>
+<p><strong>Response</strong> (JSON):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;single_buffer_length&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3489660928</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tensors_meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;model.layers.0.self_attn.q_proj.weight&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[[</span><span class="mi">2048</span><span class="p">,</span><span class="w"> </span><span class="mi">2048</span><span class="p">],</span><span class="w"> </span><span class="s2">&quot;bfloat16&quot;</span><span class="p">]],</span>
+<span class="w">    </span><span class="p">[</span><span class="s2">&quot;model.layers.0.self_attn.k_proj.weight&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[[</span><span class="mi">512</span><span class="p">,</span><span class="w"> </span><span class="mi">2048</span><span class="p">],</span><span class="w"> </span><span class="s2">&quot;bfloat16&quot;</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="post-register-sglang-instance">
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_sglang_instance</span></code><a class="headerlink" href="#post-register-sglang-instance" title="Link to this heading">#</a></h4>
+<p>RaaS registers itself as a weight receiver. Both sides exchange TCP session
+IDs and buffer pointers to establish a persistent TCP connection. Called
+<strong>once</strong> per RaaS instance, after <code class="docutils literal notranslate"><span class="pre">get_buffer_info</span></code>.</p>
+<p><strong>Request</strong> (JSON):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;sglang_http_host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10.0.0.5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;sglang_http_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">19190</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;session_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;abc123&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;buffer_ptr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">140234567890</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;buffer_length&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3489660928</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;zmq_endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10.0.0.5&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;zmq_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">45678</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;handshake_ports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">21000</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong> (JSON):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;trainer_global_rank&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;trainer_world_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;trainer_session_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[[</span><span class="s2">&quot;def456&quot;</span><span class="p">]],</span>
+<span class="w">    </span><span class="nt">&quot;trainer_buffer_ptr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">140111222333</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;trainer_buffer_length&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6979321856</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;trainer_hostname&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10.0.0.1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;trainer_rpc_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">21000</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="post-request-transfer">
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/request_transfer</span></code><a class="headerlink" href="#post-request-transfer" title="Link to this heading">#</a></h4>
+<p>RaaS requests a weight pull. The sender acquires a buffer lock, performs
+TCP bulk copy from the active buffer half to the receiver, and sends a
+ZMQ completion signal. Called <strong>every training step</strong> (or when RaaS detects
+it is behind the latest version).</p>
+<p><strong>Request</strong> (JSON):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;instance_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10.0.0.5:19190&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Response</strong> (JSON):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;ok&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="connection-lifecycle">
+<h3>Connection Lifecycle<a class="headerlink" href="#connection-lifecycle" title="Link to this heading">#</a></h3>
+<p>The weight transfer connection between a trainer and each RaaS instance
+follows this lifecycle:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>RaaS                                          Trainer Sender
+ │                                                │
+ │  1. Query tensor layout                        │
+ ├──── GET /get_buffer_info ─────────────────────►│
+ │◄─── {tensors_meta, buffer_length} ─────────────┤
+ │                                                │
+ │  2. Allocate receive buffer locally             │
+ │  3. Create TCP engine locally                   │
+ │  4. Start ZMQ listener locally                  │
+ │                                                │
+ │  5. Exchange TCP details, establish connection  │
+ ├──── POST /register_sglang_instance ───────────►│
+ │◄─── {trainer_session_ids, rpc_port, ...} ──────┤
+ │                                                │
+ │  ═══════ persistent TCP connection open ════════│
+ │                                                │
+ │  6. Per training step: pull weights             │
+ ├──── POST /request_transfer ───────────────────►│
+ │◄════ TCP bulk copy (shared-mem → shared-mem) ══┤
+ │◄──── ZMQ &quot;transfer complete&quot; ──────────────────┤
+ │                                                │
+ │  (repeat step 6 each training step)            │
+</pre></div>
+</div>
+<p>Steps 1-5 happen once per RaaS instance. Step 6 repeats every training
+step. The TCP connection persists across all transfers.</p>
+</section>
+</section>
+<section id="weight-transfer-double-buffer-design">
+<h2>Weight Transfer: Double-Buffer Design<a class="headerlink" href="#weight-transfer-double-buffer-design" title="Link to this heading">#</a></h2>
+<p>The sender agent uses a double-buffer in shared memory (<code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>) so
+that weight copying and weight serving never block each other:</p>
+<ol class="arabic simple">
+<li><p><strong>Trainer</strong> writes updated weights to the <strong>inactive</strong> buffer half via
+<code class="docutils literal notranslate"><span class="pre">copy_weights_to_buffer()</span></code>.</p></li>
+<li><p><strong>Trainer</strong> atomically swaps the active buffer index — new transfers
+now read from the freshly-written half.</p></li>
+<li><p><strong>RaaS</strong> calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/request_transfer</span></code> — sender reads from the
+<strong>active</strong> half and performs TCP bulk copy to the receiver.</p></li>
+<li><p><strong>RaaS</strong> saves the received bytes as safetensors in <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> and
+tells the inference engine to reload.</p></li>
+</ol>
+<p>This means training can continue writing the next set of weights while
+RaaS is still pulling the current set.</p>
+</section>
+<section id="complete-example">
+<h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">astraflow.train_worker.trainer.astraflow_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AstraFlowClient</span>
+
+<span class="c1"># --- Startup ---</span>
+
+<span class="c1"># 1. Start the weight sender agent (reusable library).</span>
+<span class="c1">#    This launches a subprocess that serves /get_buffer_info,</span>
+<span class="c1">#    /register_sglang_instance, and /request_transfer.</span>
+<span class="n">sender</span> <span class="o">=</span> <span class="n">start_sender_agent</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="c1"># 2. Connect to AstraFlow and signal readiness.</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">AstraFlowClient</span><span class="p">(</span>
+    <span class="n">service_url</span><span class="o">=</span><span class="s2">&quot;http://astraflow-host:8000&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>          <span class="c1"># wait for AstraFlow service to be ready</span>
+<span class="n">client</span><span class="o">.</span><span class="n">signal_ready</span><span class="p">(</span>
+    <span class="n">train_batch_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+    <span class="n">sender_endpoint</span><span class="o">=</span><span class="n">sender</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span>   <span class="c1"># e.g. &quot;10.0.0.1:18861&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># --- Training Loop ---</span>
+
+<span class="n">version</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">training</span><span class="p">:</span>
+    <span class="c1"># Pull batch (blocks until data is available)</span>
+    <span class="n">batch</span><span class="p">,</span> <span class="n">buffer_stats</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_batch</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
+
+    <span class="c1"># Your training logic</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+
+    <span class="c1"># Copy updated weights to shared-memory buffer</span>
+    <span class="n">copy_weights_to_buffer</span><span class="p">()</span>
+    <span class="n">sender</span><span class="o">.</span><span class="n">notify_buffer_ready</span><span class="p">(</span><span class="n">version</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Notify AstraFlow — it broadcasts to all RaaS instances</span>
+    <span class="n">version</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">should_eval</span> <span class="o">=</span> <span class="p">(</span><span class="n">version</span> <span class="o">%</span> <span class="n">eval_freq</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">eval_results</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">notify_version</span><span class="p">(</span>
+        <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">,</span>
+        <span class="n">run_eval</span><span class="o">=</span><span class="n">should_eval</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">eval_results</span><span class="p">:</span>
+        <span class="n">log_eval</span><span class="p">(</span><span class="n">eval_results</span><span class="p">)</span>
+
+<span class="c1"># --- Shutdown ---</span>
+<span class="n">client</span><span class="o">.</span><span class="n">drain_pending_notifications</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">shutdown_service</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="api-summary">
+<h2>API Summary<a class="headerlink" href="#api-summary" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Direction</p></th>
+<th class="head"><p>Category</p></th>
+<th class="head"><p>Method</p></th>
+<th class="head"><p>Endpoint</p></th>
+<th class="head"><p>Frequency</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Trainer → AstraFlow</p></td>
+<td><p>Registration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ready</span></code></p></td>
+<td><p>Once</p></td>
+</tr>
+<tr class="row-odd"><td><p>Trainer → AstraFlow</p></td>
+<td><p>Data</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/batch</span></code></p></td>
+<td><p>Every step</p></td>
+</tr>
+<tr class="row-even"><td><p>Trainer → AstraFlow</p></td>
+<td><p>Weights</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/notify_version</span></code></p></td>
+<td><p>Every step</p></td>
+</tr>
+<tr class="row-odd"><td><p>RaaS → Trainer</p></td>
+<td><p>Weights</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/get_buffer_info</span></code></p></td>
+<td><p>Once per RaaS</p></td>
+</tr>
+<tr class="row-even"><td><p>RaaS → Trainer</p></td>
+<td><p>Weights</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/register_sglang_instance</span></code></p></td>
+<td><p>Once per RaaS</p></td>
+</tr>
+<tr class="row-odd"><td><p>RaaS → Trainer</p></td>
+<td><p>Weights</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/request_transfer</span></code></p></td>
+<td><p>Every step</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Total: <strong>6 APIs</strong>. The 3 inbound endpoints are handled by the reusable
+sender agent library.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="weight-manager.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">WeightManager</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="custom-raas.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Custom RaaS Integration</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture">Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#wire-formats">Wire formats</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer-astraflow-outbound">Trainer → AstraFlow (outbound)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#registration-post-ready">Registration: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#data-get-batch">Data: <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#weights-post-notify-version">Weights: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#raas-trainer-inbound-weight-sender">RaaS → Trainer (inbound, weight sender)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#get-get-buffer-info"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/get_buffer_info</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-register-sglang-instance"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_sglang_instance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-request-transfer"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/request_transfer</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#connection-lifecycle">Connection Lifecycle</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-transfer-double-buffer-design">Weight Transfer: Double-Buffer Design</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-example">Complete Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-summary">API Summary</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By AstraFlow Team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025-2026, AstraFlow Team.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
