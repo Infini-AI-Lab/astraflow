@@ -79,6 +79,8 @@ Near-term focus:
 - [ ] **All-in-one launcher** — A launcher helper that streamlines bringing up the AstraFlow, RaaS, and trainer services.
 - [ ] **MoE model support** — Extend the training backends to Mixture-of-Experts models.
 - [ ] **Terminal-Bench training** — Add a recipe for training agents on Terminal-Bench.
+- [ ] **Megatron backend** — Add Megatron-LM as a training backend.
+- [ ] **vLLM rollout engine** — Support vLLM alongside SGLang as a rollout engine.
 
 ## Citation
 If you find AstraFlow useful in your research, please cite:
@@ -96,6 +98,3 @@ If you find AstraFlow useful in your research, please cite:
 
 ## Acknowledgment
 We learned the design and reused code from the following projects: [AReaL](https://github.com/areal-project/AReaL), [verl](https://github.com/verl-project/verl), [AgentBench](https://github.com/THUDM/AgentBench), [ASearcher](https://github.com/inclusionAI/ASearcher), and [M2PO](https://github.com/Infini-AI-Lab/M2PO).
-
-## License
-AstraFlow is released under the [Apache License 2.0](./LICENSE).
