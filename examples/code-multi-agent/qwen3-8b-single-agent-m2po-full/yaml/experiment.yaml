@@ -1,0 +1,153 @@
+# ============================================================================
+# Experiment config — AstraFlow service + Trainer (single-model code)
+# Experiment: code-multi-agent / qwen3-8b-single-agent-m2po-full
+#
+# Single-model livecodebench_single_turn workflow — the fair-comparison
+# baseline for the 2-agent codegen/verifier recipe in this folder.
+#
+# GPU layout (default, 8 GPUs):
+#   SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3 -> RaaS (model0 dp=4)
+#   TRAINER_GPUS=4,5,6,7                 -> Trainer (FSDP, 4 GPUs)
+#
+# Training dataset: HF agentica-org/DeepCoder-Preview-Dataset (primeintellect)
+# Eval dataset: ./data-data/AReaL-boba-2-RL-Code/code_benchmark/lcb_v5/test.jsonl
+# ============================================================================
+
+# ── Experiment: identity, model, shared settings ──
+experiment:
+  experiment_name: code-multi-agent
+  trial_name: qwen3-8b-single-agent-m2po-full
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen3-8B"
+  tokenizer_path: "Qwen/Qwen3-8B"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: full
+
+# ── RaaS: what to generate (inference-level config) ──
+# model keys here also determine expected_model_ids for AstraFlow service
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        max_new_tokens: 4096
+        min_new_tokens: 0
+
+# ── AstraFlow: data pipeline ──
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+  dump_dir: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}/rollout_dumps
+
+  buffer:
+    size: 10000
+    replay_size: 10000
+    replay_ratio: 0
+    max_staleness: 8
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.deepcoder_preview:get_deepcoder_preview_primeintellect_rl_dataset"
+    dataset_name: "agentica-org/DeepCoder-Preview-Dataset"
+    subset: "primeintellect"
+    split: "train"
+    max_length: 6000
+
+  workflow_spec:
+    workflow_cls: "livecodebench_single_turn"
+    reward_fn: "livecodebench_reward"
+
+  eval_workflows:
+    code_eval:
+      workflow_cls: "livecodebench_single_turn"
+      reward_fn: "livecodebench_reward"
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+    humaneval_eval:
+      workflow_cls: "livecodebench_single_turn"
+      reward_fn: "human_eval_reward"
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+
+  eval_datasets:
+    humaneval:
+      dataset_fn: "astraflow.dataflow.dataset.human_eval:get_human_eval_test_dataset"
+      path: "./astraEnv/human-eval/data/HumanEval.jsonl"
+      split: "test"
+      max_length: 6000
+      repeat: 2
+      eval_workflow: humaneval_eval
+    lcb_v5:
+      dataset_fn: "astraflow.dataflow.dataset.livecodebench:get_livecodebench_single_turn_test_dataset"
+      path: "./data-data/AReaL-boba-2-RL-Code/code_benchmark/lcb_v5/test.jsonl"
+      split: "test"
+      max_length: 6000
+      repeat: 2
+      eval_workflow: code_eval
+    deepcoder_codeforces:
+      dataset_fn: "astraflow.dataflow.dataset.deepcoder_preview:get_deepcoder_preview_codeforces_test_dataset"
+      dataset_name: "agentica-org/DeepCoder-Preview-Dataset"
+      subset: "codeforces"
+      split: "test"
+      max_length: 6000
+      repeat: 2
+      eval_workflow: code_eval
+
+# ── Trainer: training engine ──
+trainer:
+  total_train_steps: 1500
+  train_batch_size: 256
+  n_samples: 8
+  engine:
+    backend: fsdp
+    data_parallel_size: 4
+  model_id: model0
+
+  actor:
+    gradient_checkpointing: true
+    mb_spec:
+      max_tokens_per_mb: 22000
+    optimizer:
+      type: adam
+      lr: 3e-6
+      weight_decay: 0.01
+      beta1: 0.9
+      beta2: 0.999
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    # PPO / M2PO algorithm
+    m2_threshold: 0.01
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.00
+    kl_penalty_coef: 0.001
+    ppo_n_minibatches: 4
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    mb_spec:
+      max_tokens_per_mb: 22000
+
+  recover:
+    mode: auto
+    freq_steps: 25
+
+  evaluator:
+    freq_steps: 25
+    eval_at_start: false
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+      tags: ["m2po", "code", "deepcoder-preview", "primeintellect", "single-turn", "astraflow-v2", "q3-8b", "tcp", "full", "single-agent"]

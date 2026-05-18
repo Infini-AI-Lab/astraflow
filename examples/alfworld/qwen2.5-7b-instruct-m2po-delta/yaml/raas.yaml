@@ -1,0 +1,31 @@
+# ============================================================================
+# RaaS config -- Inference serving instance (hardware/resources)
+# Experiment: alfworld / qwen2.5-7b-instruct-m2po-delta
+#
+# Hardware: 4x GPU, TP=1
+#
+# Merged with experiment.yaml at launch (--config experiment.yaml --config raas.yaml)
+# experiment.yaml provides: model_path, tokenizer_path, seed, dtype, models/gconfig
+# ============================================================================
+
+rollout:
+  max_concurrent_rollouts: 256
+  pause_grace_period: 3
+  enable_adaptive_availability: true
+  target_waiting_queue_per_dp: 4
+  adaptive_step_size: 4
+  load_cache_ttl_ms: 100
+  # Wipe training engine before each eval window so eval runs on a
+  # quiescent SGLang with no contention from pre-eval rollouts.
+  reset_training_on_eval: true
+
+engine:
+  backend: sglang
+  data_parallel_size: 4
+
+sglang:
+  context_length: 16384
+  mem_fraction_static: 0.7
+  max_running_requests: 48
+  skip_tokenizer_init: false
+  attention_backend: fa3

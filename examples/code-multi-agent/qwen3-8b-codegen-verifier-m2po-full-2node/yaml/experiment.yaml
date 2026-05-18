@@ -1,0 +1,175 @@
+# ============================================================================
+# Experiment config — AstraFlow service + Trainers (2-model code actor-and-verify)
+# Experiment: code-multi-agent / qwen3-8b-codegen-verifier-m2po-full-2node
+#
+# 2-node actor-and-verify recipe. Same model, workflow, and hyperparams —
+# only the serving fan-out grows:
+#
+#   Node compute-node-1 (8 GPUs) → RaaS-A: model0 dp=6, model1 dp=2
+#   Node compute-node-0 (8 GPUs) →
+#     GPU 0..3 → RaaS-B: model0 dp=3, model1 dp=1
+#     GPU 4..5 → Trainer model0 (FSDP dp=2)
+#     GPU 6..7 → Trainer model1 (FSDP dp=2)
+#     AstraFlow HTTP service on CPU, port 8000
+#
+# Both RaaS instances register back to the single AstraFlow service via
+# --engine-id and --astraflow-url, and each hosts BOTH models. Rollout
+# totals: model0 = 9 GPUs, model1 = 3 GPUs.
+# ============================================================================
+
+experiment:
+  experiment_name: code-multi-agent
+  trial_name: qwen3-8b-codegen-verifier-m2po-full-2node
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen3-8B"
+  tokenizer_path: "Qwen/Qwen3-8B"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: full
+
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        max_new_tokens: 4096
+        min_new_tokens: 0
+    model1:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        max_new_tokens: 4096
+        min_new_tokens: 0
+
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+  dump_dir: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}/rollout_dumps
+
+  buffer:
+    size: 10000
+    replay_size: 10000
+    replay_ratio: 0
+    max_staleness: 8
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.deepcoder_preview:get_deepcoder_preview_primeintellect_rl_dataset"
+    dataset_name: "agentica-org/DeepCoder-Preview-Dataset"
+    subset: "primeintellect"
+    split: "train"
+    max_length: 6000
+
+  workflow_spec:
+    workflow_cls: "code_actor_and_verify_v2"
+    reward_fn: "livecodebench_reward"
+    enable_thinking: false
+    enable_testgen_thinking: true
+    strip_examples_for_testgen: true
+    discrete_code_reward: true
+    discrete_testgen_reward: true
+    generated_case_count: 2
+    verify_timeout: 6
+
+  eval_workflows:
+    code_eval:
+      workflow_cls: "livecodebench_single_turn"
+      reward_fn: "livecodebench_reward"
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+    humaneval_eval:
+      workflow_cls: "livecodebench_single_turn"
+      reward_fn: "human_eval_reward"
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+
+  eval_datasets:
+    humaneval:
+      dataset_fn: "astraflow.dataflow.dataset.human_eval:get_human_eval_test_dataset"
+      path: "./astraEnv/human-eval/data/HumanEval.jsonl"
+      split: "test"
+      max_length: 6000
+      repeat: 2
+      eval_workflow: humaneval_eval
+    lcb_v5:
+      dataset_fn: "astraflow.dataflow.dataset.livecodebench:get_livecodebench_single_turn_test_dataset"
+      path: "./data-data/AReaL-boba-2-RL-Code/code_benchmark/lcb_v5/test.jsonl"
+      split: "test"
+      max_length: 6000
+      repeat: 2
+      eval_workflow: code_eval
+    deepcoder_codeforces:
+      dataset_fn: "astraflow.dataflow.dataset.deepcoder_preview:get_deepcoder_preview_codeforces_test_dataset"
+      dataset_name: "agentica-org/DeepCoder-Preview-Dataset"
+      subset: "codeforces"
+      split: "test"
+      max_length: 6000
+      repeat: 2
+      eval_workflow: code_eval
+
+trainer_base:
+  total_train_steps: 800
+  train_batch_size: 256
+  n_samples: 8
+  engine:
+    backend: fsdp
+    data_parallel_size: 2
+
+  actor:
+    gradient_checkpointing: true
+    mb_spec:
+      max_tokens_per_mb: 14000
+    optimizer:
+      type: adam
+      lr: 3e-6
+      weight_decay: 0.01
+      beta1: 0.9
+      beta2: 0.999
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    m2_threshold: 0.01
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.00
+    kl_penalty_coef: 0.001
+    ppo_n_minibatches: 4
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    mb_spec:
+      max_tokens_per_mb: 14000
+
+  recover:
+    mode: auto
+    freq_steps: 23
+
+  evaluator:
+    freq_steps: 25
+    eval_at_start: false
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+
+trainer_model0:
+  model_id: model0
+  stats_logger:
+    wandb:
+      tags: ["m2po", "code", "deepcoder-preview", "primeintellect", "astraflow-v2", "q3-8b", "tcp", "full", "codegen-verifier", "codegen", "2node", "mraas"]
+
+trainer_model1:
+  model_id: model1
+  stats_logger:
+    wandb:
+      tags: ["m2po", "code", "deepcoder-preview", "primeintellect", "astraflow-v2", "q3-8b", "tcp", "full", "codegen-verifier", "testgen", "2node", "mraas"]

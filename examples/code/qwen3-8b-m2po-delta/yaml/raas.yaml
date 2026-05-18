@@ -1,0 +1,30 @@
+# ============================================================================
+# RaaS config -- Inference serving instance (hardware/resources)
+# Experiment: code / qwen3-8b-m2po-delta
+#
+# Hardware: 4x GPU, TP=1
+#   model0: DP=4, TP=1
+#
+# Merged with experiment.yaml at launch (--config experiment.yaml --config raas.yaml)
+# experiment.yaml provides: model_path, tokenizer_path, seed, dtype, models/gconfig
+# ============================================================================
+
+rollout:
+  max_concurrent_rollouts: 256
+  pause_grace_period: 3
+  # Adaptive availability -- drive /availability off sglang /get_load.
+  enable_adaptive_availability: true
+  target_waiting_queue_per_dp: 16
+  adaptive_step_size: 4
+  load_cache_ttl_ms: 100
+
+engine:
+  model0:
+    backend: sglang
+    data_parallel_size: 4
+
+sglang:
+  context_length: 12288
+  mem_fraction_static: 0.8
+  max_running_requests: 48
+  skip_tokenizer_init: true

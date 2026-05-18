@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>AstraFlow — Elastic RaaS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FBFAF7;
+  --ink: #2D2A26;
+  --line: #1F1B16;
+  --raas-bg: #E3E7F0;
+  --raas-border: #2E3F66;
+  --data-bg: #ECEAE4;
+  --data-border: #3A342B;
+  --trainer-bg: #EFE2CE;
+  --trainer-border: #4A2E13;
+  --pkt-data: #2E5BD9;
+  --pkt-resp: #1F9367;
+  --pkt-weight: #D8731E;
+}
+
+html, body {
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  font-family: 'Space Grotesk', -apple-system, system-ui, sans-serif;
+  color: var(--ink);
+}
+
+#wrap { position: fixed; inset: 0; }
+
+#stage {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 1400px;
+  height: 820px;
+  background: var(--bg);
+  transform-origin: center center;
+}
+
+#stage *, #stage *::before, #stage *::after { box-sizing: border-box; }
+
+.layer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  font-size: 22px;
+}
+.layer.data {
+  left: 480px; top: 520px;
+  width: 440px; height: 56px;
+  background: var(--data-bg);
+  border: 3px solid var(--data-border);
+  z-index: 1;
+}
+.layer.trainer {
+  left: 480px; top: 610px;
+  width: 200px; height: 56px;
+  background: var(--trainer-bg);
+  border: 3px solid var(--trainer-border);
+  color: #3a2510;
+  z-index: 5;
+}
+.layer.wm {
+  left: 720px; top: 610px;
+  width: 200px; height: 56px;
+  background: #F4D8CC;
+  border: 3px solid #B85540;
+  color: #5C2A1C;
+  font-size: 20px;
+  z-index: 5;
+}
+
+.rack {
+  position: absolute;
+  width: 138px;
+  height: 116px;
+  background: var(--raas-bg);
+  border: 3px solid var(--raas-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  transform-origin: center center;
+  will-change: transform, opacity;
+  z-index: 10;
+}
+.rack .title {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--raas-border);
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+.rack .region {
+  font-size: 13px;
+  color: #3a3a3a;
+  margin-bottom: 1px;
+  font-weight: 500;
+}
+.rack .hw {
+  font-size: 13px;
+  color: #555;
+}
+
+.particles-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.sparkles-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;  /* above racks (10) so star sparks burst on top */
+}
+.sparkle {
+  position: absolute;
+  width: 5px; height: 5px;
+  left: -2.5px; top: -2.5px;
+  border-radius: 50%;
+  background: #D94B3E;
+  box-shadow: 0 0 10px 3px rgba(200, 60, 50, 0.7);
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.death-star {
+  position: absolute;
+  width: 138px; height: 116px;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+  filter:
+    drop-shadow(0 0 3px rgba(168, 50, 42, 0.3))
+    drop-shadow(0 0 8px rgba(200, 70, 60, 0.15));
+}
+.death-star svg { width: 100%; height: 100%; display: block; }
+.weight-particles {
+  z-index: 3;  /* above DA (1), below TP/WM (5) and racks (10) */
+}
+
+.particle {
+  position: absolute;
+  left: 0; top: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform-origin: 0 0;
+}
+.trail {
+  position: absolute;
+  height: 3px;
+  border-radius: 2px;
+  top: -1.5px;
+}
+.head {
+  position: absolute;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  left: -4.5px; top: -4.5px;
+}
+
+.brand-mark {
+  position: absolute;
+  left: 49px;
+  bottom: 21px;
+  font-weight: 700;
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  color: var(--line);
+}
+
+.legend {
+  position: absolute;
+  right: 30px;
+  bottom: 122px;
+  display: flex;
+  gap: 32px;
+  font-size: 20px;
+  color: #2D2A26;
+  align-items: center;
+  font-weight: 500;
+}
+.legend .item { display: flex; gap: 12px; align-items: center; }
+.legend .dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  display: inline-block;
+}
+
+.subtitles {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 80px;
+  text-align: center;
+  pointer-events: none;
+}
+.subtitle-line {
+  font-size: 20px;
+  line-height: 1.45;
+  color: #3a3a3a;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  margin: 2px 0;
+}
+.subtitle-line.visible { opacity: 1; }
+
+.caption {
+  position: absolute;
+  left: 50%;
+  top: 28px;
+  transform: translateX(-50%);
+  font-size: 20px;
+  font-weight: 500;
+  color: #4a4a4a;
+  letter-spacing: 0.3px;
+}
+
+/* Loose map-like dashed region outlines in the background — suggests
+   cross-region without putting a literal world map behind everything. */
+.region-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.region-map path {
+  fill: none;
+  stroke: #A6B3C2;
+  stroke-width: 1.4;
+  opacity: 0.42;
+}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <!-- Region map: dashed dividing lines only. A full-width top divider sits
+         below the caption, a full-width bottom divider above the legend/subtitle.
+         Within that middle band, two full-height verticals + three per-column
+         short horizontals split the area into 6 labelled "country" zones. -->
+    <svg class="region-map" viewBox="0 0 1400 820">
+      <g stroke="#A6B3C2" stroke-width="4" opacity="0.55" stroke-dasharray="13 8">
+        <!-- Verticals (bounded inside the content band) -->
+        <line x1="300"  y1="75"  x2="300"  y2="670"/>
+        <line x1="1020" y1="75"  x2="1020" y2="670"/>
+        <!-- Per-column horizontal splits -->
+        <line x1="0"    y1="300" x2="300"  y2="300"/>
+        <line x1="300"  y1="320" x2="1020" y2="320"/>
+        <line x1="1020" y1="380" x2="1400" y2="380"/>
+      </g>
+      <g fill="#94A4B8" font-family="'Space Grotesk', sans-serif"
+         font-size="20" font-weight="500" opacity="0.6">
+        <text x="32"   y="102">Canada</text>
+        <text x="32"   y="332">Latin America</text>
+        <text x="322"  y="102">Europe</text>
+        <text x="322"  y="352">United States</text>
+        <text x="1042" y="102">Asia</text>
+        <text x="1042" y="412">Africa</text>
+      </g>
+    </svg>
+
+    <div class="caption">RaaS: Elastic &middot; Heterogeneous &middot; Cross Region</div>
+
+    <!-- Default particles UNDER everything (prompt, rollout, DT, TPWM) -->
+    <div class="particles-layer" id="particles-layer"></div>
+
+    <div class="layer data">Data Acquisition</div>
+
+    <!-- Weight particles ABOVE Data Acquisition only — shows as ghost when crossing DA -->
+    <div class="particles-layer weight-particles" id="weight-particles-layer"></div>
+
+    <div class="layer trainer">Trainer Pool</div>
+    <div class="layer wm">Weight Manager</div>
+
+    <div id="racks-layer"></div>
+
+    <!-- Star-burst sparkles emitted when a RaaS dies (above racks) -->
+    <div class="sparkles-layer" id="sparkles-layer"></div>
+
+    <div class="brand-mark">AstraFlow</div>
+    <div class="legend">
+      <span class="item"><span class="dot" style="background:#2E5BD9"></span>Data</span>
+      <span class="item"><span class="dot" style="background:#D9684E"></span>Weight</span>
+    </div>
+
+    <div class="subtitles">
+      <div class="subtitle-line" id="sub1">Rollout as a Service (RaaS) in AstraFlow can be deployed independently with isolated codebases.</div>
+      <div class="subtitle-line" id="sub2">RaaS can be launched in any location with heterogeneous resources,</div>
+      <div class="subtitle-line" id="sub3">and instances can join or leave at any time without disrupting training.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOOP = 30.0;
+
+// 13 racks. Only r1 + r2 are permanent (US core, always 2). r3–r13 are elastic.
+// At any moment at most 4 elastic are alive, so peak total stays at 6.
+// Positions placed so each rack sits inside the region zone matching its address
+// (us-* in United States, eu-* in Europe, ap-* in Asia, ca-* in Canada,
+// sa-* in Latin America, af-* in Africa) and clears the region label.
+const RACKS = [
+  // United States (BM: x 300–1020, y 250–670). r1+r2 are permanent and sit
+  // directly above Data Acquisition; r3+r11 elastic, scattered with y jitter.
+  { id: 'r1',  region: 'us-east-1',     hw: '8× H100', x: 530, y: 360, ranges: [[0.3, 99]] },
+  { id: 'r2',  region: 'us-west-2',     hw: '4× A100', x: 700, y: 350, ranges: [[0.8, 99]] },
+  { id: 'r3',  region: 'us-central-1',  hw: '2× H200', x: 320, y: 380, ranges: [[3.0,  8.0], [18.0, 23.0]] },
+  { id: 'r11', region: 'us-west-1',     hw: '4× H100', x: 870, y: 390, ranges: [[16.0, 20.0]] },
+  // Canada (TL: x 0–300, y 75–300)
+  { id: 'r5',  region: 'ca-central-1',  hw: '4× A100', x: 100, y: 170, ranges: [[9.0, 13.0], [24.0, 28.0]] },
+  // Latin America (BL: x 0–300, y 300–670)
+  { id: 'r9',  region: 'sa-east-1',     hw: '4× L40S', x: 60,  y: 440, ranges: [[11.0, 15.0]] },
+  // Europe (TM: x 300–1020, y 75–250) — jittered y across the row
+  { id: 'r12', region: 'eu-central-2',  hw: '2× H100', x: 400, y: 110, ranges: [[6.0, 11.0], [21.0, 25.0]] },
+  { id: 'r4',  region: 'eu-west-1',     hw: '8× H100', x: 600, y: 140, ranges: [[2.0,  6.0], [17.0, 21.0]] },
+  { id: 'r6',  region: 'eu-north-1',    hw: '4× L40S', x: 820, y: 100, ranges: [[8.0, 12.0], [22.0, 27.0]] },
+  // Asia (TR: x 1020–1400, y 75–380) — two rows for variety
+  { id: 'r13', region: 'ap-east-1',     hw: '4× A100', x: 1050, y: 130, ranges: [[12.0, 16.0], [25.0, 29.0]] },
+  { id: 'r7',  region: 'ap-south-1',    hw: '4× L40S', x: 1240, y: 110, ranges: [[4.0,  8.0], [20.0, 24.0]] },
+  { id: 'r8',  region: 'ap-northeast-1',hw: '8× A10',  x: 1100, y: 250, ranges: [[13.0, 17.0]] },
+  // Africa (BR: x 1020–1400, y 380–670)
+  { id: 'r10', region: 'af-south-1',    hw: '2× A100', x: 1130, y: 480, ranges: [[14.0, 18.0]] },
+];
+
+const DATA_CENTER    = { x: 480 + 220, y: 520 + 28 };  // DA  layer center  (700, 548)
+const TRAINER_CENTER = { x: 480 + 100, y: 610 + 28 };  // TP  layer center  (580, 638)
+const WM_CENTER      = { x: 720 + 100, y: 610 + 28 };  // WM  layer center  (820, 638)
+
+const sparklesLayer = document.getElementById('sparkles-layer');
+const racksLayer = document.getElementById('racks-layer');
+RACKS.forEach(r => {
+  const el = document.createElement('div');
+  el.className = 'rack';
+  const titleEl = document.createElement('div');
+  titleEl.className = 'title';
+  titleEl.textContent = 'RaaS';
+  const regionEl = document.createElement('div');
+  regionEl.className = 'region';
+  regionEl.textContent = r.region;
+  const hwEl = document.createElement('div');
+  hwEl.className = 'hw';
+  hwEl.textContent = r.hw;
+  el.appendChild(titleEl);
+  el.appendChild(regionEl);
+  el.appendChild(hwEl);
+  el.style.left = r.x + 'px';
+  el.style.top  = r.y + 'px';
+  racksLayer.appendChild(el);
+  r.el = el;
+  r.titleEl = titleEl;
+  r.cx = r.x + 69;
+  r.cy = r.y + 58;
+});
+
+// Star death effect — rack collapses into a bright twinkling star, then fades.
+const NUM_SPARKS_PER_RACK = 10;
+const SPARK_FADE_OUT = 0.55;  // matches rackState FADE_OUT
+RACKS.forEach(r => {
+  // Sparkle particles flying outward
+  r.sparks = [];
+  for (let i = 0; i < NUM_SPARKS_PER_RACK; i++) {
+    const el = document.createElement('div');
+    el.className = 'sparkle';
+    sparklesLayer.appendChild(el);
+    const angle = (i / NUM_SPARKS_PER_RACK) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+    const dist  = 60 + Math.random() * 50;
+    r.sparks.push({ el, dx: Math.cos(angle) * dist, dy: Math.sin(angle) * dist });
+  }
+  // Slim 4-pointed SVG star that briefly appears as the rack fades out
+  const star = document.createElement('div');
+  star.className = 'death-star';
+  star.innerHTML =
+    '<svg viewBox="-50 -50 100 100" preserveAspectRatio="xMidYMid meet">' +
+    '<path d="M 0 -10 L 1.5 -1.5 L 10 0 L 1.5 1.5 L 0 10 L -1.5 1.5 L -10 0 L -1.5 -1.5 Z" fill="rgba(168, 50, 42, 0.45)"/>' +
+    '</svg>';
+  star.style.left = r.x + 'px';
+  star.style.top  = r.y + 'px';
+  sparklesLayer.appendChild(star);
+  r.star = star;
+});
+
+// Precompute per-rack flow periods so px/sec is uniform across all racks.
+// (Done after RACKS are positioned but before renderAt is called.)
+
+// Color base + dying ramp (warning before death + full red at death)
+const C_BG_BASE     = '#E3E7F0';
+const C_BG_DEAD     = '#F4CFC9';
+const C_BORDER_BASE = '#2E3F66';
+const C_BORDER_DEAD = '#A8322A';
+const C_TITLE_BASE  = '#2E3F66';
+const C_TITLE_DEAD  = '#A8322A';
+
+function lerpHex(a, b, t) {
+  const A = [parseInt(a.slice(1,3),16), parseInt(a.slice(3,5),16), parseInt(a.slice(5,7),16)];
+  const B = [parseInt(b.slice(1,3),16), parseInt(b.slice(3,5),16), parseInt(b.slice(5,7),16)];
+  return `rgb(${A.map((v,i)=>Math.round(v + (B[i]-v)*t)).join(',')})`;
+}
+
+const particlesLayer       = document.getElementById('particles-layer');
+const weightParticlesLayer = document.getElementById('weight-particles-layer');
+
+function makeParticle(color, trailLen, container) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const t = document.createElement('div');
+  t.className = 'trail';
+  t.style.background = `linear-gradient(to right, transparent, ${color})`;
+  t.style.width = trailLen + 'px';
+  t.style.left  = (-trailLen) + 'px';
+  const h = document.createElement('div');
+  h.className = 'head';
+  h.style.background = color;
+  p.appendChild(t);
+  p.appendChild(h);
+  p.style.opacity = '0';
+  (container || particlesLayer).appendChild(p);
+  return p;
+}
+
+// Speeds (px/sec). Data → Trainer is slower than other data flows; weight slowest.
+const DATA_SPEED   = 230;  // Data ↔ Rack (prompt / rollout)
+const DT_SPEED     = 80;   // Data → Trainer (intentionally slower)
+const WEIGHT_SPEED = 100;  // Trainer → WM, WM → Rack
+
+// Data → Trainer: 4 vertical lanes positioned above TP (which is now narrower).
+// ox is relative to TP center; lanes run straight down from DA y to TP y.
+const DT_LANES = [
+  { ox: -75, phaseOff: 0.00, trailLen: 24 },
+  { ox: -25, phaseOff: 0.37, trailLen: 28 },
+  { ox:  25, phaseOff: 0.18, trailLen: 26 },
+  { ox:  75, phaseOff: 0.62, trailLen: 30 },
+];
+const DT_DIST   = Math.abs(TRAINER_CENTER.y - DATA_CENTER.y);  // vertical only
+const DT_PERIOD = DT_DIST / DT_SPEED;
+DT_LANES.forEach(lane => {
+  lane.particles = [
+    { el: makeParticle('#2E5BD9', lane.trailLen), spacing: 0.0  },
+    { el: makeParticle('#2E5BD9', lane.trailLen), spacing: 0.5 },
+  ];
+});
+
+function warpPhase(linear, amp, freq) {
+  // sin(linear*PI) is 0 at endpoints → endpoints preserved, middle is warped
+  return linear + amp * Math.sin(linear * Math.PI * freq) * Math.sin(linear * Math.PI);
+}
+
+// Per-rack particle pools — data flows blue, weight transfer orange (matches figure 1).
+// Weight now flows FROM Weight Manager (not Trainer Pool) to each rack.
+// Periods scale with distance so pixel-per-second speed is the same for every rack.
+RACKS.forEach((r, idx) => {
+  r.promptP = makeParticle('#2E5BD9', 28);  // prompt: data → rack
+  r.respP   = makeParticle('#2E5BD9', 28);  // rollout: rack → data
+  r.weightP = makeParticle('#D9684E', 32, weightParticlesLayer);  // weight: WM → rack (above DA)
+  r.dataDist   = Math.hypot(r.cx - DATA_CENTER.x, r.cy - DATA_CENTER.y);
+  r.wmDist     = Math.hypot(r.cx - WM_CENTER.x,   r.cy - WM_CENTER.y);
+  r.promptPeriod = r.dataDist / DATA_SPEED;
+  r.weightPeriod = r.wmDist   / WEIGHT_SPEED;
+});
+
+// Trainer Pool → Weight Manager: horizontal weight publishing stream.
+const TPWM_DIST   = Math.hypot(WM_CENTER.x - TRAINER_CENTER.x, WM_CENTER.y - TRAINER_CENTER.y);
+const TPWM_PERIOD = TPWM_DIST / WEIGHT_SPEED;
+const TPWM_PARTICLES = [
+  { el: makeParticle('#D9684E', 28), spacing: 0.00 },
+  { el: makeParticle('#D9684E', 28), spacing: 0.50 },
+];
+
+function isActive(r, t) {
+  return r.ranges.some(([s, e]) => t >= s && t < e);
+}
+
+function rackState(r, t) {
+  const FADE_IN  = 0.45;
+  const FADE_OUT = 0.55;
+  const WARN     = 0.7;  // pre-death warning window
+  let alpha = 0, dying = 0;
+  for (const [s, e] of r.ranges) {
+    if (e > 50) {  // permanent rack — no death
+      if (t < s) continue;
+      if (t < s + FADE_IN) alpha = Math.max(alpha, (t - s) / FADE_IN);
+      else alpha = 1;
+      continue;
+    }
+    if (t < s || t >= e + FADE_OUT) continue;
+    if (t < s + FADE_IN) {
+      alpha = Math.max(alpha, (t - s) / FADE_IN);
+    } else if (t < e - WARN) {
+      alpha = 1;
+    } else if (t < e) {
+      alpha = 1;
+      dying = Math.max(dying, (t - (e - WARN)) / WARN);  // 0 → 1
+    } else {
+      const u = (t - e) / FADE_OUT;
+      alpha = Math.max(alpha, 1 - u);
+      dying = 1;
+    }
+  }
+  return { alpha, dying };
+}
+
+// Weight particles render above Data Acquisition. When they overlap DA, dim to
+// a ghost so the box stays readable. All other particles render UNDER blocks
+// (default behavior — fully covered when intersecting any block).
+const DA_GHOST_DIM = 0.27;
+function placeParticle(p, from, to, progress, baseAlpha, isWeight) {
+  if (baseAlpha <= 0) { p.style.opacity = '0'; return; }
+  const x = from.x + (to.x - from.x) * progress;
+  const y = from.y + (to.y - from.y) * progress;
+  const ang = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
+  const edge = progress < 0.06 ? progress / 0.06
+             : progress > 0.94 ? (1 - progress) / 0.06
+             : 1;
+  let dim = 1;
+  if (isWeight && x > 480 && x < 920 && y > 520 && y < 576) dim = DA_GHOST_DIM;
+  p.style.opacity = (baseAlpha * edge * dim).toFixed(3);
+  p.style.transform = `translate(${x}px, ${y}px) rotate(${ang}deg)`;
+}
+
+// Subtitles: 3 lines accumulate at staggered times within the loop.
+const SUB_LINES = [
+  { el: document.getElementById('sub1'), showAt: 2.0  },
+  { el: document.getElementById('sub2'), showAt: 6.0  },
+  { el: document.getElementById('sub3'), showAt: 10.0 },
+];
+
+function renderAt(t) {
+  // Subtitles — toggle .visible based on phase within the loop. CSS handles
+  // the 0.6s fade-in / fade-out transition.
+  SUB_LINES.forEach(s => {
+    const visible = t >= s.showAt;
+    if (visible !== s._v) { s.el.classList.toggle('visible', visible); s._v = visible; }
+  });
+
+  // Racks
+  RACKS.forEach(r => {
+    const { alpha: a, dying } = rackState(r, t);
+    if (a <= 0) {
+      r.el.style.opacity = '0';
+      r.el.style.transform = 'scale(0.85)';
+      r.el.style.background = '';
+      r.el.style.borderColor = '';
+      r.el.style.boxShadow = '';
+      r.titleEl.style.color = '';
+      r.star.style.opacity = '0';  // reset star so prior fade-out frame doesn't linger
+      r.alpha = 0;
+      return;
+    }
+    r.alpha = a;
+    r.el.style.opacity = a.toFixed(3);
+    const pulse = dying > 0 ? Math.sin(t * 11) * 0.025 * dying : 0;
+    const baseScale = 0.86 + 0.14 * a;
+    r.el.style.transform = `scale(${(baseScale + pulse).toFixed(3)})`;
+
+    if (dying > 0) {
+      const tint = dying;
+      r.el.style.background = lerpHex(C_BG_BASE, C_BG_DEAD, tint);
+      r.el.style.borderColor = lerpHex(C_BORDER_BASE, C_BORDER_DEAD, tint);
+      const glow = 8 + 10 * (0.5 + 0.5 * Math.sin(t * 11));
+      r.el.style.boxShadow = `0 0 ${glow.toFixed(1)}px rgba(168, 50, 42, ${(0.55 * tint).toFixed(3)})`;
+      r.titleEl.style.color = lerpHex(C_TITLE_BASE, C_TITLE_DEAD, tint);
+    } else {
+      r.el.style.background = '';
+      r.el.style.borderColor = '';
+      r.el.style.boxShadow = '';
+      r.titleEl.style.color = '';
+    }
+
+    // Death effect: the rack collapses (scale + alpha → 0 fast) then a small
+    // star takes over and quickly fades. They aren't two co-existing objects —
+    // it should look like the rack itself shrinks into a star, then the star
+    // disappears.
+    let deathProgress = -1;
+    for (const [s, e] of r.ranges) {
+      if (e > 50) continue;
+      if (t >= e && t < e + SPARK_FADE_OUT) {
+        deathProgress = (t - e) / SPARK_FADE_OUT;
+        break;
+      }
+    }
+    if (deathProgress >= 0) {
+      const dp = deathProgress;
+
+      // (1) Rack collapses: scale + alpha both shrink to 0 by dp≈0.35.
+      const c = Math.min(dp / 0.35, 1);
+      const newAlpha = 1 - c;
+      const newScale = 1 - c * 0.85;        // 1 → 0.15
+      r.el.style.opacity = newAlpha.toFixed(3);
+      r.el.style.transform = `scale(${newScale.toFixed(3)})`;
+      r.alpha = newAlpha;
+
+      // (2) Star rises during the second half of the collapse, peaks as the
+      //     rack vanishes, then slowly fades out over the rest of the window.
+      let starAlpha = 0;
+      if (dp >= 0.20 && dp < 0.35) {
+        const u = (dp - 0.20) / 0.15;
+        starAlpha = 0.7 * Math.sin(u * Math.PI / 2);  // smooth rise to 0.7
+      } else if (dp >= 0.35 && dp < 1.0) {
+        const u = (dp - 0.35) / 0.65;
+        starAlpha = 0.7 * (1 - u);  // long linear fade
+      }
+      r.star.style.opacity = starAlpha.toFixed(3);
+    } else {
+      r.star.style.opacity = '0';
+    }
+  });
+
+  // Data → Trainer: vertical lanes anchored on TP (DA's left half feeds TP)
+  DT_LANES.forEach(lane => {
+    const x = TRAINER_CENTER.x + lane.ox;
+    const from = { x, y: DATA_CENTER.y };
+    const to   = { x, y: TRAINER_CENTER.y };
+    lane.particles.forEach(pp => {
+      const ph = ((t / DT_PERIOD) + lane.phaseOff + pp.spacing) % 1;
+      placeParticle(pp.el, from, to, ph, 1);
+    });
+  });
+
+  // Trainer → Weight Manager: short horizontal weight publishing stream
+  TPWM_PARTICLES.forEach(pp => {
+    const ph = ((t / TPWM_PERIOD) + pp.spacing) % 1;
+    placeParticle(pp.el, TRAINER_CENTER, WM_CENTER, ph, 1);
+  });
+
+  // Per-rack flows (uses r.alpha set in the rack pass above).
+  // Periods derive from per-rack distances so px/sec speed is uniform across racks.
+  RACKS.forEach((r, idx) => {
+    const a = r.alpha || 0;
+    const target = { x: r.cx, y: r.cy };
+
+    // prompt: Data → Rack
+    const promptOff = idx * 0.27;
+    const pPh = (((t + promptOff) / r.promptPeriod) % 1 + 1) % 1;
+    placeParticle(r.promptP, DATA_CENTER, target, pPh, a);
+
+    // rollout response: Rack → Data. Particles already in flight when the rack
+    // dies must complete the trip. Use rack alpha at the particle's DEPARTURE
+    // time (t - progress × period) rather than current time, so in-flight
+    // rollouts finish their journey even after the rack disappears.
+    const rPh = (((t + promptOff + r.promptPeriod / 2) / r.promptPeriod) % 1 + 1) % 1;
+    const rDepart = ((t - rPh * r.promptPeriod) % LOOP + LOOP) % LOOP;
+    const rAlpha = rackState(r, rDepart).alpha;
+    placeParticle(r.respP, target, DATA_CENTER, rPh, rAlpha);
+
+    // weights: WM → Rack (pull-based weight delivery, WM is the source)
+    const wOff = idx * 0.41;
+    const wPh = (((t + wOff) / r.weightPeriod) % 1 + 1) % 1;
+    placeParticle(r.weightP, WM_CENTER, target, wPh, a, true);
+  });
+}
+
+window.renderAt = renderAt;
+
+function fit() {
+  const stage = document.getElementById('stage');
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const scale = Math.min(w / 1400, h / 820);
+  stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+window.addEventListener('resize', fit);
+fit();
+
+const params = new URLSearchParams(location.search);
+if (params.has('t')) {
+  renderAt(parseFloat(params.get('t')) || 0);
+} else {
+  let start = performance.now();
+  const tick = (now) => {
+    const wall = (now - start) / 1000;
+    const tt = ((wall % LOOP) + LOOP) % LOOP;
+    renderAt(tt);
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>

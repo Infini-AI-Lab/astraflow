@@ -1,0 +1,32 @@
+gpt-5-nano-2025-08-07:
+    import: "./openai-chat.yaml"
+    parameters:
+        name: "gpt-5-nano-2025-08-07"
+        body:
+            model: "gpt-5-nano-2025-08-07"
+            max_completion_tokens: 512
+
+gpt-5-2025-08-07:
+    import: "./openai-chat.yaml"
+    parameters:
+        name: "gpt-5-2025-08-07"
+        body:
+            model: "gpt-5-2025-08-07"
+            max_completion_tokens: 8192
+
+text-davinci-003:
+    import: "./openai-text.yaml"
+    parameters:
+        name: "text-davinci-003"
+        body:
+            model: "text-davinci-003"
+            max_tokens: 512
+
+text-davinci-002:
+    import: "./openai-text.yaml"
+    parameters:
+        name: "text-davinci-002"
+        body:
+            model: "text-davinci-002"
+            max_tokens: 512
+

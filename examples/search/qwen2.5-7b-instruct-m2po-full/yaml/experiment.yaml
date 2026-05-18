@@ -1,0 +1,209 @@
+# ============================================================================
+# Experiment config -- AstraFlow service + Trainer
+# Experiment: search / qwen2.5-7b-instruct-m2po-full
+#
+# ASearcher agentic RL with TCP weight transfer.
+# GPU layout (default, 6 GPUs used of 8; 6,7 left idle):
+#   SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3 -> RaaS (model0 dp=4)
+#   TRAINER_MODEL0_GPUS=4,5              -> Trainer model0 (FSDP, 2 GPUs)
+# ============================================================================
+
+# -- Experiment: identity, model, shared settings --
+experiment:
+  experiment_name: astraflow-search
+  trial_name: qwen2.5-7b-instruct-m2po-full
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen2.5-7B-Instruct"
+  tokenizer_path: "Qwen/Qwen2.5-7B-Instruct"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: full
+
+# -- RaaS: what to generate (inference-level config) --
+# model keys here also determine expected_model_ids for AstraFlow service
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        max_new_tokens: 1024
+        min_new_tokens: 0
+
+# -- AstraFlow: data pipeline --
+# auto-derives: expected_model_ids from raas.models keys
+# auto-derives: dump_dir from experiment.fileroot
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+
+  buffer:
+    size: 32768
+    replay_size: 32768
+    replay_ratio: 0
+    max_staleness: 8
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.asearcher:get_asearcher_rl_dataset"
+    path: "./astraEnv/ASearcher/ASearcher-train-data/ASearcher-Base-35k.jsonl"
+    max_length: 4096
+
+  workflow_spec:
+    workflow_cls: "asearcher"
+    dataset_path: "./astraEnv/ASearcher/ASearcher-train-data/ASearcher-Base-35k.jsonl"
+    max_turns: 32
+    n_trajs: 8
+    search_client_type: "async-search-access"
+    reward_type: "F1"
+    topk: 5
+    valid_inst_ratio: 0.3
+    max_tokens: 16384
+
+  eval_workflows:
+    triviaqa_eval:
+      workflow_cls: "asearcher"
+      dataset_path: "./astraEnv/ASearcher/data/TriviaQA_rand1000/test.jsonl"
+      max_turns: 32
+      n_trajs: 1
+      search_client_type: "async-search-access"
+      reward_type: "F1"
+      topk: 5
+      valid_inst_ratio: 1.0
+      max_tokens: 16384
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+    popqa_eval:
+      workflow_cls: "asearcher"
+      dataset_path: "./astraEnv/ASearcher/data/PopQA_rand1000/test.jsonl"
+      max_turns: 32
+      n_trajs: 1
+      search_client_type: "async-search-access"
+      reward_type: "F1"
+      topk: 5
+      valid_inst_ratio: 1.0
+      max_tokens: 16384
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+    hotpotqa_eval:
+      workflow_cls: "asearcher"
+      dataset_path: "./astraEnv/ASearcher/data/HotpotQA_rand1000/test.jsonl"
+      max_turns: 32
+      n_trajs: 1
+      search_client_type: "async-search-access"
+      reward_type: "F1"
+      topk: 5
+      valid_inst_ratio: 1.0
+      max_tokens: 16384
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+    bamboogle_eval:
+      workflow_cls: "asearcher"
+      dataset_path: "./astraEnv/ASearcher/data/Bamboogle/test.jsonl"
+      max_turns: 32
+      n_trajs: 1
+      search_client_type: "async-search-access"
+      reward_type: "F1"
+      topk: 5
+      valid_inst_ratio: 1.0
+      max_tokens: 16384
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+
+  eval_datasets:
+    triviaqa:
+      dataset_fn: "astraflow.dataflow.dataset.asearcher:get_asearcher_rl_dataset"
+      path: "./astraEnv/ASearcher/data/TriviaQA_rand1000/test.jsonl"
+      max_length: 4096
+      repeat: 4
+      eval_workflow: triviaqa_eval
+    popqa:
+      dataset_fn: "astraflow.dataflow.dataset.asearcher:get_asearcher_rl_dataset"
+      path: "./astraEnv/ASearcher/data/PopQA_rand1000/test.jsonl"
+      max_length: 4096
+      repeat: 4
+      eval_workflow: popqa_eval
+    hotpotqa:
+      dataset_fn: "astraflow.dataflow.dataset.asearcher:get_asearcher_rl_dataset"
+      path: "./astraEnv/ASearcher/data/HotpotQA_rand1000/test.jsonl"
+      max_length: 4096
+      repeat: 4
+      eval_workflow: hotpotqa_eval
+    bamboogle:
+      dataset_fn: "astraflow.dataflow.dataset.asearcher:get_asearcher_rl_dataset"
+      path: "./astraEnv/ASearcher/data/Bamboogle/test.jsonl"
+      max_length: 4096
+      repeat: 4
+      eval_workflow: bamboogle_eval
+
+# -- Trainer base: shared config --
+# auto-derives from experiment: experiment_name, trial_name, fileroot,
+#   tokenizer_path, seed, dtype, weight_transfer_mode
+# auto-derives from raas.models.<model_id>: actor.path, actor.max_new_tokens,
+#   ref.path
+# auto-derives: saver, recover, stats_logger fields from experiment section
+# auto-derives: cluster.name_resolve from experiment.fileroot
+# auto-derives: trial_name suffix from model_id (e.g. trial_name-model0)
+trainer_base:
+  total_train_steps: 1000
+  train_batch_size: 256
+  n_samples: 8
+  engine:
+    backend: fsdp
+    data_parallel_size: 2
+
+  actor:
+    gradient_checkpointing: true
+    mb_spec:
+      max_tokens_per_mb: 17408
+    optimizer:
+      type: adam
+      lr: 5e-6
+      weight_decay: 0.01
+      beta1: 0.9
+      beta2: 0.999
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    # PPO / M2PO algorithm
+    m2_threshold: 0.004
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.0
+    kl_penalty_coef: 0.001
+    ppo_n_minibatches: 4
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    mb_spec:
+      max_tokens_per_mb: 32768
+
+  recover:
+    mode: auto
+    freq_steps: 13
+
+  evaluator:
+    freq_steps: 25
+    eval_at_start: false
+
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+
+# -- Trainer for model0 -- only overrides --
+trainer_model0:
+  model_id: model0
+  stats_logger:
+    wandb:
+      tags: ["m2po", "search", "asearcher", "astraflow-v2", "qwen2.5-7b-instruct", "sglang", "tcp", "full", "examples", "sglang-d4", "fsdp-d2"]

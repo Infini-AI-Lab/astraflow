@@ -1,0 +1,138 @@
+# ============================================================================
+# Experiment config -- AstraFlow service + Trainer
+# Experiment: alfworld / qwen2.5-7b-instruct-m2po-delta
+#
+# ALFWorld multi-turn agentic RL with delta weight transfer.
+#
+# GPU layout (default, 8 GPUs):
+#   SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3 -> RaaS (default dp=4)
+#   TRAINER_GPUS=4,5,6,7                 -> Trainer (FSDP, 4 GPUs)
+# Delta weight transfer with full sync every 10 steps.
+# ============================================================================
+
+experiment:
+  experiment_name: astraflow-alfworld
+  trial_name: qwen2.5-7b-instruct-m2po-delta
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen2.5-7B-Instruct"
+  tokenizer_path: "Qwen/Qwen2.5-7B-Instruct"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: delta
+
+raas:
+  models:
+    default:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        max_new_tokens: 512
+        min_new_tokens: 0
+        top_p: 0.95
+        top_k: 50
+  delta_full_sync_interval: 10
+
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+
+  buffer:
+    size: 262144
+    replay_size: 262144
+    replay_ratio: 0
+    max_staleness: 8
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.alfworld:get_alfworld_rl_dataset"
+    path: "astraEnv/AgentBench/data/alfworld/train_indices.jsonl"
+    split: "train"
+    max_length: 4096
+
+  workflow_spec:
+    workflow_cls: "alfworld_task_server"
+    # Must match the port the task server binds on in
+    # scripts/0_alfworld_server.sh (AGENTBENCH_PORT).
+    task_server_url: "http://127.0.0.1:5000"
+    max_turns: 15
+    turn_discount: 1.0
+    failure_penalty: 0.0
+    rollout_stat_scope: "rollout"
+    timeout: 300.0
+
+  eval_workflows:
+    alfworld_eval:
+      workflow_cls: "alfworld_task_server"
+      task_server_url: "http://127.0.0.1:5000"
+      max_turns: 10
+      turn_discount: 1.0
+      failure_penalty: 0.0
+      rollout_stat_scope: "eval-rollout"
+      timeout: 300.0
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+
+  eval_datasets:
+    valid:
+      dataset_fn: "astraflow.dataflow.dataset.alfworld:get_alfworld_rl_dataset"
+      path: "astraEnv/AgentBench/data/alfworld/valid_indices.jsonl"
+      split: "test"
+      max_length: 4096
+      repeat: 4
+      eval_workflow: alfworld_eval
+
+trainer:
+  total_train_steps: 1200
+  train_batch_size: 128
+  n_samples: 8
+  engine:
+    backend: fsdp
+    data_parallel_size: 4
+  model_id: default
+
+  actor:
+    gradient_checkpointing: true
+    pad_to_maximum: true
+    mb_spec:
+      max_tokens_per_mb: 20384
+    optimizer:
+      type: adam
+      lr: 1e-6
+      weight_decay: 0.01
+      beta1: 0.9
+      beta2: 0.999
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    m2_threshold: 0.004
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.0
+    kl_penalty_coef: 0.001
+    ppo_n_minibatches: 4
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    mb_spec:
+      max_tokens_per_mb: 17408
+
+  recover:
+    mode: auto
+    freq_steps: 25
+
+  evaluator:
+    eval_at_start: false
+    freq_steps: 10
+
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+      tags: ["m2po", "alfworld", "astraflow-v2", "qwen2.5-7b-instruct", "tcp", "delta", "examples", "sglang-d4", "fsdp-d4"]

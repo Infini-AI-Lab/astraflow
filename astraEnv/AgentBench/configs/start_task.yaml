@@ -1,0 +1,9 @@
+definition:
+  import: tasks/task_assembly.yaml
+
+start:
+  # alfworld-dev: 16
+  alfworld-std: 16
+  # dbbench-std: 5
+  # os-std: 5
+  # webshop-dev: 5

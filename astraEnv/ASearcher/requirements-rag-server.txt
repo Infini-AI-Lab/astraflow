@@ -1,0 +1,16 @@
+# Runtime dependencies for:
+#   astraEnv/ASearcher/tools/local_retrieval_server.py
+#
+# Install GPU torch separately (conda recommended) so CUDA version matches
+# your driver, then install this file with:
+#   pip install -r astraEnv/ASearcher/requirements-rag-server.txt
+
+torch
+faiss-gpu-cu12
+transformers
+datasets
+fastapi
+uvicorn
+pydantic
+numpy
+tqdm

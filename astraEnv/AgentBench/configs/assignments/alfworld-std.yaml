@@ -1,0 +1,22 @@
+import: definition.yaml
+
+concurrency:
+  task:
+    # alfworld-dev: 5
+    alfworld-std: 16
+    # dbbench-std: 5
+    # os-std: 5
+  agent:
+    # Qwen3-4B-Instruct-2507: 5
+    Qwen3-1.7B: 16
+
+assignments: # List[Assignment] | Assignment
+  - agent: # "task": List[str] | str ,  "agent": List[str] | str
+      - Qwen3-1.7B
+    task:
+      # - alfworld-dev
+      - alfworld-std
+      # - dbbench-std
+      # - os-std
+
+output: "outputs/alfworld/{TIMESTAMP}"

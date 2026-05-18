@@ -1,0 +1,19 @@
+import: definition.yaml
+
+concurrency:
+  task:
+    alfworld-dev: 5
+    # dbbench-std: 5
+    # os-std: 5
+  agent:
+    gpt-5-nano-2025-08-07: 5
+
+assignments: # List[Assignment] | Assignment
+  - agent: # "task": List[str] | str ,  "agent": List[str] | str
+      - gpt-5-nano-2025-08-07
+    task:
+      - alfworld-dev
+      # - dbbench-std
+      # - os-std
+
+output: "outputs/{TIMESTAMP}"

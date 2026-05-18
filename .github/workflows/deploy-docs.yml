@@ -1,0 +1,54 @@
+name: Deploy site and docs to GitHub Pages
+
+on:
+  push:
+    branches: [ main, release ]
+    paths:
+      - "docs/**"
+      - ".github/workflows/deploy-docs.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: "deploy-docs"
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: "docs/requirements.txt"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs/requirements.txt
+
+      - name: Build docs
+        working-directory: docs
+        run: |
+          bash ./build.sh
+
+      - name: Assemble site (landing page at root, docs under /docs)
+        run: |
+          rm -rf _site
+          mkdir -p _site/docs
+          cp -r docs/web/. _site/
+          cp -r docs/build/en/. _site/docs/
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          keep_files: false

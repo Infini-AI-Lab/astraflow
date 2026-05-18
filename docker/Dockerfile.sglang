@@ -1,0 +1,36 @@
+# Cache chain: basic → sglang
+# Layers up to "uv pip install -e ." are identical to Dockerfile.basic.
+FROM nvidia/cuda:12.9.1-cudnn-devel-ubuntu24.04
+
+SHELL ["/bin/bash", "-lc"]
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:${PATH}"
+
+WORKDIR /workspace/astraflow
+
+COPY . .
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential curl git ninja-build numactl && \
+    rm -rf /var/lib/apt/lists/*
+
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+RUN sh /uv-installer.sh && rm /uv-installer.sh && \
+    mv /root/.local/bin/uv /usr/local/bin/uv
+
+RUN uv venv /opt/venv --python 3.12 && \
+    uv pip install cmake
+
+RUN uv pip install -e .
+
+# --- sglang layers (on top of basic) ---
+RUN uv pip install -e ".[sglang]"
+
+# flash-attn is excluded from uv resolution (see pyproject.toml [tool.uv]),
+# so install it explicitly with --no-build-isolation.
+RUN uv pip install "flash-attn==2.8.3" --no-build-isolation
+
+CMD ["/bin/bash"]

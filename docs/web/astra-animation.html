@@ -1,0 +1,1187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AstraFlow Architecture Animation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #b8c3d0;
+      --dashed: #475569;
+      --panel: #ffffff;
+
+      --m1: #6995C8;  /* Model 1 blue */
+      --m2: #E08869;  /* Model 2 orange */
+      --m3: #9DB78C;  /* Model 3 green */
+      --m4: #A78EBE;  /* Model 4 purple */
+      --data: #2C4A6B;        /* dataflow blue */
+      --weight: #D9684E;      /* weight transfer orange */
+
+      --raas-bg: #DCE3EE;
+      --raas-head: #C9D5E5;
+      --ds-bg: #DCD0E1;       /* data serving lavender */
+      --ds-border: #B49DC9;
+      --trainer-bg: #E5D3B8;  /* trainer tan */
+      --trainer-border: #C8AB7B;
+      --da-bg: #E3E3E5;
+      --da-inner: #ECECEE;
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+    #stage *, #stage *::before, #stage *::after { box-sizing: border-box; }
+
+    #stage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1701px;
+      height: 720px;
+      transform-origin: center center;
+      background: var(--bg);
+    }
+
+    /* ====== Model cycle (top-left) ====== */
+    .cycle-area {
+      position: absolute;
+      left: 30px; top: 60px;
+      width: 340px; height: 250px;
+    }
+    .cycle-label {
+      position: absolute;
+      left: 30px; top: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+    .cycle-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      overflow: visible;
+    }
+    .cycle-arrow {
+      fill: none;
+      stroke: #1f3554;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .model {
+      position: absolute;
+      width: 100px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 21px;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,.12);
+      will-change: transform, opacity;
+    }
+    .m1 { background: var(--m1); }
+    .m2 { background: var(--m2); }
+    .m3 { background: var(--m3); }
+    .m4 { background: var(--m4); }
+
+    #model1 { left:  10px; top: 105px; }
+    #model2 { left: 120px; top:  20px; }
+    #model3 { left: 120px; top: 190px; }
+    #model4 { left: 230px; top: 105px; }
+
+    /* ====== Dataflow Layer (dashed rounded box) ====== */
+    .dataflow-layer {
+      position: absolute;
+      left: 410px; top: 30px;
+      width: 1270px; height: 230px;
+      border: 4px dashed #2c3e55;
+      border-radius: 0;
+      background: rgba(255,255,255,.4);
+    }
+    .layer-title {
+      position: absolute;
+      left: 24px; top: 18px;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .chip-icon {
+      position: absolute;
+      right: 18px; top: 12px;
+      width: 30px; height: 30px;
+      border-radius: 0;
+      background: linear-gradient(135deg, #c9d5e5, #aeb8c2);
+      display: grid; place-items: center;
+      color: #1f2937;
+      font-size: 15px;
+    }
+
+    .acquisition {
+      position: absolute;
+      left: 25px; top: 80px;
+      width: 640px; height: 130px;
+      background: var(--da-bg);
+      border: 3.5px solid #6b7280;
+      border-radius: 0;
+    }
+    .acq-title {
+      padding: 6px 16px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .acq-inner {
+      position: absolute;
+      left: 14px; right: 14px;
+      top: 40px; bottom: 14px;
+      display: flex;
+      gap: 12px;
+    }
+    .acq-box {
+      flex: 1;
+      background: var(--da-inner);
+      border: 3px solid #6b7280;
+      border-radius: 0;
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      font-weight: 500;
+      transition: box-shadow .2s ease, background .2s ease;
+    }
+    .acq-box.hot {
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, .25), 0 0 18px rgba(217, 119, 6, .25);
+    }
+
+    .ds-row {
+      position: absolute;
+      left: 670px; top: 80px;
+      width: 575px;
+      height: 130px;
+      display: flex;
+      gap: 14px;
+    }
+    .data-serving {
+      flex: 1;
+      background: var(--ds-bg);
+      border: 3.5px solid #7E5D9C;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 21px;
+      font-weight: 500;
+      color: var(--ink);
+      padding: 10px;
+      line-height: 1.25;
+    }
+
+    /* ====== Env & Reward (left) ====== */
+    .env-reward {
+      position: absolute;
+      left: 80px; top: 350px;
+      width: 280px; height: 120px;
+      border: 3.5px dashed #2c3e55;
+      border-radius: 0;
+      background: rgba(255,255,255,.4);
+      padding: 10px 14px;
+    }
+    .env-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .env-icons {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+      color: #334155;
+    }
+    .env-icon {
+      width: 48px; height: 48px;
+      display: grid;
+      place-items: center;
+      border: 3px solid #1e293b;
+      border-radius: 0;
+      font-size: 26px;
+      background: #fff;
+    }
+
+    /* ====== RaaS row (middle) ====== */
+    .raas-cluster {
+      position: absolute;
+      left: 410px; top: 305px;
+      width: 620px; height: 190px;
+      border: 4px dashed #2c3e55;
+      border-radius: 0;
+      background: rgba(255,255,255,.0);
+      padding: 13px;
+    }
+    .trainer-cluster {
+      position: absolute;
+      left: 1069px; top: 305px;
+      width: 605px; height: 190px;
+      padding: 13px;
+      border: 4px solid transparent;  /* invisible, but matches raas-cluster box model for alignment */
+    }
+    .raas {
+      position: absolute;
+      width: 138px; height: 160px;
+      background: var(--raas-bg);
+      border: 4px solid #3D5C82;
+      border-radius: 0;
+      overflow: hidden;
+    }
+    .raas.elastic {
+      border-style: dashed;
+      border-color: #9c2418;
+    }
+    .raas-head {
+      background: var(--raas-head);
+      padding: 6px 12px;
+      font-weight: 600;
+      font-size: 21px;
+      text-align: center;
+      border-bottom: 3px solid #3D5C82;
+    }
+    .raas.elastic .raas-head { border-bottom-color: #9c2418; }
+    .raas-detail {
+      padding: 8px 12px;
+      font-size: 17px;
+      line-height: 1.32;
+      color: #1f2937;
+      text-align: center;
+    }
+    .raas-tag {
+      position: absolute;
+      bottom: 4px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 16px;
+      color: #c0392b;
+      font-weight: 500;
+    }
+
+    #raas1 { left: 13px;  top: 13px; }
+    #raas2 { left: 165px; top: 13px; }
+    #raas3 { left: 317px; top: 13px; }
+    #raasN { left: 469px; top: 13px; }
+
+    .raas-ellipsis {
+      position: absolute;
+      left: 524px;
+      top: 100px;
+      font-size: 22px;
+      color: #475569;
+      letter-spacing: 2px;
+    }
+
+    /* ====== Migration particles (colored slots that fly into RaaS) ====== */
+    .slot {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-radius: 0;
+      will-change: transform, opacity;
+      box-shadow: 0 1px 2px rgba(0,0,0,.18);
+    }
+    .slot.m1 { background: var(--m1); }
+    .slot.m2 { background: var(--m2); }
+    .slot.m3 { background: var(--m3); }
+    .slot.m4 { background: var(--m4); }
+
+    /* ====== Trainers ====== */
+    .trainer {
+      position: absolute;
+      width: 138px; height: 160px;
+      background: var(--trainer-bg);
+      border: 3.5px solid #8c6d3f;
+      border-radius: 0;
+      padding: 11px 11px 19px 11px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .trainer-title {
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-top: 28px;
+    }
+    .trainer-slot {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border-radius: 0;
+      visibility: hidden;  /* placeholder for layout; actual chip is a migration .slot that lands here */
+    }
+
+    #trainer1 { left: 13px;  top: 13px; }
+    #trainer2 { left: 160px; top: 13px; }
+    #trainer3 { left: 307px; top: 13px; }
+    #trainer4 { left: 454px; top: 13px; }
+    #trainer1 .trainer-slot { background: var(--m1); }
+    #trainer2 .trainer-slot { background: var(--m2); }
+    #trainer3 .trainer-slot { background: var(--m3); }
+    #trainer4 .trainer-slot { background: var(--m4); }
+
+    /* ====== Weight Manager ====== */
+    .weight-manager {
+      position: absolute;
+      left: 1017px; top: 520px;
+      width: 50px; height: 50px;
+      background: #B85540;
+      border: 3px solid #5C2A1C;
+      border-radius: 0;
+    }
+    .weight-manager-label {
+      position: absolute;
+      left: 987px; top: 577px;
+      width: 110px;
+      text-align: center;
+      font-size: 18px;
+      color: var(--ink);
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .weight-caption {
+      position: absolute;
+      left: 440px; top: 560px;
+      font-size: 26px;
+      color: var(--muted);
+      font-style: italic;
+    }
+    .phase2-caption {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 25px;
+      text-align: center;
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.01em;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+    .phase2-caption.visible { opacity: 1; }
+
+    .brand-mark {
+      position: absolute;
+      left: 60px; bottom: 25px;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    /* ====== Flow SVG layer ====== */
+    #flows {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .flow {
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0;
+    }
+    .flow.data    { stroke: var(--data); }
+    .flow.m1      { stroke: var(--m1); }
+    .flow.m2      { stroke: var(--m2); }
+    .flow.m3      { stroke: var(--m3); }
+    .flow.m4      { stroke: var(--m4); }
+    .flow.weight  { stroke: var(--weight); stroke-width: 5; }
+    .flow.bus     { stroke-width: 5; }
+    .packet {
+      opacity: 0;
+      stroke: #fff;
+      stroke-width: 2;
+    }
+    .packet.m1     { fill: var(--m1); }
+    .packet.m2     { fill: var(--m2); }
+    .packet.m3     { fill: var(--m3); }
+    .packet.m4     { fill: var(--m4); }
+    .packet.data   { fill: var(--data); }
+    .packet.weight { fill: var(--weight); }
+
+    .stream {
+      visibility: hidden;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="stage">
+
+    <!-- ===== Model cycle (top-left) ===== -->
+    <div class="cycle-area">
+      <svg class="cycle-svg" viewBox="0 0 340 250">
+        <defs>
+          <marker id="cycHead" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="8" refY="5" orient="auto">
+            <path d="M1,1 L9,5 L1,9" fill="none" stroke="#1f3554" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </marker>
+        </defs>
+        <!-- 4 inner arrows: short straight diagonals, endpoints near the corners of adjacent models -->
+        <path id="c12" class="cycle-arrow stream" data-start=".15" data-end=".55"
+              d="M 110 115 L 140 60" marker-end="url(#cycHead)"></path>
+        <path id="c13" class="cycle-arrow stream" data-start=".25" data-end=".65"
+              d="M 110 135 L 140 190" marker-end="url(#cycHead)"></path>
+        <path id="c24" class="cycle-arrow stream" data-start=".70" data-end="1.10"
+              d="M 200 60 L 230 115" marker-end="url(#cycHead)"></path>
+        <path id="c34" class="cycle-arrow stream" data-start=".80" data-end="1.20"
+              d="M 200 190 L 230 135" marker-end="url(#cycHead)"></path>
+        <!-- Big outer arch from M4 top straight up, over the cycle, back down to M1 top -->
+        <path id="c41" class="cycle-arrow stream" data-start="1.25" data-end="2.00"
+              d="M 280 105 C 280 -50, 60 -50, 60 105" marker-end="url(#cycHead)"></path>
+      </svg>
+      <div id="model1" class="model m1 stream" data-start="0"   data-end=".25" data-dx="-30">Model 1</div>
+      <div id="model2" class="model m2 stream" data-start=".05" data-end=".30" data-dy="-30">Model 2</div>
+      <div id="model3" class="model m3 stream" data-start=".10" data-end=".35" data-dy="30">Model 3</div>
+      <div id="model4" class="model m4 stream" data-start=".15" data-end=".40" data-dx="30">Model 4</div>
+    </div>
+
+    <!-- ===== Dataflow Layer ===== -->
+    <div class="dataflow-layer stream" data-start="0.5" data-end="1.2" data-dx="0" data-dy="-20">
+      <div class="layer-title">Dataflow Layer</div>
+
+      <div class="acquisition">
+        <div class="acq-title">Data Acquisition</div>
+        <div class="acq-inner">
+          <div id="boxSR" class="acq-box">Selective Rollout</div>
+          <div id="boxPF" class="acq-box">Post-rollout Filtering</div>
+        </div>
+      </div>
+
+      <div class="ds-row">
+        <div id="ds1" class="data-serving">Data<br>Serving</div>
+        <div id="ds2" class="data-serving">Data<br>Serving</div>
+        <div id="ds3" class="data-serving">Data<br>Serving</div>
+        <div id="ds4" class="data-serving">Data<br>Serving</div>
+      </div>
+    </div>
+
+    <!-- ===== Env & Reward Service ===== -->
+    <div class="env-reward stream" data-start="0.6" data-end="1.3" data-dx="-30">
+      <div class="env-title">Env &amp; Reward Service</div>
+      <div class="env-icons">
+        <div class="env-icon">&gt;_</div>
+        <div class="env-icon">🛠</div>
+      </div>
+    </div>
+
+    <!-- ===== RaaS cluster ===== -->
+    <div class="raas-cluster stream" data-start="0.7" data-end="1.4" data-dx="0" data-dy="20">
+      <div id="raas1" class="raas">
+        <div class="raas-head">RaaS 1</div>
+        <div class="raas-detail">us-east-1<br>8× H100</div>
+      </div>
+      <div id="raas2" class="raas">
+        <div class="raas-head">RaaS 2</div>
+        <div class="raas-detail">us-west-2<br>4× A100</div>
+      </div>
+      <div id="raas3" class="raas">
+        <div class="raas-head">RaaS 3</div>
+        <div class="raas-detail">eu-west-1<br>8× H100</div>
+      </div>
+      <div id="raasN" class="raas">
+        <div class="raas-head">RaaS 4</div>
+        <div class="raas-detail">ap-south-1<br>4× L40S</div>
+      </div>
+    </div>
+
+    <!-- ===== Trainers ===== -->
+    <div class="trainer-cluster">
+    <div id="trainer1" class="trainer stream" data-start="0.8" data-end="1.5" data-dx="30">
+      <div class="trainer-title">Trainer<br>Model 1</div>
+      <span class="trainer-slot"></span>
+    </div>
+    <div id="trainer2" class="trainer stream" data-start="0.85" data-end="1.55" data-dx="30">
+      <div class="trainer-title">Trainer<br>Model 2</div>
+      <span class="trainer-slot"></span>
+    </div>
+    <div id="trainer3" class="trainer stream" data-start="0.90" data-end="1.60" data-dx="30">
+      <div class="trainer-title">Trainer<br>Model 3</div>
+      <span class="trainer-slot"></span>
+    </div>
+    <div id="trainer4" class="trainer stream" data-start="0.95" data-end="1.65" data-dx="30">
+      <div class="trainer-title">Trainer<br>Model 4</div>
+      <span class="trainer-slot"></span>
+    </div>
+    </div>
+
+    <!-- ===== Weight Manager ===== -->
+    <div class="weight-manager stream" data-start="1.0" data-end="1.7" data-dy="20"></div>
+    <div class="weight-manager-label stream" data-start="1.0" data-end="1.7" data-dy="20">Weight Manager</div>
+    <div class="weight-caption stream" data-start="7.3" data-end="7.8" data-dy="-12">Fully Async Pull-based Sparse Weight Update</div>
+
+    <!-- Phase 2 tagline: appears when continuous mode starts -->
+    <div class="phase2-caption" id="phase2Caption">All Components are Autonomous and Fully Independent.</div>
+
+    <!-- AstraFlow brand mark, always visible at bottom-left -->
+    <div class="brand-mark">AstraFlow</div>
+
+    <!-- ===== Migration slots (the colored squares that fly from cycle into each RaaS) ===== -->
+    <!-- Each slot has a 'data-from' (source model index) and 'data-to' (RaaS index). -->
+    <!-- We'll position them via JS each frame. -->
+    <!-- 16 slots: 4 models × 4 RaaS -->
+    <!-- Order: R1.m1, R1.m2, R1.m3, R1.m4, R2.m1...etc -->
+    <div class="slot m1 stream" data-mig="0" data-color="m1" data-r="0"></div>
+    <div class="slot m2 stream" data-mig="1" data-color="m2" data-r="0"></div>
+    <div class="slot m3 stream" data-mig="2" data-color="m3" data-r="0"></div>
+    <div class="slot m4 stream" data-mig="3" data-color="m4" data-r="0"></div>
+    <div class="slot m1 stream" data-mig="4" data-color="m1" data-r="1"></div>
+    <div class="slot m2 stream" data-mig="5" data-color="m2" data-r="1"></div>
+    <div class="slot m3 stream" data-mig="6" data-color="m3" data-r="1"></div>
+    <div class="slot m4 stream" data-mig="7" data-color="m4" data-r="1"></div>
+    <div class="slot m1 stream" data-mig="8" data-color="m1" data-r="2"></div>
+    <div class="slot m2 stream" data-mig="9" data-color="m2" data-r="2"></div>
+    <div class="slot m3 stream" data-mig="10" data-color="m3" data-r="2"></div>
+    <div class="slot m4 stream" data-mig="11" data-color="m4" data-r="2"></div>
+    <div class="slot m1 stream" data-mig="12" data-color="m1" data-r="3"></div>
+    <div class="slot m2 stream" data-mig="13" data-color="m2" data-r="3"></div>
+    <div class="slot m3 stream" data-mig="14" data-color="m3" data-r="3"></div>
+    <div class="slot m4 stream" data-mig="15" data-color="m4" data-r="3"></div>
+    <!-- Trainer migration slots (one per trainer, color-matched) -->
+    <div class="slot m1 stream" data-mig="16" data-color="m1" data-dest="trainer"></div>
+    <div class="slot m2 stream" data-mig="17" data-color="m2" data-dest="trainer"></div>
+    <div class="slot m3 stream" data-mig="18" data-color="m3" data-dest="trainer"></div>
+    <div class="slot m4 stream" data-mig="19" data-color="m4" data-dest="trainer"></div>
+
+    <!-- ===== Flow SVG (paths + packets) ===== -->
+    <svg id="flows" viewBox="0 0 1920 1080">
+      <defs>
+        <marker id="dataHead" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#2C4A6B"></path>
+        </marker>
+        <marker id="dataDrop" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#2C4A6B"></path>
+        </marker>
+        <marker id="m1Head" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#6995C8"></path>
+        </marker>
+        <marker id="m2Head" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#E08869"></path>
+        </marker>
+        <marker id="m3Head" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#9DB78C"></path>
+        </marker>
+        <marker id="m4Head" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#A78EBE"></path>
+        </marker>
+        <marker id="weightHead" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#D9684E"></path>
+        </marker>
+        <marker id="m1Drop" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#6995C8"></path>
+        </marker>
+        <marker id="m2Drop" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#E08869"></path>
+        </marker>
+        <marker id="m3Drop" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#9DB78C"></path>
+        </marker>
+        <marker id="m4Drop" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="8" refY="5" orient="auto">
+          <path d="M1,1 L9,5 L1,9 Z" fill="#A78EBE"></path>
+        </marker>
+      </defs>
+
+      <!-- Env & Reward ↔ RaaS (bidirectional, fires during rollout) -->
+      <path id="envToRaas" class="flow data" marker-end="url(#dataHead)"
+            d="M 363 398 L 407 398"></path>
+      <path id="raasToEnv" class="flow data" marker-end="url(#dataHead)"
+            d="M 407 412 L 363 412"></path>
+
+      <!-- Phase B: Dataflow Layer → each RaaS (prompt, going DOWN from DA bottom to RaaS top). -->
+      <path id="daToR1" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 481 245 L 481 322"></path>
+      <path id="daToR2" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 633 245 L 633 322"></path>
+      <path id="daToR3" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 785 245 L 785 322"></path>
+      <path id="daToRN" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 937 245 L 937 322"></path>
+
+      <!-- Phase C: each RaaS → Dataflow Layer (response, going UP to DA bottom). -->
+      <path id="r1ToPF" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 503 322 L 503 245"></path>
+      <path id="r2ToPF" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 655 322 L 655 245"></path>
+      <path id="r3ToPF" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 807 322 L 807 245"></path>
+      <path id="rNToPF" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 959 322 L 959 245"></path>
+
+      <!-- Phase E1: 4 color-matched drops connected to bus (start exactly at bus y=70), pointing into each DS.
+           Drawn BEFORE the bus so the bus renders on top, covering each drop's top stub. -->
+      <path id="daToDS1" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1151 70 L 1151 114"></path>
+      <path id="daToDS2" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1298 70 L 1298 114"></path>
+      <path id="daToDS3" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1445 70 L 1445 114"></path>
+      <path id="daToDS4" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1592 70 L 1592 114"></path>
+
+      <!-- Phase E0: unified BLUE bus from DA top up and across to rightmost DS column. No arrowhead.
+           Drawn AFTER the drops so the bus visually covers the drops' top stubs (clean junctions). -->
+      <path id="daBus" class="flow data bus"
+            d="M 759 114 L 759 70 L 1592 70"></path>
+
+      <!-- Phase F: Data Serving bottom → Trainer top (color-matched, short vertical) -->
+      <path id="ds1ToT1" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1151 245 L 1151 322"></path>
+      <path id="ds2ToT2" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1298 245 L 1298 322"></path>
+      <path id="ds3ToT3" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1445 245 L 1445 322"></path>
+      <path id="ds4ToT4" class="flow data bus" marker-end="url(#dataDrop)"
+            d="M 1592 245 L 1592 322"></path>
+
+      <!-- Phase G1: each Trainer → Weight Manager (down to bus at y=560 = WM middle, then horizontal to WM right edge 1067) -->
+      <path id="t1ToWM" class="flow weight"
+            d="M 1151 482 L 1151 545 L 1067 545"></path>
+      <path id="t2ToWM" class="flow weight"
+            d="M 1298 482 L 1298 545 L 1067 545"></path>
+      <path id="t3ToWM" class="flow weight"
+            d="M 1445 482 L 1445 545 L 1067 545"></path>
+      <path id="t4ToWM" class="flow weight"
+            d="M 1592 482 L 1592 545 L 1067 545"></path>
+
+      <!-- Phase G2: Weight Manager → each RaaS (from WM left edge 1017 at middle y=560, along bus, then up). -->
+      <path id="wmToR1" class="flow weight" marker-end="url(#weightHead)"
+            d="M 1017 545 L 492 545 L 492 482"></path>
+      <path id="wmToR2" class="flow weight" marker-end="url(#weightHead)"
+            d="M 1017 545 L 644 545 L 644 482"></path>
+      <path id="wmToR3" class="flow weight" marker-end="url(#weightHead)"
+            d="M 1017 545 L 796 545 L 796 482"></path>
+      <path id="wmToRN" class="flow weight" marker-end="url(#weightHead)"
+            d="M 1017 545 L 948 545 L 948 482"></path>
+
+      <!-- Traveling packets along the dataflow paths -->
+      <!-- Env <-> RaaS bidirectional data packets (small, blue) -->
+      <circle class="packet data" id="pkEnvOut" r="5"></circle>
+      <circle class="packet data" id="pkEnvIn"  r="5"></circle>
+
+      <!-- Phase B: 4 blue trigger packets going DOWN from Selective Rollout to each RaaS -->
+      <circle class="packet" id="pkTrigR1" r="7" style="fill: #2C4A6B;"></circle>
+      <circle class="packet" id="pkTrigR2" r="7" style="fill: #2C4A6B;"></circle>
+      <circle class="packet" id="pkTrigR3" r="7" style="fill: #2C4A6B;"></circle>
+      <circle class="packet" id="pkTrigRN" r="7" style="fill: #2C4A6B;"></circle>
+
+      <!-- Phase C: 4 RaaS × 4 packets = 16 blue response packets going UP to Dataflow Layer (color matches the data bus) -->
+      <circle class="packet data" id="pkR1m1" r="7"></circle>
+      <circle class="packet data" id="pkR1m2" r="7"></circle>
+      <circle class="packet data" id="pkR1m3" r="7"></circle>
+      <circle class="packet data" id="pkR1m4" r="7"></circle>
+      <circle class="packet data" id="pkR2m1" r="7"></circle>
+      <circle class="packet data" id="pkR2m2" r="7"></circle>
+      <circle class="packet data" id="pkR2m3" r="7"></circle>
+      <circle class="packet data" id="pkR2m4" r="7"></circle>
+      <circle class="packet data" id="pkR3m1" r="7"></circle>
+      <circle class="packet data" id="pkR3m2" r="7"></circle>
+      <circle class="packet data" id="pkR3m3" r="7"></circle>
+      <circle class="packet data" id="pkR3m4" r="7"></circle>
+      <circle class="packet data" id="pkRNm1" r="7"></circle>
+      <circle class="packet data" id="pkRNm2" r="7"></circle>
+      <circle class="packet data" id="pkRNm3" r="7"></circle>
+      <circle class="packet data" id="pkRNm4" r="7"></circle>
+
+      <!-- Phase 6: 4 packets -->
+      <circle class="packet m1" id="pkDS1" r="8"></circle>
+      <circle class="packet m2" id="pkDS2" r="8"></circle>
+      <circle class="packet m3" id="pkDS3" r="8"></circle>
+      <circle class="packet m4" id="pkDS4" r="8"></circle>
+
+      <!-- Phase 7: 4 packets -->
+      <circle class="packet m1" id="pkT1" r="8"></circle>
+      <circle class="packet m2" id="pkT2" r="8"></circle>
+      <circle class="packet m3" id="pkT3" r="8"></circle>
+      <circle class="packet m4" id="pkT4" r="8"></circle>
+
+      <!-- Phase G1: 4 weight packets going from each Trainer to WM -->
+      <circle class="packet weight" id="pkTrW1" r="7"></circle>
+      <circle class="packet weight" id="pkTrW2" r="7"></circle>
+      <circle class="packet weight" id="pkTrW3" r="7"></circle>
+      <circle class="packet weight" id="pkTrW4" r="7"></circle>
+
+      <!-- Phase G2: 4 weight packets going from WM to each RaaS -->
+      <circle class="packet weight" id="pkW1" r="7"></circle>
+      <circle class="packet weight" id="pkW2" r="7"></circle>
+      <circle class="packet weight" id="pkW3" r="7"></circle>
+      <circle class="packet weight" id="pkW4" r="7"></circle>
+    </svg>
+  </div>
+
+  <script>
+    const duration = 22;
+    const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
+    const ease  = (v) => { v = clamp(v); return 1 - Math.pow(1 - v, 3); };
+    const phase = (t, start, end) => ease((t - start) / (end - start));
+
+    // ---------- Stream (boxes / arrows that slide in) ----------
+    function setStream(el, t) {
+      const start = Number(el.dataset.start || 0);
+      const end   = Number(el.dataset.end   || start + .4);
+      const dx    = Number(el.dataset.dx    || 0);
+      const dy    = Number(el.dataset.dy    || 0);
+      const p     = phase(t, start, end);
+      const visible = p > 0;
+
+      el.style.visibility = visible ? 'visible' : 'hidden';
+      el.style.opacity    = p >= .98 ? 1 : Math.min(1, p * 1.2);
+      el.style.transform  = `translate(${dx * (1 - p)}px, ${dy * (1 - p)}px)`;
+    }
+
+    // Same as setStream but with a fade-out window (used for cycle elements fading after migration)
+    function setStreamFade(el, t, fadeStart, fadeEnd) {
+      const start = Number(el.dataset.start || 0);
+      const dx    = Number(el.dataset.dx    || 0);
+      const dy    = Number(el.dataset.dy    || 0);
+      const end   = Number(el.dataset.end   || start + .4);
+      const p     = phase(t, start, end);
+      const fade  = phase(t, fadeStart, fadeEnd);
+      const visible = p > 0;
+      el.style.visibility = visible ? 'visible' : 'hidden';
+      const baseOp = p >= .98 ? 1 : Math.min(1, p * 1.2);
+      el.style.opacity = baseOp * (1 - 0.6 * fade);
+      const tx = dx * (1 - p);
+      const ty = dy * (1 - p);
+      // also shrink slightly during fade
+      const s = 1 - 0.15 * fade;
+      el.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    }
+
+    // ---------- Cycle arrows: reveal stroke-dashoffset ----------
+    function revealCycleArrow(el, t) {
+      const start = Number(el.dataset.start);
+      const end   = Number(el.dataset.end);
+      const p = phase(t, start, end);
+      try {
+        const L = el.getTotalLength();
+        el.style.strokeDasharray  = `${L}`;
+        el.style.strokeDashoffset = `${L * (1 - p)}`;
+      } catch (_) {}
+      el.style.visibility = p > 0 ? 'visible' : 'hidden';
+      el.style.opacity    = p > 0 ? 1 : 0;
+    }
+
+    // ---------- Migration particles ----------
+    // Models source positions (in stage coords, center of each model box)
+    // Cycle area at (30, 60). Model size 100x40.
+    const modelPos = [
+      { x:  30 +  10 + 50, y:  60 + 105 + 20 },  // M1 → (90, 185)
+      { x:  30 + 120 + 50, y:  60 +  20 + 20 },  // M2 → (200, 100)
+      { x:  30 + 120 + 50, y:  60 + 190 + 20 },  // M3 → (200, 270)
+      { x:  30 + 230 + 50, y:  60 + 105 + 20 },  // M4 → (310, 185)
+    ];
+    // RaaS slot destinations (in stage coords): 4 slots per RaaS
+    // raas-cluster left=440, top=440; each raas relative position:
+    //   r1: 12,12 ; r2: 182,12 ; r3: 358,12 ; rN: 540,12
+    // raas size: 158x196
+    // The 4 colored slot squares appear inside the raas at the bottom row:
+    //   relative inside raas: x = 22, 56, 90, 124 ; y = 158
+    // Cluster at (410, 305), padding 13. RaaS width 138, height 140.
+    const raasOrigin = [
+      { x: 410 +  13, y: 305 + 13 }, // R1 → (423, 318), center 492
+      { x: 410 + 165, y: 305 + 13 }, // R2 → (575, 318), center 644
+      { x: 410 + 317, y: 305 + 13 }, // R3 → (727, 318), center 796
+      { x: 410 + 469, y: 305 + 13 }, // RN → (879, 318), center 948
+    ];
+    function raasSlotPos(rIdx, colorIdx) {
+      const base = raasOrigin[rIdx];
+      const slotX = [13, 45, 77, 109][colorIdx];
+      const slotY = 120;  // chips sit below raas-detail text in 160px-tall raas
+      return { x: base.x + slotX, y: base.y + slotY };
+    }
+
+    // Trainer slot landing positions (top-left for a 20x20 slot, matching the
+    // static `.trainer-slot` placeholder centered inside the flex column).
+    // Trainer slot aligned with RaaS chip center (chip top stage = 438, center = 448).
+    function trainerSlotPos(colorIdx) {
+      const centerX = [1151, 1298, 1445, 1592][colorIdx];
+      const centerY = 448;
+      return { x: centerX - 10, y: centerY - 10 };
+    }
+
+    // Setup migration particles (16 RaaS + 4 Trainer = 20 total)
+    const migSlots = Array.from(document.querySelectorAll('.slot'));
+    const migData = migSlots.map(el => {
+      const colorMap = { m1: 0, m2: 1, m3: 2, m4: 3 };
+      const colorIdx = colorMap[el.dataset.color];
+      const dest = el.dataset.dest || 'raas';
+      const from = modelPos[colorIdx];
+      let to, start, end;
+      if (dest === 'trainer') {
+        // One per color: model[c] → trainer[c]. Fires alongside this model's RaaS migrations.
+        to = trainerSlotPos(colorIdx);
+        start = 1.6 + colorIdx * 0.15 + 0.2;
+        end   = start + 1.0;
+      } else {
+        const rIdx = Number(el.dataset.r);
+        to = raasSlotPos(rIdx, colorIdx);
+        // Stagger: by model first, then by raas
+        start = 1.6 + colorIdx * 0.15 + rIdx * 0.1;
+        end   = start + 0.95;
+      }
+      return { el, from, to, start, end };
+    });
+
+    function setMigration(m, t) {
+      const p = phase(t, m.start, m.end);
+      if (p <= 0) {
+        m.el.style.visibility = 'hidden';
+        m.el.style.opacity = 0;
+        return;
+      }
+      m.el.style.visibility = 'visible';
+      // Fade in quickly, settle visible
+      m.el.style.opacity = Math.min(1, p * 3);
+      // Lerp from source center to destination top-left of 20x20 slot
+      // (slot 20x20, so subtract 10 to center)
+      const fromX = m.from.x - 10;
+      const fromY = m.from.y - 10;
+      const toX   = m.to.x;
+      const toY   = m.to.y;
+      // Slight arc upward during flight
+      const arc = -20 * Math.sin(p * Math.PI);
+      const x = fromX + (toX - fromX) * p;
+      const y = fromY + (toY - fromY) * p + arc;
+      const s = 1.5 - 0.5 * p;
+      m.el.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+    }
+
+    // ---------- Flow path reveals ----------
+    function revealFlow(path, t, start, end) {
+      const p = phase(t, start, end);
+      try {
+        const L = path.getTotalLength();
+        path.style.strokeDasharray  = `${L}`;
+        path.style.strokeDashoffset = `${L * (1 - p)}`;
+      } catch (_) {}
+      path.style.opacity = p > 0 ? 1 : 0;
+
+      // Marker-end (arrowhead) only appears when the line is essentially fully drawn,
+      // otherwise the triangle is rendered at the geometric endpoint before the stroke arrives there.
+      const orig = path.getAttribute('marker-end');
+      if (orig && orig !== 'none') {
+        // Cache the original marker-end once so we can restore it.
+        if (!path.dataset.markerEnd) path.dataset.markerEnd = orig;
+      }
+      if (path.dataset.markerEnd) {
+        if (p < 0.96) {
+          if (path.getAttribute('marker-end') !== 'none') path.setAttribute('marker-end', 'none');
+        } else {
+          if (path.getAttribute('marker-end') !== path.dataset.markerEnd) {
+            path.setAttribute('marker-end', path.dataset.markerEnd);
+          }
+        }
+      }
+    }
+
+    function packetOnPath(packet, path, t, start, end) {
+      const p = phase(t, start, end);
+      if (p <= .02 || p >= .98) {
+        packet.style.opacity = 0;
+        return;
+      }
+      const L = path.getTotalLength();
+      const pt = path.getPointAtLength(L * p);
+      packet.setAttribute('cx', pt.x);
+      packet.setAttribute('cy', pt.y);
+      packet.style.opacity = 1;
+    }
+
+    // ---------- Phase highlights (Data Acquisition inner) ----------
+    function highlightBox(el, t, start, end) {
+      const p = phase(t, start, end);
+      const active = (p > .1 && p < .9);
+      el.classList.toggle('hot', active);
+    }
+
+    // ---------- Cached element handles ----------
+    const cycleArrows = ['c12', 'c13', 'c24', 'c34', 'c41'].map(id => document.getElementById(id));
+    const $ = id => document.getElementById(id);
+
+    // Env <-> RaaS (bidirectional, animates during rollout)
+    const envToRaas = $('envToRaas');
+    const raasToEnv = $('raasToEnv');
+    const pkEnvOut  = $('pkEnvOut');
+    const pkEnvIn   = $('pkEnvIn');
+
+    // Phase B: Selective Rollout → each RaaS (trigger, going DOWN)
+    const daToR = [
+      { path: $('daToR1'), pk: $('pkTrigR1') },
+      { path: $('daToR2'), pk: $('pkTrigR2') },
+      { path: $('daToR3'), pk: $('pkTrigR3') },
+      { path: $('daToRN'), pk: $('pkTrigRN') },
+    ];
+    // Phase C: each RaaS → Post-rollout Filtering (data return, going UP, 4 colored packets per path)
+    const rToPF = [
+      { path: $('r1ToPF'), pks: ['pkR1m1','pkR1m2','pkR1m3','pkR1m4'].map($) },
+      { path: $('r2ToPF'), pks: ['pkR2m1','pkR2m2','pkR2m3','pkR2m4'].map($) },
+      { path: $('r3ToPF'), pks: ['pkR3m1','pkR3m2','pkR3m3','pkR3m4'].map($) },
+      { path: $('rNToPF'), pks: ['pkRNm1','pkRNm2','pkRNm3','pkRNm4'].map($) },
+    ];
+    // Phase E0: unified blue bus from DA up and across (no packet, just reveal)
+    const daBus = $('daBus');
+    // Phase E1: 4 color-matched drops from bus down to each DS
+    const daToDS = [
+      { path: $('daToDS1'), pk: $('pkDS1') },
+      { path: $('daToDS2'), pk: $('pkDS2') },
+      { path: $('daToDS3'), pk: $('pkDS3') },
+      { path: $('daToDS4'), pk: $('pkDS4') },
+    ];
+    const dsToTr = [
+      { path: $('ds1ToT1'), pk: $('pkT1') },
+      { path: $('ds2ToT2'), pk: $('pkT2') },
+      { path: $('ds3ToT3'), pk: $('pkT3') },
+      { path: $('ds4ToT4'), pk: $('pkT4') },
+    ];
+    // Phase G1: each Trainer → Weight Manager (collect)
+    const tToWM = [
+      { path: $('t1ToWM'), pk: $('pkTrW1') },
+      { path: $('t2ToWM'), pk: $('pkTrW2') },
+      { path: $('t3ToWM'), pk: $('pkTrW3') },
+      { path: $('t4ToWM'), pk: $('pkTrW4') },
+    ];
+    // Phase G2: Weight Manager → each RaaS (distribute)
+    const weightFlows = [
+      { path: $('wmToR1'), pk: $('pkW1') },
+      { path: $('wmToR2'), pk: $('pkW2') },
+      { path: $('wmToR3'), pk: $('pkW3') },
+      { path: $('wmToRN'), pk: $('pkW4') },
+    ];
+    const boxSR = $('boxSR');
+    const boxPF = $('boxPF');
+    const phase2Caption = $('phase2Caption');
+
+    // ---------- Continuous flow (after setup completes, packets cycle on all buses forever) ----------
+    function continuousPacket(packet, path, t, period, offset) {
+      const localT = ((t - offset) % period + period) % period;
+      const p = localT / period;
+      if (p < 0.02 || p > 0.98) {
+        packet.style.opacity = 0;
+        return;
+      }
+      const L = path.getTotalLength();
+      const pt = path.getPointAtLength(L * p);
+      packet.setAttribute('cx', pt.x);
+      packet.setAttribute('cy', pt.y);
+      packet.style.opacity = 1;
+    }
+
+    function runContinuousFlows(t) {
+      const period = 3.0;
+      // DA → RaaS trigger: 4 blue packets (one per RaaS path)
+      for (let r = 0; r < daToR.length; r++) {
+        continuousPacket(daToR[r].pk, daToR[r].path, t, period * 0.95, r * 0.75);
+      }
+      // RaaS → DA response: 4 packets total (one per RaaS), each path shows a different model color via pks[r]
+      for (let r = 0; r < rToPF.length; r++) {
+        continuousPacket(rToPF[r].pks[r], rToPF[r].path, t, period * 1.15, r * 0.6 + 0.4);
+      }
+      // DA bus → DS (color-matched, one per DS)
+      for (let i = 0; i < daToDS.length; i++) {
+        continuousPacket(daToDS[i].pk, daToDS[i].path, t, period * 0.85, i * 0.55);
+      }
+      // DS → Trainer (color-matched, one per Trainer)
+      for (let i = 0; i < dsToTr.length; i++) {
+        continuousPacket(dsToTr[i].pk, dsToTr[i].path, t, period * 0.9, i * 0.5 + 0.7);
+      }
+      // Trainer → WM (weight) — slower (20% slower than before)
+      for (let i = 0; i < tToWM.length; i++) {
+        continuousPacket(tToWM[i].pk, tToWM[i].path, t, period * 2.52, i * 1.1 + 0.3);
+      }
+      // WM → RaaS (weight) — slowest (20% slower than before)
+      for (let i = 0; i < weightFlows.length; i++) {
+        continuousPacket(weightFlows[i].pk, weightFlows[i].path, t, period * 2.88, i * 1.2 + 1.4);
+      }
+      // Env <-> RaaS bidirectional (small blue packets)
+      continuousPacket(pkEnvOut, envToRaas, t, period * 0.7, 0.5);
+      continuousPacket(pkEnvIn,  raasToEnv, t, period * 0.75, 1.6);
+    }
+
+    // ---------- Render frame ----------
+    function renderAt(t) {
+      // Setup runs 0..setupDuration, continuous runs for continuousDuration after, then loops.
+      // (Tick multiplies wall-clock time by 2, so 10s renderAt time ≈ 5s wall clock.)
+      const setupDuration = 11;
+      const continuousDuration = 27.5;
+      const loopDuration = setupDuration + continuousDuration;
+      t = ((t % loopDuration) + loopDuration) % loopDuration;
+      const rawT = t;
+      t = Math.min(t, setupDuration);
+
+      // 1) Stream elements (boxes, labels, model boxes)
+      // Model cycle: no flow animation — models and arrows visible immediately and stay so.
+      for (const el of document.querySelectorAll('.model.stream')) {
+        el.style.visibility = 'visible';
+        el.style.opacity = '1';
+        el.style.transform = '';
+      }
+      for (const a of cycleArrows) {
+        a.style.strokeDasharray = '';
+        a.style.strokeDashoffset = '';
+        a.style.visibility = 'visible';
+        a.style.opacity = '1';
+      }
+
+      // Other stream elements (non-model)
+      const otherStreams = document.querySelectorAll(
+        '.dataflow-layer.stream, .env-reward.stream, .raas-cluster.stream, ' +
+        '.trainer.stream, .weight-manager.stream, .weight-manager-label.stream, ' +
+        '.weight-caption.stream'
+      );
+      for (const el of otherStreams) setStream(el, t);
+
+      // 2) Migration particles (slots flying from cycle to RaaS)
+      for (const m of migData) setMigration(m, t);
+
+      // Phase A: Selective Rollout highlights (fires first, sustained)
+      highlightBox(boxSR, t, 3.2, 4.6);
+
+      // Phase B: SR → each RaaS (trigger, blue packets going DOWN)
+      for (let r = 0; r < daToR.length; r++) {
+        const s = 3.4 + r * 0.08;
+        const e = s + 0.7;
+        revealFlow(daToR[r].path, t, s, e);
+        packetOnPath(daToR[r].pk, daToR[r].path, t, s + 0.05, e);
+      }
+
+      // During rollout: RaaS queries Env & Reward, gets response (path reveal + packet on each)
+      revealFlow(envToRaas, t, 3.8, 4.2);
+      packetOnPath(pkEnvOut, envToRaas, t, 3.85, 4.2);
+      revealFlow(raasToEnv, t, 4.2, 4.6);
+      packetOnPath(pkEnvIn, raasToEnv, t, 4.25, 4.6);
+
+      // Phase C: each RaaS → Post-rollout Filtering (data return, going UP)
+      for (let r = 0; r < rToPF.length; r++) {
+        const baseStart = 4.5 + r * 0.06;
+        const pathEnd   = baseStart + 0.5;
+        revealFlow(rToPF[r].path, t, baseStart, pathEnd);
+        for (let c = 0; c < 4; c++) {
+          const ps = baseStart + 0.1 + c * 0.13;
+          const pe = ps + 0.55;
+          packetOnPath(rToPF[r].pks[c], rToPF[r].path, t, ps, pe);
+        }
+      }
+
+      // Phase D: Post-rollout Filtering highlights (after data arrives, sustained)
+      highlightBox(boxPF, t, 5.5, 6.9);
+
+      // Phase E0: unified blue bus from DA top up and across (draws out as one line)
+      revealFlow(daBus, t, 5.7, 6.3);
+
+      // Phase E1: 4 color-matched drops down to each DS (packets travel down)
+      for (let i = 0; i < daToDS.length; i++) {
+        const s = 6.1 + i * 0.05;
+        const e = s + 0.5;
+        revealFlow(daToDS[i].path, t, s, e);
+        packetOnPath(daToDS[i].pk, daToDS[i].path, t, s + 0.05, e);
+      }
+
+      // Phase F: Data Serving → Trainer (color-matched)
+      for (let i = 0; i < dsToTr.length; i++) {
+        const s = 6.8 + i * 0.05;
+        const e = s + 0.55;
+        revealFlow(dsToTr[i].path, t, s, e);
+        packetOnPath(dsToTr[i].pk, dsToTr[i].path, t, s + 0.05, e);
+      }
+
+      // Phase G1: each Trainer → Weight Manager (collect along bus) — slower
+      for (let i = 0; i < tToWM.length; i++) {
+        const s = 7.5 + i * 0.08;
+        const e = s + 1.2;
+        revealFlow(tToWM[i].path, t, s, e);
+        packetOnPath(tToWM[i].pk, tToWM[i].path, t, s + 0.05, e);
+      }
+
+      // Phase G2: Weight Manager → each RaaS (distribute along bus) — slower
+      for (let i = 0; i < weightFlows.length; i++) {
+        const s = 9.0 + i * 0.08;
+        const e = s + 1.4;
+        revealFlow(weightFlows[i].path, t, s, e);
+        packetOnPath(weightFlows[i].pk, weightFlows[i].path, t, s + 0.05, e);
+      }
+
+      // After setup completes, all buses run continuous async packet flows forever (no more "hold")
+      if (rawT > setupDuration) {
+        runContinuousFlows(rawT);
+        phase2Caption.classList.add('visible');
+      } else {
+        phase2Caption.classList.remove('visible');
+      }
+    }
+
+    window.renderAt = renderAt;
+    const params = new URLSearchParams(location.search);
+    if (params.has('t')) {
+      renderAt(Number(params.get('t')));
+    } else {
+      const start = performance.now();
+      // Setup plays at slower rate, continuous at faster rate.
+      const setupRate = 1.15;       // 11 / 1.15 ≈ 9.6s wall clock for setup
+      const continuousRate = 2.75;  // 27.5 / 2.75 = 10s wall clock for continuous, packets 10% faster
+      const setupDurRender = 11;
+      const contDurRender = 27.5;
+      const setupWall = setupDurRender / setupRate;
+      const contWall = contDurRender / continuousRate;
+      const totalWall = setupWall + contWall;
+      const tick = (now) => {
+        const wallSec = (now - start) / 1000;
+        const wallMod = ((wallSec % totalWall) + totalWall) % totalWall;
+        const renderT = wallMod < setupWall
+          ? wallMod * setupRate
+          : setupDurRender + (wallMod - setupWall) * continuousRate;
+        renderAt(renderT);
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    // Auto-fit stage to viewport
+    function fit() {
+      const stage = document.getElementById('stage');
+      const w = window.innerWidth  || document.documentElement.clientWidth;
+      const h = window.innerHeight || document.documentElement.clientHeight;
+      if (!w || !h) return;
+      const s = Math.min(w / 1701, h / 720);
+      stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+    }
+    window.addEventListener('resize', fit);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', fit);
+    } else { fit(); }
+    setTimeout(fit, 50);
+    setTimeout(fit, 250);
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+sphinx
+sphinx-book-theme
+myst-parser
+nbsphinx
+sphinx-copybutton
+sphinx-tabs
+sphinxcontrib-mermaid
+sphinx-autobuild
+
+matplotlib
+numpy

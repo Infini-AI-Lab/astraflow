@@ -1,0 +1,15 @@
+import: definition.yaml
+
+concurrency:
+  task:
+    webshop-dev: 5
+  agent:
+    Qwen3-4B-Instruct-2507: 5
+
+assignments: # List[Assignment] | Assignment
+  - agent: # "task": List[str] | str ,  "agent": List[str] | str
+      - Qwen3-4B-Instruct-2507
+    task:
+      webshop-dev
+
+output: "outputs/{TIMESTAMP}"

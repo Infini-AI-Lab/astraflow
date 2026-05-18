@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AstraFlow — Dataflow-Oriented RL for Agentic LLMs</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --accent: #7c3aed;
+    --accent-strong: #6d28d9;
+    --accent-soft: #f5f3ff;
+    --accent-line: #ddd6fe;
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --muted: #64748b;
+    --muted-2: #94a3b8;
+    --line: #e2e8f0;
+    --line-soft: #eef2f7;
+    --bg: #ffffff;
+    --bg-soft: #fafafb;
+    --code-bg: #f3f1fb;
+    --maxw: 960px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--bg);
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  a { color: var(--accent-strong); text-decoration: none; transition: color .15s ease, border-color .15s ease; }
+  a:not(.btn):not(.chip) { border-bottom: 1px dotted var(--accent-line); }
+  a:not(.btn):not(.chip):hover { color: var(--accent); border-bottom-color: var(--accent); }
+  code, pre, .mono { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 56px 0; }
+
+  .container { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+  .container.wide { max-width: 1120px; }
+
+  /* HEADER — left-aligned, terminal-ish */
+  header.hero {
+    padding: 56px 0 28px;
+    border-bottom: 1px dashed var(--line);
+  }
+  header.hero .stamp {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  header.hero .stamp a {
+    color: inherit;
+    border-bottom: 0;
+  }
+  header.hero .stamp a:hover { color: var(--accent-strong); }
+  header.hero .stamp .dot { color: var(--accent); }
+  h1.title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(36px, 5.4vw, 60px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin: 0 0 12px;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  h1.title .acronym { color: var(--accent); }
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: clamp(18px, 2vw, 22px);
+    margin: 0 0 36px;
+    font-weight: 400;
+    max-width: 720px;
+    line-height: 1.4;
+  }
+
+  .authors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin: 0 0 8px;
+    font-size: 16px;
+    color: var(--ink);
+    line-height: 1.7;
+    max-width: 820px;
+  }
+  .authors .author { white-space: nowrap; }
+  .authors sup { color: var(--accent); font-weight: 600; font-family: 'IBM Plex Mono', monospace; font-size: 11px; margin-left: 1px; }
+  .authors .sep { color: var(--muted-2); }
+  .affiliations {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.7;
+    margin-top: 8px;
+    max-width: 820px;
+  }
+  .affiliations sup { color: var(--accent); font-weight: 600; margin-right: 2px; }
+  .affiliations span { white-space: nowrap; margin-right: 16px; }
+
+  /* ACTION BUTTONS — outlined ghost, sharp 6px */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 36px 0 4px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 13.5px;
+    letter-spacing: 0.01em;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    color: var(--ink) !important;
+    transition: background .15s ease, color .15s ease, border-color .15s ease, transform .1s ease;
+    line-height: 1.2;
+  }
+  .btn svg { width: 15px; height: 15px; }
+  .btn:hover {
+    background: var(--ink);
+    color: #fff !important;
+    border-color: var(--ink);
+  }
+  .btn.accent {
+    border-color: var(--accent);
+    color: var(--accent-strong) !important;
+  }
+  .btn.accent:hover {
+    background: var(--accent);
+    color: #fff !important;
+    border-color: var(--accent);
+  }
+
+  /* HERO FIGURE */
+  .hero-fig {
+    margin: 48px auto 0;
+    max-width: 1008px;
+    padding: 0 28px;
+  }
+  .hero-fig .frame-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1701 / 720;
+    overflow: hidden;
+    background: transparent;
+  }
+  .hero-fig.hero-fig-raas { margin-top: 36px; }
+  .hero-fig .frame-wrap-raas { aspect-ratio: 1400 / 820; }
+  .hero-fig iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: transparent;
+  }
+  .hero-fig .caption {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    line-height: 1.7;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 14px;
+    border-left: 2px solid var(--accent);
+  }
+  .hero-fig .caption b { color: var(--ink); font-weight: 600; }
+  .hero-fig .caption .label {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent-strong);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* SECTIONS */
+  section { padding: 64px 0; }
+  section.alt { background: var(--bg-soft); border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); }
+  section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 4px;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  section h2 .glyph {
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 24px;
+  }
+  section .rule {
+    height: 1px;
+    background: linear-gradient(to right, var(--ink) 0, var(--ink) 56px, var(--line) 56px, var(--line) 100%);
+    margin: 8px 0 28px;
+  }
+  section h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 56px 0 22px;
+    color: var(--ink);
+    padding: 0 0 14px 0;
+    border: 0;
+    position: relative;
+    clear: both;
+  }
+  section h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 48px;
+    height: 3px;
+    background: var(--accent);
+  }
+  section h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+    margin: 28px 0 8px;
+  }
+  section p { color: var(--ink-soft); margin: 12px 0; }
+  section ul { color: var(--ink-soft); }
+  section em { font-style: italic; color: var(--ink); }
+
+  /* TLDR — top border, mono labels for each line */
+  .tldr {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    padding: 24px 28px;
+    border-radius: 4px;
+    margin: 32px 0 0;
+  }
+  .tldr .row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 18px;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+  .tldr .row:last-child { border-bottom: 0; }
+  .tldr .row .lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent-strong);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tldr .row p { margin: 0; color: var(--ink); font-size: 16px; line-height: 1.6; }
+  .tldr .row p b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 560px) {
+    .tldr .row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* CALLOUT — for "why this is hard" */
+  .callout {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    border-left: 3px solid var(--accent);
+    padding: 22px 26px;
+    border-radius: 4px;
+    margin: 22px 0;
+  }
+  .callout .row {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 18px;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--accent-line);
+  }
+  .callout .row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .callout .row:first-child { padding-top: 0; }
+  .callout .row .lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent-strong);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .callout .row p { margin: 0; color: var(--ink); font-size: 15.5px; line-height: 1.6; }
+  .callout .row p b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 560px) {
+    .callout .row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* CAPABILITIES — five features that fall out of the architecture */
+  .capabilities {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    border-left: 3px solid var(--accent);
+    padding: 22px 26px 24px;
+    border-radius: 4px;
+    margin: 22px 0 36px;
+  }
+  .capabilities-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent-strong);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .capabilities-statement {
+    margin: 0 0 18px;
+    color: var(--ink);
+    font-size: 16.5px;
+    line-height: 1.55;
+  }
+  .capabilities-statement em {
+    color: var(--accent-strong);
+    font-style: normal;
+    font-weight: 600;
+  }
+  .capabilities-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 4px;
+    background: var(--bg);
+    border: 1px solid var(--accent-line);
+    color: var(--ink);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  a.chip:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  a.chip:hover .num { color: rgba(255, 255, 255, 0.85); }
+  .chip .num {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* POINTER — "more in the paper" */
+  .pointer {
+    margin: 36px 0 0;
+    padding: 16px 20px;
+    border: 1px dashed var(--accent-line);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink-soft);
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .pointer .arrow {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .pointer a { font-weight: 600; }
+
+  /* CLAIM CARDS — what AstraFlow unlocks (pitch format) */
+  .claim-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 28px 0;
+  }
+  @media (max-width: 760px) { .claim-grid { grid-template-columns: 1fr; } }
+  .claim {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 20px 20px 22px;
+    text-decoration: none;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    min-width: 0;
+    transition: border-color .15s ease, transform .1s ease, box-shadow .15s ease;
+  }
+  a.claim:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px -8px rgba(124, 58, 237, 0.28);
+  }
+  .claim .lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    margin: 0;
+    display: block;
+  }
+  .claim .lbl .num { color: var(--accent); }
+  .claim-big {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(26px, 2.8vw, 32px);
+    font-weight: 700;
+    color: var(--accent-strong);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+    margin: 0;
+  }
+  .claim-sub {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .claim-big.claim-big-text {
+    line-height: 1;
+    text-wrap: balance;
+  }
+  .claim-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .claim-list li {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    padding-left: 12px;
+    position: relative;
+  }
+  .claim-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  /* CARDS (legacy, kept for completeness) */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 28px 0;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin: 28px 0;
+    align-items: start;
+  }
+  @media (max-width: 720px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+  /* FIGURE BLOCKS */
+  figure.paper-fig {
+    margin: 22px 0 8px;
+    text-align: center;
+  }
+  figure.paper-fig img,
+  figure.paper-fig object {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+  figure.paper-fig figcaption {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    line-height: 1.65;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+    padding-left: 12px;
+    border-left: 2px solid var(--accent-line);
+  }
+  figure.paper-fig figcaption b { color: var(--ink); font-weight: 600; }
+
+  figure.paper-fig.wrap-right {
+    float: right;
+    width: 300px;
+    margin: 6px 0 14px 28px;
+    text-align: center;
+  }
+  figure.paper-fig.wrap-right img { max-width: 100%; }
+  figure.paper-fig.wrap-right figcaption {
+    text-align: left;
+    margin-top: 10px;
+    padding-left: 12px;
+    max-width: 100%;
+  }
+  /* Larger variant: forces small SVGs to fill the wider container. */
+  figure.paper-fig.wrap-right.lg { width: 280px; }
+  figure.paper-fig.wrap-right.lg img { width: 100%; }
+  @media (max-width: 720px) {
+    figure.paper-fig.wrap-right,
+    figure.paper-fig.wrap-right.lg {
+      float: none;
+      width: 100%;
+      margin: 22px auto 8px;
+    }
+  }
+
+  .fig-row {
+    display: grid;
+    gap: 18px;
+    margin: 18px 0 8px;
+    align-items: end;
+  }
+  .fig-row.cols-2 { grid-template-columns: 1fr 2fr; }
+  .fig-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .fig-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  /* MAS workflow row: column widths proportional to SVG aspect ratios
+     so all three figures render at the same height. */
+  .fig-row.cols-3.mas-row { grid-template-columns: 84fr 91fr 143fr; }
+  .fig-row.cols-3.mas-row figure { padding: 0 8px; }
+  .fig-row.cols-3.mas-row figure img { width: 100%; }
+  @media (max-width: 820px) {
+    .fig-row.cols-2, .fig-row.cols-3, .fig-row.cols-4 { grid-template-columns: 1fr; }
+  }
+  .fig-row figure { margin: 0; }
+  .fig-row figure img { width: 90%; height: auto; display: block; margin: 0 auto; }
+  .fig-row figure figcaption {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 8px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .fig-row figure figcaption b { color: var(--ink); font-family: 'Space Grotesk', sans-serif; font-weight: 500; }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 16px 0 8px; }
+  table.paper {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    background: var(--bg);
+    font-variant-numeric: tabular-nums;
+  }
+  table.paper caption {
+    caption-side: top;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: left;
+    padding: 6px 0 12px;
+    line-height: 1.6;
+  }
+  table.paper th, table.paper td {
+    padding: 9px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  table.paper th:first-child, table.paper td:first-child { text-align: left; }
+  table.paper thead th {
+    border-bottom: 1.5px solid var(--ink);
+    border-top: 1.5px solid var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    background: transparent;
+  }
+  table.paper tbody tr:last-child td { border-bottom: 1.5px solid var(--ink); }
+  table.paper td.best { font-weight: 600; color: var(--accent-strong); }
+  table.paper .delta { color: var(--muted-2); font-size: 12px; font-weight: 400; }
+
+  /* CODE / BIBTEX */
+  pre.code-block {
+    background: var(--code-bg);
+    color: var(--ink);
+    padding: 14px 18px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 13.5px;
+    line-height: 1.7;
+    margin: 14px 0;
+    border: 1px solid var(--accent-line);
+  }
+  pre.bibtex {
+    background: #0b0a14;
+    color: #e6e3f3;
+    padding: 22px 24px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.65;
+    margin: 16px 0;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px dashed var(--line);
+    padding: 32px 0 56px;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--accent-strong); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container">
+    <div class="stamp"><a href="./">AstraFlow</a> <span class="dot">/</span> 2026 <span class="dot">·</span> Dataflow-Oriented RL <span class="dot">·</span> Agentic LLMs</div>
+    <h1 class="title">AstraFlow</h1>
+    <p class="subtitle">Dataflow-Oriented Reinforcement Learning for Agentic LLMs</p>
+
+    <div class="authors">
+      <span class="author">Haizhong Zheng<sup>1</sup></span><span class="sep">·</span>
+      <span class="author">Yizhuo Di<sup>1</sup></span><span class="sep">·</span>
+      <span class="author">Jiahui Wang<sup>1</sup></span><span class="sep">·</span>
+      <span class="author">Shuowei Jin<sup>2</sup></span><span class="sep">·</span>
+      <span class="author">Xueshen Liu<sup>2</sup></span><span class="sep">·</span>
+      <span class="author">Yongji Wu<sup>3</sup></span><span class="sep">·</span>
+      <span class="author">Z. Morley Mao<sup>2</sup></span><span class="sep">·</span>
+      <span class="author">Ion Stoica<sup>3</sup></span><span class="sep">·</span>
+      <span class="author">Jiawei Zhao<sup>4</sup></span><span class="sep">·</span>
+      <span class="author">Beidi Chen<sup>1</sup></span>
+    </div>
+    <div class="affiliations">
+      <span><sup>1</sup>Carnegie Mellon University</span>
+      <span><sup>2</sup>U. Michigan</span>
+      <span><sup>3</sup>UC Berkeley</span>
+      <span><sup>4</sup>Meta</span>
+    </div>
+
+    <div class="actions">
+      <a class="btn accent" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Paper (PDF)
+      </a>
+      <a class="btn" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        arXiv
+      </a>
+      <a class="btn" href="https://github.com/Infini-AI-Lab/astraflow">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.1c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.25 1.91-.38 2.89-.39.98 0 1.97.13 2.89.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.4-5.25 5.68.41.35.78 1.04.78 2.1v3.11c0 .3.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+        Code
+      </a>
+      <a class="btn" href="#bibtex" data-scroll-target="bibtex">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        BibTeX
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- HERO ANIMATION — Elastic RaaS, headline visual -->
+<div class="hero-fig hero-fig-raas">
+  <div class="frame-wrap frame-wrap-raas">
+    <iframe id="raasFrame" src="raas-animation.html" title="AstraFlow elastic RaaS animation" scrolling="no" allowtransparency="true"></iframe>
+  </div>
+  <div class="caption">
+    <span class="label">Figure 1 · Elasticity falls out of the contract</span>
+    Mixed-hardware nodes (H100, A100, L40S, …) across regions (US, EU, APAC, …) join and leave the pool on demand. <b>AstraFlow contains no scheduler- or region-specific code</b> — elasticity and heterogeneity fall out of the RaaS contract.
+  </div>
+</div>
+
+<!-- WHAT IT UNLOCKS — claim grid above the fold, replaces stat tiles -->
+<section>
+  <div class="container">
+    <div class="claim-grid">
+      <a class="claim" href="#finding-auto-scaling" data-scroll-target="finding-auto-scaling">
+        <span class="lbl"><span class="num">[ 01 ]</span> · system flexibility</span>
+        <div class="claim-big claim-big-text">Zero-code</div>
+        <p class="claim-sub">Multi-policy training, elastic scaling, heterogeneous GPUs, and cross-region rollout. <b>No feature-specific system engineering needed.</b></p>
+      </a>
+      <a class="claim" href="#finding-multi-policy" data-scroll-target="finding-multi-policy">
+        <span class="lbl"><span class="num">[ 02 ]</span> · multi-policy</span>
+        <div class="claim-big">2.7×</div>
+        <p class="claim-sub">Faster than verl-based training, with comparable or better accuracy.</p>
+      </a>
+      <a class="claim" href="#finding-sparsity" data-scroll-target="finding-sparsity">
+        <span class="lbl"><span class="num">[ 03 ]</span> · sparse transfer</span>
+        <div class="claim-big claim-big-text">≥98.9%</div>
+        <p class="claim-sub">Sparse RL weight deltas shrink ~28 GB full syncs to ~1.5 GB for remote rollout.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY THIS IS HARD TODAY — single callout, replaces "The problem" section -->
+<section class="alt">
+  <div class="container">
+    <h2><span class="glyph">§</span>What Existing RL Systems Lack</h2>
+    <div class="rule"></div>
+
+    <p>
+      LLMs are moving from standalone use into complex agentic systems — coding agents, search agents, multi-agent workflows. RL is the key technique for improving them, but scaling RL to agentic LLMs is hard. The workloads are complex (dynamic execution, multi-policy coordination), and the underlying compute is diverse (elastic, heterogeneous, distributed). Existing systems can be made to do <em>parts</em> of this, but each part is a separate patch on the same rigid pipeline.
+    </p>
+
+    <div class="callout">
+      <div class="row">
+        <span class="lbl">Need</span>
+        <p>Scale RL to agentic LLMs — <b>multi-policy collaborative training</b>, <b>dynamic execution</b>, <b>elastic / heterogeneous / cross-region compute</b> — under one system.</p>
+      </div>
+      <div class="row">
+        <span class="lbl">Today</span>
+        <p>Existing LLM RL systems are <b>trainer-centered</b>. A single trainer loop owns rollout scheduling, data movement, optimization, and weight sync. Multi-agent serving systems run rich agent workflows but don't <em>train</em>. Recent systems add multi-policy / elastic / heterogeneous rollout as <b>ad-hoc patches</b> — they're hard to combine, hard to reuse, and require feature-specific engineering each time.</p>
+      </div>
+      <div class="row">
+        <span class="lbl">Why</span>
+        <p>The root cause is the <b>lack of clean abstraction boundaries</b> among rollout execution, dataflow management, training, and weight transfer. Compute decoupling (separating rollout from training computation) is just placement, it isn't a principled component abstraction. Without those boundaries, new capabilities can't be supported by the architecture itself; they have to be hand-engineered onto a trainer-centered loop.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE FIX -->
+<section>
+  <div class="container">
+    <h2><span class="glyph">§</span>Dataflow-oriented RL: Separate <em>control</em>, not just compute</h2>
+    <div class="rule"></div>
+  </div>
+
+  <!-- ARCHITECTURE ANIMATION — opens the section as the system overview -->
+  <div class="hero-fig" style="margin-top: 8px;">
+    <div class="frame-wrap">
+      <iframe id="rolloutFrame" src="astra-animation.html" title="AstraFlow architecture animation" scrolling="no" allowtransparency="true"></iframe>
+    </div>
+    <div class="caption">
+      <span class="label">Figure 2 · The three abstractions in action</span>
+      AstraFlow training a multi-policy workflow on an elastic, heterogeneous, cross-region rollout pool: <b>All at once, with no feature-specific code</b>. Three components (dataflow layer, RaaS pool, trainer pool) each run their own control loop and interact only through data and weight interfaces. Multi-policy, elasticity, and cross-region rollout are not bolted on, they fall out of the architecture.
+    </div>
+  </div>
+
+  <div class="container">
+    <p>
+      AstraFlow's design principle is <em>dataflow-oriented coordination</em>. Disaggregation does not only separate rollout and training <em>computation</em>; it also separates their <em>control responsibilities</em>. Rollout services, trainers, and the dataflow layer each run autonomous control loops and interact only through minimal data and weight interfaces. Capabilities like multi-policy collaborative training, elastic rollout pools, heterogeneous and cross-region rollouts, and modular data algorithms are then expressed by the architecture itself, not bolted on.
+    </p>
+
+    <h3>Dataflow Abstraction: Data algorithms become plug-ins</h3>
+
+    <figure class="paper-fig">
+      <img src="figs/dataflow-component.svg" alt="Dataflow layer abstraction" style="max-width: 560px;">
+      <figcaption><b>Dataflow layer.</b> The coordination plane between rollout services and trainers. Buffers RL data in its natural units (prompts, trajectories, metadata, batches); applies sampling, filtering, and routing policies. Data algorithms become first-class plug-ins instead of pipeline rewrites.</figcaption>
+    </figure>
+
+    <p>
+      RaaS nodes pull rollout tasks from the layer and push completed trajectories back, while trainers independently pull batches. The layer exposes a programmable interface — <b>selective rollout, curriculum scheduling, post-rollout filtering, dynamic sampling, replay, data mixing, staleness correction</b> all become dataflow policies, with no trainer / RaaS / orchestration changes.
+    </p>
+    <p>
+      The layer also <em>regulates</em> autonomous components: throttling slow rollouts, prioritizing fresher trajectories, blocking unsuitable batches via backpressure. In multi-policy training, trajectory metadata (producing policy, model version, timestamp, reward, task type) lets the layer route policy-specific / shared / mixed streams to different trainers — no direct trainer-to-trainer coordination.
+    </p>
+
+    <h3>RaaS Abstraction: Rollout becomes a service contract</h3>
+
+    <figure class="paper-fig wrap-right lg">
+      <img src="figs/raas-abstraction.svg" alt="RaaS abstraction">
+      <figcaption><b>RaaS.</b> Each node consumes tasks, produces trajectories, refreshes weights. Three operations, one contract — that's all rollout has to be.</figcaption>
+    </figure>
+
+    <p>
+      The RaaS contract makes rollout execution <b>substitutable</b>: any efficient agent-serving runtime plugs in. The runtime doesn't need to know how trajectories are sampled, filtered, or assigned to trainers; the trainer doesn't need to know which runtime produced a trajectory. AstraFlow can reuse specialized agent-serving systems as backends instead of re-implementing their internal logic.
+    </p>
+    <p>
+      RaaS also makes capacity <b>elastic</b>. Adding capacity is just launching more nodes connected to the same dataflow and weight interfaces; removing nodes, slow workers, or failures only affect the rate trajectories arrive, not the trainer loop. Heterogeneous and cross-region settings — where rollout services have different latency, throughput, bandwidth — fall out of the same contract.
+    </p>
+
+    <h3>Trainer Abstraction: Training backends become substitutable</h3>
+
+    <div class="fig-row cols-2">
+      <figure>
+        <img src="figs/trainer-abstraction.svg" alt="Trainer abstraction">
+        <figcaption><b>(a)</b> Trainer abstraction.</figcaption>
+      </figure>
+      <figure>
+        <img src="figs/weight-transfer.svg" alt="Delta weight transfer">
+        <figcaption><b>(b)</b> Fully-async pull-based sparse weight update.</figcaption>
+      </figure>
+    </div>
+
+    <p>
+      A trainer consumes batches and publishes updated weights through a trainer-side weight interface. From the trainer's perspective, the dataflow layer is a streaming corpus and the weight interface is a publication target — it doesn't manage rollout workers, serve weights directly, or coordinate with other trainers.
+    </p>
+    <p>
+      This makes training backends <b>substitutable</b>: any existing RL / SFT / fault-tolerant backend participates in AstraFlow if it consumes batches and publishes weights. <b>Multi-policy collaborative training falls out</b> — each policy gets its own independent trainer and weight stream; the dataflow layer routes trajectories.
+    </p>
+    <p>
+      The weight-transfer mechanism stores model versions and exposes them to RaaS nodes; RaaS nodes <b>pull</b> when appropriate, so weight delivery is never on the trainer's critical path. The same interface implements full-model transfer, <b>sparse delta transfer</b>, and version-aware refresh — keeping constrained or remote weight transfer isolated from trainer logic.
+    </p>
+  </div>
+</section>
+
+<!-- HOW WELL DOES IT WORK -->
+<section class="alt">
+  <div class="container">
+    <h2><span class="glyph">§</span>What can AstraFlow enable?</h2>
+    <div class="rule"></div>
+
+    <div class="capabilities" id="capabilities">
+      <span class="capabilities-tag">No feature-specific system engineering</span>
+      <p class="capabilities-statement">
+        AstraFlow natively supports by <em>design</em>:
+      </p>
+      <div class="capabilities-chips">
+        <a class="chip" href="#finding-multi-policy" data-scroll-target="finding-multi-policy"><span class="num">[ 01 ]</span> Multi-policy collaborative training</a>
+        <a class="chip" href="#finding-auto-scaling" data-scroll-target="finding-auto-scaling"><span class="num">[ 02 ]</span> Rollout auto-scaling</a>
+        <a class="chip" href="#finding-cross-region" data-scroll-target="finding-cross-region"><span class="num">[ 03 ]</span> Cross-region rollout</a>
+        <a class="chip" href="#finding-cross-region" data-scroll-target="finding-cross-region"><span class="num">[ 04 ]</span> Heterogeneous compute</a>
+        <a class="chip" href="#finding-data-algorithms" data-scroll-target="finding-data-algorithms"><span class="num">[ 05 ]</span> Composable data algorithms</a>
+      </div>
+    </div>
+
+    <!-- Finding 1 -->
+    <h3 id="finding-multi-policy">Multi-policy: 2.7× faster than verl-Dr.MAS, +5.4 pp better than single-policy</h3>
+    <p>
+      AstraFlow expresses multi-policy workflows as <em>workflow-level changes</em>, not pipeline modifications. To the best of our knowledge, AstraFlow is the <b>first LLM RL framework to support fully asynchronous multi-policy collaborative training</b>. Dr.MAS inherits verl's colocated synchronous execution, so long-tail multi-agent rollouts stall the iteration — AstraFlow's async dataflow doesn't.
+    </p>
+    <div class="fig-row cols-3 mas-row">
+      <figure>
+        <img src="figs/MAS-math-verifier.svg" alt="Math solver + verifier workflow">
+        <figcaption><b>(a)</b> Math: Solver + Verifier.</figcaption>
+      </figure>
+      <figure>
+        <img src="figs/MAS-code-selector.svg" alt="Code solver + selector workflow">
+        <figcaption><b>(b)</b> Code: Solver + Selector.</figcaption>
+      </figure>
+      <figure>
+        <img src="figs/MAS-code-test-case.svg" alt="Code solver + test-case generator workflow">
+        <figcaption><b>(c)</b> Code: Solver + Test-Case Generator.</figcaption>
+      </figure>
+    </div>
+
+    <div class="table-wrap">
+      <table class="paper">
+        <caption>Math multi-policy training under matched conditions. AstraFlow reaches comparable / better accuracy while cutting iteration time by 2.7×.</caption>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>AIME24</th>
+            <th>AIME25</th>
+            <th>MATH500</th>
+            <th>Minerva</th>
+            <th>Avg Acc.</th>
+            <th>Time / iter (s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Solver</td>
+            <td>42.9</td>
+            <td>31.8</td>
+            <td>90.5</td>
+            <td>39.2</td>
+            <td>51.1</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Solver + Verifier (verl)</td>
+            <td>44.6 <span class="delta">(+1.7)</span></td>
+            <td class="best">41.5 <span class="delta">(+9.7)</span></td>
+            <td>90.7 <span class="delta">(+0.2)</span></td>
+            <td>40.9 <span class="delta">(+1.7)</span></td>
+            <td>54.4 <span class="delta">(+3.3)</span></td>
+            <td>212.64</td>
+          </tr>
+          <tr>
+            <td>Solver + Verifier (AstraFlow)</td>
+            <td class="best">47.3 <span class="delta">(+4.4)</span></td>
+            <td>40.6 <span class="delta">(+8.8)</span></td>
+            <td class="best">92.9 <span class="delta">(+2.4)</span></td>
+            <td class="best">45.0 <span class="delta">(+5.8)</span></td>
+            <td class="best">56.5 <span class="delta">(+5.4)</span></td>
+            <td class="best">77.65</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top: 20px;">
+      The same abstraction generalizes beyond math. On code (LiveCodeBench v5/v6, Codeforces), Solver + Test-Case Generator improves the matched Solver baseline from <b>30.29% → 34.55%</b> average (+4.26 pp). Both workflows are workflow-level changes; the trainer, rollout, dataflow, and weight interfaces are identical to the math run.
+    </p>
+
+    <div class="table-wrap">
+      <table class="paper">
+        <caption>Code-generation accuracy: single-policy vs. multi-policy collaborative training (Qwen3-8B).</caption>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>LCB v5</th>
+            <th>LCB v6</th>
+            <th>Codeforces</th>
+            <th>Avg</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Solver</td>
+            <td>36.83</td>
+            <td>32.86</td>
+            <td>21.20</td>
+            <td>30.29</td>
+          </tr>
+          <tr>
+            <td>Solver + Selector</td>
+            <td>38.32 <span class="delta">(+1.49)</span></td>
+            <td>35.43 <span class="delta">(+2.57)</span></td>
+            <td>22.67 <span class="delta">(+1.47)</span></td>
+            <td>32.14 <span class="delta">(+1.85)</span></td>
+          </tr>
+          <tr>
+            <td>Solver + Test-Case Gen.</td>
+            <td class="best">41.62 <span class="delta">(+4.79)</span></td>
+            <td class="best">36.29 <span class="delta">(+3.43)</span></td>
+            <td class="best">25.74 <span class="delta">(+4.54)</span></td>
+            <td class="best">34.55 <span class="delta">(+4.26)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Finding 2 -->
+    <h3 id="finding-auto-scaling">Auto-scaling: 13% GPU-hours saved at matched accuracy and wall-clock — no scheduler code</h3>
+    <div style="display: flow-root;">
+      <figure class="paper-fig wrap-right">
+        <img src="figs/mraas_combined.svg" alt="Pool size and trainer waiting under different settings">
+        <figcaption><b>Auto-scaling in action.</b> Rollout GPU count tracks demand: scale up when trainer waiting spikes, hold inside the dead band, scale down on sustained low waiting.</figcaption>
+      </figure>
+      <p>
+        The dataflow layer observes how much each rollout pool produces, how much the trainer consumes, and how long the trainer spends waiting. It exports a target pool size via a simple dead-band policy. An agentic maintainer (Claude Code in the experiment) reads the report and resizes the pool — launching or retiring RaaS instances per the suggested target. <b>AstraFlow contains no scheduler-specific code.</b>
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="paper">
+        <caption>Auto-scaling vs. fixed pools on Qwen3-14B math. Comparable accuracy and wall-clock to the over-allocated baseline, with 13% lower total GPU-hours.</caption>
+        <thead>
+          <tr>
+            <th>RaaS strategy</th>
+            <th>Avg Acc.</th>
+            <th>Wall (h)</th>
+            <th>Rollout GPU-h</th>
+            <th>Trainer GPU-h</th>
+            <th>Total GPU-h</th>
+            <th>Wait frac.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Fixed 6 GPUs</td>
+            <td>68.6</td>
+            <td>35.8</td>
+            <td>214.8</td>
+            <td>143.2</td>
+            <td>358.0</td>
+            <td>26.9%</td>
+          </tr>
+          <tr>
+            <td>Fixed 11 GPUs</td>
+            <td>68.0</td>
+            <td>23.9</td>
+            <td>263.4</td>
+            <td>95.8</td>
+            <td>359.2</td>
+            <td>2.1%</td>
+          </tr>
+          <tr>
+            <td>Auto-scaling</td>
+            <td>67.9</td>
+            <td>24.4</td>
+            <td class="best">214.5</td>
+            <td>97.4</td>
+            <td class="best">312.0</td>
+            <td>3.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Finding 3 -->
+    <h3 id="finding-cross-region">Cross-region: Trainer never blocks on a slow remote pool</h3>
+    <p>
+      Three RaaS pools at 100% / 60% / 30% relative throughput (induced by 700W / 400W / 250W per-GPU power caps), two of them remote and shaped to 4 Gbit/s + 300 ms RTT. <b>All three pools contribute every iteration.</b> AstraFlow reaches 67.6 average math accuracy — comparable to a homogeneous local baseline. The trainer's downtime is essentially flat; even when remote pools finish weight transfer late, ongoing training masks the cost.
+    </p>
+
+    <div class="fig-row cols-3">
+      <figure>
+        <img src="figs/cross-region_produced_per_iter.svg" alt="Per-iteration rollout throughput from different RaaS pools">
+        <figcaption><b>(a)</b> Per-iteration throughput from each pool.</figcaption>
+      </figure>
+      <figure>
+        <img src="figs/cross-region_transfer_time.svg" alt="Weight-transfer time across local and remote pools">
+        <figcaption><b>(b)</b> Weight-transfer time per link.</figcaption>
+      </figure>
+      <figure>
+        <img src="figs/cross-region_downtime.svg" alt="Trainer and rollout downtime in the heterogeneous cross-region setting">
+        <figcaption><b>(c)</b> Trainer / rollout downtime per iteration.</figcaption>
+      </figure>
+    </div>
+
+    <!-- Finding 4 -->
+    <h3 id="finding-sparsity">Sparsity makes remote training feasible: Full-sync 28 GB collapses to ~1.5 GB</h3>
+    <figure class="paper-fig wrap-right">
+      <img src="figs/weight_transfer_sparsity_bar.svg" alt="Weight delta sparsity">
+      <figcaption>Per-iteration weight delta sparsity across Qwen3-1.7B / 8B / 14B on math, and Qwen2.5-7B on AlfWorld, WebShop, Search. Math runs land in 0.989–0.993; Qwen2.5-7B tasks reach ≥0.996.</figcaption>
+    </figure>
+    <p>
+      RL weight updates under bf16 are <b>bit-exactly sparse</b>: most parameters are unchanged from one iteration to the next. Sparsity is largely independent of model size and task — only learning rate moves it, and even at the most aggressive setting it stays above 0.97.
+    </p>
+    <p>
+      That collapses the per-iteration payload from a <b>~28 GB</b> full sync to <b>~1.5 GB</b> of delta bytes on Qwen3-14B. Most remote transfers complete in tens of seconds even at 4 Gbit/s + 300 ms RTT. The request-based delta-pull keeps slow links off the trainer's critical path.
+    </p>
+
+    <!-- Finding 5 -->
+    <h3 id="finding-data-algorithms">Data algorithms compose as plug-ins: Three intervention points, one interface</h3>
+    <p>
+      <b>GRESO</b> picks prompts <em>before</em> rollout; <b>dynamic sampling</b> filters trajectories <em>after</em> rollout; <b>buffer replay</b> reuses trajectories <em>at batch serving</em>. Three different points along the RL data path, all expressed through the same dataflow-layer interface.
+    </p>
+
+    <div class="grid-2">
+      <figure class="paper-fig" style="margin: 0;">
+        <img src="figs/math_buffer_greso_acc_vs_rollouts.svg" alt="Math accuracy vs generated rollouts" style="max-width: 340px;">
+        <figcaption>Math accuracy vs. generated rollouts for the three data algorithms. Different trade-offs along the data path.</figcaption>
+      </figure>
+      <div>
+        <p style="margin-top: 0;">
+          Dynamic sampling lifts final accuracy but inflates generation cost <b>~3.5×</b> (~200k → ~700k rollouts) — post-filtering throws a lot away. GRESO and buffer replay sit on the opposite side: both reach baseline accuracy with <em>far fewer</em> generated rollouts.
+        </p>
+        <p>
+          Each algorithm is a self-contained policy class the dataflow layer imports as a plug-in — prompt selection, rollout filtering, trajectory replay become composable, not system-wide rewrites.
+        </p>
+      </div>
+    </div>
+
+    <div class="pointer">
+      <span class="arrow">→</span>
+      <span>Full ablations, hyperparameters, and experimental setup are in the <a href="#">paper</a> and the <a href="https://github.com/Infini-AI-Lab/astraflow">code repo</a>.</span>
+    </div>
+  </div>
+</section>
+
+<!-- BIBTEX -->
+<section id="bibtex">
+  <div class="container">
+    <h2><span class="glyph">§</span>BibTeX</h2>
+    <div class="rule"></div>
+    <pre class="bibtex"><code>@article{zheng2026astraflow,
+  title   = {AstraFlow: Dataflow-Oriented Reinforcement Learning for Agentic LLMs},
+  author  = {Zheng, Haizhong and Di, Yizhuo and Wang, Jiahui and Jin, Shuowei
+             and Liu, Xueshen and Wu, Yongji and Mao, Z. Morley and Stoica, Ion
+             and Zhao, Jiawei and Chen, Beidi},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+
+    <div class="actions" style="justify-content: center; margin-top: 40px;">
+      <a class="btn accent" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Paper (PDF)
+      </a>
+      <a class="btn" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        arXiv
+      </a>
+      <a class="btn" href="https://github.com/Infini-AI-Lab/astraflow">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.1c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.25 1.91-.38 2.89-.39.98 0 1.97.13 2.89.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.4-5.25 5.68.41.35.78 1.04.78 2.1v3.11c0 .3.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+        Code
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>AstraFlow / 2026</span>
+    <span>CMU · UMich · Berkeley · Meta</span>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('[data-scroll-target]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const target = document.getElementById(link.dataset.scrollTarget);
+      if (!target) return;
+
+      event.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
