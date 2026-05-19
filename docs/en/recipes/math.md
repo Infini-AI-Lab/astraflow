@@ -1,54 +1,78 @@
 # Math
 
-Train reasoning models on math datasets using GRPO/M2PO with AstraFlow.
+Reinforcement learning for math reasoning with RLVR and the M2PO algorithm.
 
-## Overview
+- **Codebase**: [github.com/haizhongzheng/astraflow](https://github.com/haizhongzheng/astraflow)
+- **Math recipes**: [`examples/math/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math) — every math recipe lives in this folder, one subdirectory per recipe.
 
-- **Task**: Offline math reasoning (GSM8K-style problems)
-- **Models**: Qwen3-1.7B, Qwen3-4B, Qwen3-8B
-- **Algorithm**: GRPO / M2PO (m2_threshold=0.004–0.01)
-- **Workflow**: `rlvr` with `math_verify` reward
-- **Eval**: AIME24/25, AMC, Minerva Math, Math500
+Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`. Pick a recipe below based on how many GPUs you have.
 
-## Example: Qwen3-1.7B
+## Qwen3-1.7B — 2 GPUs (minimal reproduction)
 
-**Config**: `examples/math/qwen3-1.7b-m2po-full/`
+The smallest recipe. It runs on a single 2-GPU node — 1 GPU for inference, 1 for training — so it is the quickest way to verify an AstraFlow setup end to end. It comes in two variants that differ **only** in weight transfer mode:
 
-Key settings:
-- M2PO, batch size and learning rate as set in the recipe yaml
-- RaaS: SGLang on 4 GPUs, context_length: 16384
-- Trainer: FSDP on 4 GPUs, TCP weight transfer (full)
+- [`qwen3-1.7b-m2po-2gpus-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-full) — full weight transfer
+- [`qwen3-1.7b-m2po-2gpus-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-delta) — delta weight transfer (only changed weights are sent)
 
-**Launch** (3 processes in separate terminals):
+### Run
+
+One script launches all three processes — the AstraFlow service, the RaaS inference server, and the trainer:
 
 ```bash
-# 1. RaaS (inference)
-SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3
+# delta weight transfer
+bash examples/math/qwen3-1.7b-m2po-2gpus-delta/scripts/run_qwen3-1.7b-m2po-2gpus-delta.sh
 
-# 2. AstraFlow (CPU-only, port 8000)
-
-# 3. Trainer (training GPUs + sender agent)
-ASTRAFLOW_CUDA_VISIBLE_DEVICES=4,5,6,7
+# full weight transfer
+bash examples/math/qwen3-1.7b-m2po-2gpus-full/scripts/run_qwen3-1.7b-m2po-2gpus-full.sh
 ```
 
-Recipes: `examples/math/`
+### Settings
 
-See `examples/math/qwen3-1.7b-m2po-full/scripts/` for the full launch scripts.
+| Setting | Value |
+|---|---|
+| Model | Qwen3-1.7B |
+| GPUs | 2 — RaaS ×1 (SGLang, DP=1), Trainer ×1 (FSDP, DP=1) |
+| Algorithm | M2PO (`m2_threshold` 0.01) |
+| Weight transfer | TCP — full, or delta (`delta_full_sync_interval` 10) |
+| Context length | 7168 |
+| Max new tokens | 4000 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 256 |
+| Learning rate | 5e-6 (Adam, constant schedule) |
+| Train steps | 800 |
+| Workflow / reward | `rlvr` / `math_verify` |
+| Train dataset | DeepScaleR |
+| Eval datasets | AIME24, AIME25, AMC, Minerva Math, MATH500 |
 
-## Example: Qwen3-8B
+## Qwen3-8B — 8 GPUs
 
-**Config**: `examples/math/qwen3-8b-m2po-full/`
+The full-scale recipe. It needs an 8-GPU node — 4 GPUs for inference, 4 for training — and also comes in full and delta transfer variants:
 
-Key differences from the 1.7B recipe:
-- M2PO with m2_threshold=0.01
-- context_length: 16384, max_new_tokens: 4096
+- [`qwen3-8b-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-8b-m2po-full) — full weight transfer
+- [`qwen3-8b-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-8b-m2po-delta) — delta weight transfer
 
-## Config Knobs
+### Run
 
-| Parameter | Description | Typical Values |
-|---|---|---|
-| `m2_threshold` | M2PO clipping threshold | 0.004–0.01 |
-| `replay_ratio` | Fraction of replay data in each batch | 0–0.7 |
-| `max_staleness` | Max weight version gap for accepted rollouts | 2–8 |
-| `n_samples` | Rollouts per prompt | 8 |
-| `eps_clip` | PPO clip range (set high to disable) | 100 |
+The same single-script pattern launches the whole job:
+
+```bash
+bash examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
+```
+
+### Settings
+
+| Setting | Value |
+|---|---|
+| Model | Qwen3-8B |
+| GPUs | 8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4) |
+| Algorithm | M2PO (`m2_threshold` 0.01) |
+| Weight transfer | TCP — full or delta |
+| Context length | 16384 |
+| Max new tokens | 14000 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 256 |
+| Learning rate | 5e-6 (Adam, constant schedule) |
+| Train steps | 800 |
+| Workflow / reward | `rlvr` / `math_verify` |
+| Train dataset | DeepScaleR |
+| Eval datasets | AIME24, AIME25, AMC, Minerva Math, MATH500 |
