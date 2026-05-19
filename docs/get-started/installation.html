@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=338524fc" />
@@ -19,7 +19,8 @@
   --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
 }
 </style>
-    <meta property="og:type" content="website"/><meta property="og:title" content="Installation"/>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Installation"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -208,9 +209,20 @@ ipython).</p>
 <h2>Option B: Docker<a class="headerlink" href="#option-b-docker" title="Link to this heading">¶</a></h2>
 <p>A pre-built image is published on Docker Hub — it skips the from-source steps above
 entirely. Requires the NVIDIA Container Toolkit so <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> works.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>16g<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.0
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.0
 </span></pre></div>
 </div>
+<blockquote>
+<div><p><strong>Note on <code class="docutils literal notranslate"><span class="pre">--shm-size</span></code>:</strong> this sets the size of the container’s <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>. A
+recipe run co-locates the trainer, RaaS, and SGLang in a single container, all
+sharing one <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> — in particular RaaS stages received model weights under
+<code class="docutils literal notranslate"><span class="pre">/dev/shm/astraflow_weights</span></code> during weight transfer. The container default
+(64 MB) and small values such as <code class="docutils literal notranslate"><span class="pre">16g</span></code> are far too small and cause
+<code class="docutils literal notranslate"><span class="pre">OSError:</span> <span class="pre">[Errno</span> <span class="pre">28]</span> <span class="pre">No</span> <span class="pre">space</span> <span class="pre">left</span> <span class="pre">on</span> <span class="pre">device</span></code> during training on 8B-scale
+recipes. Size <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> generously (<code class="docutils literal notranslate"><span class="pre">512g</span></code> above). It is a tmpfs <em>cap</em>, not a
+reservation, so it only consumes host RAM as actually used — set it to a value
+comfortably below host RAM.</p>
+</div></blockquote>
 <p>The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (<code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>) for
 reproducibility; <code class="docutils literal notranslate"><span class="pre">:latest</span></code> tracks the most recent release. See <code class="docutils literal notranslate"><span class="pre">docker/README.md</span></code> for
 build details and the NVIDIA Container Toolkit install guide.</p>
@@ -266,5 +278,5 @@ build details and the NVIDIA Container Toolkit install guide.</p>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
 </html>
