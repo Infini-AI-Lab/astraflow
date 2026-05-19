@@ -4,8 +4,8 @@ Reinforcement learning for multi-turn, interactive agents on the ALFWorld and We
 
 **AgentBench recipes**:
 
-- ALFWorld: [`examples/alfworld/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/alfworld)
-- WebShop: [`examples/webshop/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/webshop)
+- ALFWorld: [`examples/alfworld/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/alfworld)
+- WebShop: [`examples/webshop/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/webshop)
 
 Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
@@ -31,8 +31,8 @@ The all-in-one `run_*.sh` starts the task server itself; the standalone `0_<env>
 
 Trains an agent to complete embodied household tasks in a text-based environment. Each rollout is a multi-turn episode (up to 15 turns) against an AgentBench task server. The recipe comes in two variants that differ **only** in weight transfer mode:
 
-- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-full) — full weight transfer
-- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (full sync every 10 steps)
+- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-full) — full weight transfer
+- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (full sync every 10 steps)
 
 ### Run
 
@@ -69,8 +69,8 @@ bash examples/alfworld/qwen2.5-7b-instruct-m2po-delta/scripts/run_qwen2.5-7b-ins
 
 Trains an agent to navigate and purchase products on a simulated e-commerce site. Each rollout is a multi-turn episode (up to 10 turns) against an AgentBench task server. It also comes in full and delta transfer variants:
 
-- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-full) — full weight transfer
-- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (full sync every 10 steps)
+- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-full) — full weight transfer
+- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (full sync every 10 steps)
 
 ### Run
 

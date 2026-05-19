@@ -36,7 +36,7 @@
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
 </form><div class="sy-head-socials">
-  <a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
     <iconify-icon icon="simple-icons:github"></iconify-icon>
   </a></div></div>
     </div>
@@ -135,7 +135,7 @@ data-aria-dark="Switch to auto color mode">
           <section class="tex2jax_ignore mathjax_ignore" id="code">
 <h1>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h1>
 <p>Reinforcement learning for code-generation reasoning with RLVR, rewarded by test-case execution.</p>
-<p><strong>Code recipes</strong>: <a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/code"><code class="docutils literal notranslate"><span class="pre">examples/code/</span></code></a> and <a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent"><code class="docutils literal notranslate"><span class="pre">examples/code-multi-agent/</span></code></a></p>
+<p><strong>Code recipes</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code"><code class="docutils literal notranslate"><span class="pre">examples/code/</span></code></a> and <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent"><code class="docutils literal notranslate"><span class="pre">examples/code-multi-agent/</span></code></a></p>
 <p>Each recipe ships an all-in-one launch script under <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> and its config under <code class="docutils literal notranslate"><span class="pre">yaml/</span></code>.</p>
 <p>LiveCodeBench v5 eval data needs a one-time manual download — see <a class="reference internal" href="#eval-dataset-setup"><span class="std std-ref">Eval Dataset Setup</span></a> below.</p>
 <section id="eval-dataset-setup">
@@ -161,10 +161,10 @@ download needed to run a recipe end to end.</p>
 <h2>Qwen3-8B — 8 GPUs (single-agent)<a class="headerlink" href="#qwen3-8b-8-gpus-single-agent" title="Link to this heading">¶</a></h2>
 <p>Single-agent code-generation RL on one 8-GPU node — 4 GPUs for inference, 4 for training. It comes in two variants that differ <strong>only</strong> in weight transfer mode:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/code/qwen3-8b-m2po-full"><code class="docutils literal notranslate"><span class="pre">code/qwen3-8b-m2po-full/</span></code></a> — full weight transfer</p></li>
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/code/qwen3-8b-m2po-delta"><code class="docutils literal notranslate"><span class="pre">code/qwen3-8b-m2po-delta/</span></code></a> — delta weight transfer (only changed weights are sent)</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code/qwen3-8b-m2po-full"><code class="docutils literal notranslate"><span class="pre">code/qwen3-8b-m2po-full/</span></code></a> — full weight transfer</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code/qwen3-8b-m2po-delta"><code class="docutils literal notranslate"><span class="pre">code/qwen3-8b-m2po-delta/</span></code></a> — delta weight transfer (only changed weights are sent)</p></li>
 </ul>
-<p>A near-identical single-agent baseline also lives at <a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-single-agent-m2po-full"><code class="docutils literal notranslate"><span class="pre">code-multi-agent/qwen3-8b-single-agent-m2po-full/</span></code></a> as the fair-comparison reference for the codegen+verifier recipe below.</p>
+<p>A near-identical single-agent baseline also lives at <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-single-agent-m2po-full"><code class="docutils literal notranslate"><span class="pre">code-multi-agent/qwen3-8b-single-agent-m2po-full/</span></code></a> as the fair-comparison reference for the codegen+verifier recipe below.</p>
 <section id="run">
 <h3>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h3>
 <p>One script launches all three processes — the AstraFlow service, the RaaS inference server, and the trainer:</p>
@@ -234,7 +234,7 @@ download needed to run a recipe end to end.</p>
 <h2>Qwen3-8B codegen + verifier — 2 nodes × 8 GPUs (multi-agent)<a class="headerlink" href="#qwen3-8b-codegen-verifier-2-nodes-8-gpus-multi-agent" title="Link to this heading">¶</a></h2>
 <p>A two-agent recipe: model0 generates code, model1 generates verification test cases, and the two are co-trained against each other’s outputs. It spans two 8-GPU nodes — both nodes host both models for inference, while the two trainers live on the starting node:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node"><code class="docutils literal notranslate"><span class="pre">code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/</span></code></a> — codegen + verifier, full weight transfer</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node"><code class="docutils literal notranslate"><span class="pre">code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/</span></code></a> — codegen + verifier, full weight transfer</p></li>
 </ul>
 <section id="id1">
 <h3>Run<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
@@ -336,7 +336,7 @@ download needed to run a recipe end to end.</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
   <iconify-icon icon="simple-icons:github"></iconify-icon>
 </a></div>
     </div>

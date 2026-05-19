@@ -2,7 +2,7 @@
 
 Multi-policy collaborative RL for math reasoning — an actor and a verifier are each trained as a separate policy within one AstraFlow loop.
 
-**Multi-agent recipes**: [`examples/math-multi-agent/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent)
+**Multi-agent recipes**: [`examples/math-multi-agent/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent)
 
 Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
@@ -12,10 +12,10 @@ The headline multi-agent recipe. Two Qwen3-8B policies cooperate on each math pr
 
 It comes in two dataset variants, plus a `no-ds` (no dynamic sampling) variant of each:
 
-- [`qwen3-8b-actor-verifier-m2po-delta-dapo-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-dapo-data) — trains on the DAPO-filtered dataset; buffer uses `filter_zero_adv` (dynamic sampling, drops zero-advantage prompts)
-- [`qwen3-8b-actor-verifier-m2po-delta-deepscaler-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-deepscaler-data) — same recipe trained on DeepScaleR instead
-- [`qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data) — DAPO data with dynamic sampling **off** (buffer keeps all prompts, no `filter_zero_adv`)
-- [`qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data) — DeepScaleR data with dynamic sampling **off**
+- [`qwen3-8b-actor-verifier-m2po-delta-dapo-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-dapo-data) — trains on the DAPO-filtered dataset; buffer uses `filter_zero_adv` (dynamic sampling, drops zero-advantage prompts)
+- [`qwen3-8b-actor-verifier-m2po-delta-deepscaler-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-deepscaler-data) — same recipe trained on DeepScaleR instead
+- [`qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data) — DAPO data with dynamic sampling **off** (buffer keeps all prompts, no `filter_zero_adv`)
+- [`qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data) — DeepScaleR data with dynamic sampling **off**
 
 ### Run
 
@@ -51,10 +51,10 @@ bash examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-deepscaler-dat
 
 For A/B comparison, each actor+verifier recipe has a matching `single-agent` baseline that drops the verifier: a single Qwen3-8B policy trained with the plain `rlvr` workflow, but the same hyperparameters and inference budget. With only one policy the job runs three processes — AstraFlow service, one SGLang server, one FSDP trainer — using RaaS ×4 (SGLang, DP=4) and Trainer ×4 (FSDP, DP=4).
 
-- [`qwen3-8b-single-agent-m2po-delta-dapo-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-dapo-data) — DAPO data, dynamic sampling on
-- [`qwen3-8b-single-agent-m2po-delta-deepscaler-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-deepscaler-data) — DeepScaleR data, dynamic sampling on
-- [`qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data) — DAPO data, dynamic sampling off
-- [`qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data) — DeepScaleR data, dynamic sampling off
+- [`qwen3-8b-single-agent-m2po-delta-dapo-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-dapo-data) — DAPO data, dynamic sampling on
+- [`qwen3-8b-single-agent-m2po-delta-deepscaler-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-deepscaler-data) — DeepScaleR data, dynamic sampling on
+- [`qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data) — DAPO data, dynamic sampling off
+- [`qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data) — DeepScaleR data, dynamic sampling off
 
 ### Run
 

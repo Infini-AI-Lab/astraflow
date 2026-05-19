@@ -2,7 +2,7 @@
 
 Reinforcement learning for search-augmented agents ([ASearcher](https://github.com/inclusionAI/ASearcher)) that interleave reasoning with local retrieval against a Wikipedia knowledge base.
 
-**Search recipes**: [`examples/search/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/search)
+**Search recipes**: [`examples/search/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/search)
 
 Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
@@ -45,8 +45,8 @@ bash scripts/launch_rag_server.sh 6,7
 
 The search recipe trains an ASearcher agent on an 8-GPU node — 4 GPUs for inference, 2 for training, with 2 GPUs left for a local retrieval (RAG) server. It comes in two variants that differ **only** in weight transfer mode:
 
-- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/search/qwen2.5-7b-instruct-m2po-full) — full weight transfer
-- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/search/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (only changed weights are sent)
+- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/search/qwen2.5-7b-instruct-m2po-full) — full weight transfer
+- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/search/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (only changed weights are sent)
 
 The agent uses the `async-search-access` search client, which queries the local FAISS retrieval server from [Environment setup](#environment-setup) above. The launch script reads the server addresses from `astraEnv/ASearcher/tmp-log/rag_server_addrs` and aborts if the server is not running.
 

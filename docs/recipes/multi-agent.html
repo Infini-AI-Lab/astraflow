@@ -36,7 +36,7 @@
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
 </form><div class="sy-head-socials">
-  <a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
     <iconify-icon icon="simple-icons:github"></iconify-icon>
   </a></div></div>
     </div>
@@ -134,17 +134,17 @@ data-aria-dark="Switch to auto color mode">
           <section class="tex2jax_ignore mathjax_ignore" id="multi-agent-math">
 <h1>Multi-Agent (Math)<a class="headerlink" href="#multi-agent-math" title="Link to this heading">¶</a></h1>
 <p>Multi-policy collaborative RL for math reasoning — an actor and a verifier are each trained as a separate policy within one AstraFlow loop.</p>
-<p><strong>Multi-agent recipes</strong>: <a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent"><code class="docutils literal notranslate"><span class="pre">examples/math-multi-agent/</span></code></a></p>
+<p><strong>Multi-agent recipes</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent"><code class="docutils literal notranslate"><span class="pre">examples/math-multi-agent/</span></code></a></p>
 <p>Each recipe ships an all-in-one launch script under <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> and its config under <code class="docutils literal notranslate"><span class="pre">yaml/</span></code>.</p>
 <section id="qwen3-8b-actor-verifier-8-gpus">
 <h2>Qwen3-8B Actor + Verifier — 8 GPUs<a class="headerlink" href="#qwen3-8b-actor-verifier-8-gpus" title="Link to this heading">¶</a></h2>
 <p>The headline multi-agent recipe. Two Qwen3-8B policies cooperate on each math problem: <strong>model0 (actor/solver)</strong> generates a solution, <strong>model1 (verifier)</strong> approves or rejects it once, and if rejected the actor retries once with the verifier’s full output as context. Each policy gets its own SGLang inference instance and its own FSDP trainer, so the job runs four processes — AstraFlow service, RaaS (2 SGLang servers), and two trainers — on an 8-GPU node.</p>
 <p>It comes in two dataset variants, plus a <code class="docutils literal notranslate"><span class="pre">no-ds</span></code> (no dynamic sampling) variant of each:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-dapo-data/</span></code></a> — trains on the DAPO-filtered dataset; buffer uses <code class="docutils literal notranslate"><span class="pre">filter_zero_adv</span></code> (dynamic sampling, drops zero-advantage prompts)</p></li>
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-deepscaler-data/</span></code></a> — same recipe trained on DeepScaleR instead</p></li>
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data/</span></code></a> — DAPO data with dynamic sampling <strong>off</strong> (buffer keeps all prompts, no <code class="docutils literal notranslate"><span class="pre">filter_zero_adv</span></code>)</p></li>
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data/</span></code></a> — DeepScaleR data with dynamic sampling <strong>off</strong></p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-dapo-data/</span></code></a> — trains on the DAPO-filtered dataset; buffer uses <code class="docutils literal notranslate"><span class="pre">filter_zero_adv</span></code> (dynamic sampling, drops zero-advantage prompts)</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-deepscaler-data/</span></code></a> — same recipe trained on DeepScaleR instead</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-no-ds-dapo-data/</span></code></a> — DAPO data with dynamic sampling <strong>off</strong> (buffer keeps all prompts, no <code class="docutils literal notranslate"><span class="pre">filter_zero_adv</span></code>)</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-actor-verifier-m2po-delta-no-ds-deepscaler-data/</span></code></a> — DeepScaleR data with dynamic sampling <strong>off</strong></p></li>
 </ul>
 <section id="run">
 <h3>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h3>
@@ -215,10 +215,10 @@ data-aria-dark="Switch to auto color mode">
 <h2>Single-agent baselines — 8 GPUs<a class="headerlink" href="#single-agent-baselines-8-gpus" title="Link to this heading">¶</a></h2>
 <p>For A/B comparison, each actor+verifier recipe has a matching <code class="docutils literal notranslate"><span class="pre">single-agent</span></code> baseline that drops the verifier: a single Qwen3-8B policy trained with the plain <code class="docutils literal notranslate"><span class="pre">rlvr</span></code> workflow, but the same hyperparameters and inference budget. With only one policy the job runs three processes — AstraFlow service, one SGLang server, one FSDP trainer — using RaaS ×4 (SGLang, DP=4) and Trainer ×4 (FSDP, DP=4).</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-dapo-data/</span></code></a> — DAPO data, dynamic sampling on</p></li>
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-deepscaler-data/</span></code></a> — DeepScaleR data, dynamic sampling on</p></li>
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data/</span></code></a> — DAPO data, dynamic sampling off</p></li>
-<li><p><a class="reference external" href="https://github.com/haizhongzheng/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data/</span></code></a> — DeepScaleR data, dynamic sampling off</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-dapo-data/</span></code></a> — DAPO data, dynamic sampling on</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-deepscaler-data/</span></code></a> — DeepScaleR data, dynamic sampling on</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-no-ds-dapo-data/</span></code></a> — DAPO data, dynamic sampling off</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math-multi-agent/qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-single-agent-m2po-delta-no-ds-deepscaler-data/</span></code></a> — DeepScaleR data, dynamic sampling off</p></li>
 </ul>
 <section id="id1">
 <h3>Run<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
@@ -319,7 +319,7 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
   <iconify-icon icon="simple-icons:github"></iconify-icon>
 </a></div>
     </div>

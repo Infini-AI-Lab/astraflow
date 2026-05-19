@@ -2,7 +2,7 @@
 
 Reinforcement learning for code-generation reasoning with RLVR, rewarded by test-case execution.
 
-**Code recipes**: [`examples/code/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code) and [`examples/code-multi-agent/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent)
+**Code recipes**: [`examples/code/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code) and [`examples/code-multi-agent/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent)
 
 Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
@@ -36,10 +36,10 @@ download needed to run a recipe end to end.
 
 Single-agent code-generation RL on one 8-GPU node — 4 GPUs for inference, 4 for training. It comes in two variants that differ **only** in weight transfer mode:
 
-- [`code/qwen3-8b-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code/qwen3-8b-m2po-full) — full weight transfer
-- [`code/qwen3-8b-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code/qwen3-8b-m2po-delta) — delta weight transfer (only changed weights are sent)
+- [`code/qwen3-8b-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code/qwen3-8b-m2po-full) — full weight transfer
+- [`code/qwen3-8b-m2po-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code/qwen3-8b-m2po-delta) — delta weight transfer (only changed weights are sent)
 
-A near-identical single-agent baseline also lives at [`code-multi-agent/qwen3-8b-single-agent-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-single-agent-m2po-full) as the fair-comparison reference for the codegen+verifier recipe below.
+A near-identical single-agent baseline also lives at [`code-multi-agent/qwen3-8b-single-agent-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-single-agent-m2po-full) as the fair-comparison reference for the codegen+verifier recipe below.
 
 ### Run
 
@@ -75,7 +75,7 @@ bash examples/code/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
 
 A two-agent recipe: model0 generates code, model1 generates verification test cases, and the two are co-trained against each other's outputs. It spans two 8-GPU nodes — both nodes host both models for inference, while the two trainers live on the starting node:
 
-- [`code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node) — codegen + verifier, full weight transfer
+- [`code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node) — codegen + verifier, full weight transfer
 
 ### Run
 
