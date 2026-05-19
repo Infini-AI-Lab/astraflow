@@ -24,20 +24,20 @@ build details and the NVIDIA Container Toolkit install guide.
 
 The remaining steps install AstraFlow into a local conda environment.
 
-## Step 1: Create conda environment
+### Step 1: Create conda environment
 
 ```bash
 conda create -n astraflow python=3.12 -y
 conda activate astraflow
 ```
 
-## Step 2: Install uv (fast pip replacement)
+### Step 2: Install uv (fast pip replacement)
 
 ```bash
 pip install uv
 ```
 
-## Step 3: Install AstraFlow (core + dev tools)
+### Step 3: Install AstraFlow (core + dev tools)
 
 ```bash
 uv pip install -e ".[dev]"
@@ -47,34 +47,34 @@ This installs all core dependencies (~260 packages) including PyTorch 2.8.0,
 Transformers 4.57.1, Megatron-Core 0.13.1, Ray, W&B, and dev tools (pytest, ruff,
 ipython).
 
-## Step 4: Install pre-commit hooks
+### Step 4: Install pre-commit hooks
 
 ```bash
 pip install pre-commit
 pre-commit install
 ```
 
-## Step 5: Install optional extras
+### Step 5: Install optional extras
 
-### Flash Attention
+#### Flash Attention
 
 ```bash
 uv pip install "flash-attn==2.8.3" --no-build-isolation
 ```
 
-### vLLM (inference backend)
+#### vLLM (inference backend)
 
 ```bash
 uv pip install "vllm==0.11.0"
 ```
 
-### SGLang (inference backend)
+#### SGLang (inference backend)
 
 ```bash
 uv pip install "sglang==0.5.5.post1"
 ```
 
-### Transformer Engine
+#### Transformer Engine
 
 Transformer Engine requires cuDNN headers on the include path. PyTorch installs cuDNN
 via pip, but the headers are not on the system path by default. Set the following
@@ -89,7 +89,7 @@ export LD_LIBRARY_PATH="$CUDNN_LIB_DIR:$LD_LIBRARY_PATH"
 NVTE_FRAMEWORK=pytorch pip install "transformer-engine[pytorch]>=2.13.0" --no-build-isolation
 ```
 
-## Step 6: Verify installation
+### Step 6: Verify installation
 
 ```bash
 python -c "

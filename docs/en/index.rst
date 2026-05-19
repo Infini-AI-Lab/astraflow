@@ -1,5 +1,5 @@
-AstraFlow Documentation
-=======================
+AstraFlow v0.1.0 Documentation
+==============================
 
 AstraFlow is an asynchronous RL training system for large reasoning and agentic models
 on distributed GPU clusters.
@@ -16,12 +16,10 @@ on distributed GPU clusters.
    :caption: System Components
 
    architecture/overview
-   architecture/astraflow
+   architecture/dataflow
    architecture/raas
    architecture/trainer
    architecture/weight-manager
-   architecture/custom-trainer
-   architecture/custom-raas
 
 .. toctree::
    :maxdepth: 1
@@ -32,15 +30,3 @@ on distributed GPU clusters.
    recipes/multi-agent
    recipes/agentbench
    recipes/search
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Developer Guide
-
-   developer-guide/contributing
-
-.. toctree::
-   :maxdepth: 1
-   :caption: References
-
-   references/roadmap

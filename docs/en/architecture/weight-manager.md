@@ -28,11 +28,11 @@ wm.offload(model.named_parameters(), version, rank, world_size)
 - **`WeightManager`** — Main class that owns buffer allocation, GPU→CPU
   copy (shard-direct and all-gather paths), sender agent lifecycle, and
   double-buffer swap. The trainer calls `offload()` once per step.
-- **`TransferStrategy`** — Pluggable interface for transfer modes.
-  `FullTransferStrategy` sends the entire model; delta transfer sends
-  only changed elements (~1-2% of the model). See
+- **Transfer modes** — `POST /request_transfer` accepts a `mode` of
+  `full` (sends the entire model) or `delta` (sends only changed
+  elements, ~1-2% of the model). See
   [Delta Weight Transfer](delta-weight-transfer.md) for details.
-- **`SenderAgent`** — Subprocess on the Trainer side that exposes HTTP
+- **`TransferAgent`** — Subprocess on the Trainer side that exposes HTTP
   endpoints and serves TCP weight pulls from RaaS.
 - **`TCPTransferEngine`** — TCP engine with 6 parallel streams and
   `sendfile()` zero-copy. Used by both sender (Trainer) and receiver (RaaS).
@@ -243,12 +243,11 @@ The buffer index swap is a single Python int assignment (atomic under GIL).
 astraflow/weight_manager/
   __init__.py              ← exports WeightManager, WeightManagerConfig
   weight_manager.py        ← main class: buffer mgmt, GPU→CPU copy, sender lifecycle
-  strategy.py              ← TransferStrategy ABC + FullTransferStrategy
   config.py                ← WeightManagerConfig
 
   transfer/                ← shared transport layer
-    config.py              ← TransferEngineConfig, SenderAgentConfig, TransferStatus
-    sender_agent.py        ← sender subprocess: HTTP, TCP, ZMQ
+    config.py              ← TransferEngineConfig, SenderAgentConfig, ReceiverAgentConfig, TransferStatus, ReceiverInfo
+    sender_agent.py        ← sender subprocess (TransferAgent): HTTP, TCP, ZMQ
     transfer_engine.py     ← TCPTransferEngine (6-stream, sendfile)
     receiver_agent.py      ← TransferBuffer
 ```

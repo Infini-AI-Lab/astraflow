@@ -1,6 +1,6 @@
-# AstraFlow
+# Dataflow
 
-The AstraFlow core (`astraflow/dataflow/`) is the orchestration layer that manages async data flow between rollout generation and training.
+The Dataflow core (`astraflow/dataflow/`) is the orchestration layer that manages async data flow between rollout generation and training.
 
 ## Key Components
 
@@ -13,7 +13,7 @@ The AstraFlow core (`astraflow/dataflow/`) is the orchestration layer that manag
 
 ## How It Fits
 
-AstraFlow sits between RaaS (upstream) and Trainer (downstream):
+Dataflow sits between RaaS (upstream) and Trainer (downstream):
 
 - Requests rollouts from RaaS via `RaaS2InferenceEngine`
 - Buffers and serves training batches to Trainer via `AstraFlowService`

@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Custom RaaS Integration
 
 AstraFlow's RaaS (Remote Agentic Serving) is a swappable component. You

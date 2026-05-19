@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Custom Trainer Integration
 
 AstraFlow's trainer is a swappable component. You can replace the built-in

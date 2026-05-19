@@ -5,8 +5,8 @@ RaaS (Remote Agentic Serving, `astraflow/raas/`) manages inference engines and r
 ## Key Components
 
 - **`RaaS3Manager`** — Central async manager that maintains per-model inference engines, handles workflow registration, and manages pause/resume for weight sync.
-- **`routes.py`** — FastAPI routes exposing the RaaS HTTP API.
-- **`tcp_receiver.py`** — TCP weight receiver that pulls weights from the Trainer's sender agent.
+- **`server/routes.py`** — FastAPI routes exposing the RaaS HTTP API.
+- **`server/tcp_receiver.py`** — TCP weight receiver that pulls weights from the Trainer's sender agent.
 - **`engine/`** — Backend engine implementations (SGLang, vLLM wrappers).
 - **`api/`** — Configuration dataclasses and engine specs.
 
@@ -104,7 +104,7 @@ the Trainer's sender agent:
 | `POST` | Trainer `/request_transfer` | Request the actual TCP weight transfer (per pull) |
 
 The flow inside `manager.notify_version(model_id, version, sender_endpoint)`
-(`astraflow/raas/server/manager.py:1556`):
+(`astraflow/raas/server/manager.py:1648`):
 
 ```
 AstraFlow ──POST /notify_version──> RaaS (for one model_id)

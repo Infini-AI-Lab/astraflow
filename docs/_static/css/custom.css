@@ -11,16 +11,19 @@ html.light {
     width: auto;
 }
 
-/* Version number under the AstraFlow brand text */
+/* Larger "AstraFlow" brand text in the top header */
+.sy-head-brand strong {
+    font-size: 1.6rem;
+}
+
+/* Version number, inline to the right of the AstraFlow brand text */
 .sy-head-brand strong::after {
     content: "v0.1.0";
-    display: block;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 400;
-    line-height: 1;
     letter-spacing: 0.04em;
     opacity: 0.55;
-    margin-top: 2px;
+    margin-left: 0.4rem;
 }
 
 /* Top header bar (light mode only): a soft violet wash + a crisp violet underline.
@@ -47,4 +50,11 @@ html.light .sy-head-blur {
    Needs the `.yue` prefix to match Shibuya's own selector specificity. */
 .yue .toctree-wrapper p.caption {
     font-size: 1.15rem;
+    color: var(--sy-c-text);
+}
+
+/* Left-sidebar section captions: larger and darker than Shibuya's muted default. */
+.globaltoc p.caption {
+    font-size: 1.05rem;
+    color: var(--sy-c-text);
 }

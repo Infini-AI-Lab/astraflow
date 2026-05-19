@@ -43,22 +43,9 @@
 ----
 
 ## Getting Started
-The fastest path is the pre-built Docker image:
 
-```bash
-docker run --gpus all --net=host -it astraflowai/astraflow:v0.1.0
-```
-
-Then launch the 2-GPU Qwen3 math recipe from the repo root:
-
-```bash
-bash examples/math/qwen3-1.7b-m2po-2gpus-delta/scripts/run_qwen3-1.7b-m2po-2gpus-delta.sh
-```
-
-- [Install AstraFlow](docs/en/get-started/installation.md) — Docker image or install from source
+- [Install AstraFlow](docs/en/get-started/installation.md)
 - [Quick Start](docs/en/get-started/quickstart.md)
-- [Architecture Overview](docs/en/architecture/overview.md)
-- [Contribution Guide](docs/en/developer-guide/contributing.md)
 
 ## Recipes
 Runnable recipes live under `examples/`. Each recipe ships a `yaml/` directory of configs and numbered launch scripts under `scripts/`. Most recipes default to one 8×H100 node; the `math/` folder also includes 2×H100 recipes for smaller setups.

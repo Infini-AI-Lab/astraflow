@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Contributing
 
 ## Development Expectations

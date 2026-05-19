@@ -39,7 +39,10 @@ html_theme = "shibuya"
 html_static_path = ["_static"]
 # Shibuya shows `project` ("AstraFlow") as the header brand text automatically.
 # TODO: restore image logo once _static/logo.jpg is fixed (theme_options light_logo/dark_logo).
-html_theme_options = {"accent_color": "violet"}
+html_theme_options = {
+    "accent_color": "violet",
+    "github_url": "https://github.com/haizhongzheng/astraflow",
+}
 html_css_files = ["css/custom.css"]
 
 # Notebook policy: render notebooks but do not execute during docs build.
