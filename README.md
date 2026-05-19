@@ -1,5 +1,8 @@
 <div align="center" id="astraflowtop">
-<h1>AstraFlow: Dataflow-Oriented Reinforcement Learning for Agentic LLMs</h1>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/title-dark.svg">
+  <img src="./docs/assets/title-light.svg" alt="AstraFlow — Dataflow-Oriented Reinforcement Learning for Agentic LLMs" width="620">
+</picture>
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.15565-b31b1b.svg)](https://arxiv.org/abs/2605.15565)
 [![Website](https://img.shields.io/badge/website-online-9cf.svg)](https://haizhongzheng.github.io/astraflow/)
@@ -23,11 +26,16 @@
 <!-- <p align="center"><i>AstraFlow natively elastic, heterogeneous, and cross-region rollout with its RaaS (Rollout as a Service) abstraction</i></p> -->
 
 
-**AstraFlow** is a **dataflow-oriented** reinforcement learning system designed to improve the flexibility and scalability of RL training for LLMs.
+AstraFlow is a **dataflow-oriented** reinforcement learning system designed for better flexibility and scalability.
 
-**AstraFlow** natively supports **multi-policy collaboration, elastic heterogeneous cross-region rollouts, and composable data algorithms** for LLM RL training.
+AstraFlow **natively** supports the following for LLM RL training without any feature-specific system engineering:
 
-**AstraFlow**’s clean rollout and trainer abstractions make both components fully **substitutable** with independent code base, allowing users to plug in custom rollout services or training backends as long as they implement the corresponding interfaces.
+- **Multi-policy collaborative training**
+- **Elastic heterogeneous cross-region rollouts**
+- **Substitutable rollout and trainer service**
+- **Composable data algorithms**
+
+<!-- **AstraFlow**’s clean rollout and trainer abstractions make both components fully **substitutable** with independent code base, allowing users to plug in custom rollout services or training backends as long as they implement the corresponding interfaces. -->
 
 
 <div align="center">
@@ -52,14 +60,14 @@ Runnable recipes live under `examples/`. Each recipe ships a `yaml/` directory o
 
 | Recipe | Description | Docs |
 |---|---|---|
-| [`math/`](examples/math/) | RLVR math reasoning — Qwen3-1.7B / 8B, M2PO, full and delta-weight transfer | [math.md](docs/en/recipes/math.md) |
-| [`math-multi-agent/`](examples/math-multi-agent/) | Actor + verifier collaborative math training | [multi-agent.md](docs/en/recipes/multi-agent.md) |
-| [`math-efficient-data/`](examples/math-efficient-data/) | Composable data algorithms — GRESO, dynamic sampling, buffer replay | [math.md](docs/en/recipes/math.md) |
-| [`code/`](examples/code/) | Code-generation RL — Qwen3-8B, M2PO | [code.md](docs/en/recipes/code.md) |
-| [`code-multi-agent/`](examples/code-multi-agent/) | Codegen + verifier competitive coding | [code.md](docs/en/recipes/code.md) |
-| [`search/`](examples/search/) | Search-augmented agent training with local retrieval | [search.md](docs/en/recipes/search.md) |
-| [`alfworld/`](examples/alfworld/) | ALFWorld embodied household agent | [agentbench.md](docs/en/recipes/agentbench.md) |
-| [`webshop/`](examples/webshop/) | WebShop web-navigation shopping agent | [agentbench.md](docs/en/recipes/agentbench.md) |
+| [`math/`](examples/math/) | RLVR math reasoning — Qwen3-1.7B / 8B, M2PO, full and delta-weight transfer | [math](https://haizhongzheng.github.io/astraflow/docs/recipes/math.html) |
+| [`math-multi-agent/`](examples/math-multi-agent/) | Actor + verifier collaborative math training | [multi-agent](https://haizhongzheng.github.io/astraflow/docs/recipes/multi-agent.html) |
+| [`math-efficient-data/`](examples/math-efficient-data/) | Composable data algorithms — GRESO, dynamic sampling, buffer replay | [math](https://haizhongzheng.github.io/astraflow/docs/recipes/math.html) |
+| [`code/`](examples/code/) | Code-generation RL — Qwen3-8B, M2PO | [code](https://haizhongzheng.github.io/astraflow/docs/recipes/code.html) |
+| [`code-multi-agent/`](examples/code-multi-agent/) | Codegen + verifier competitive coding | [code](https://haizhongzheng.github.io/astraflow/docs/recipes/code.html) |
+| [`search/`](examples/search/) | Search-augmented agent training with local retrieval | [search](https://haizhongzheng.github.io/astraflow/docs/recipes/search.html) |
+| [`alfworld/`](examples/alfworld/) | ALFWorld embodied household agent | [agentbench](https://haizhongzheng.github.io/astraflow/docs/recipes/agentbench.html) |
+| [`webshop/`](examples/webshop/) | WebShop web-navigation shopping agent | [agentbench](https://haizhongzheng.github.io/astraflow/docs/recipes/agentbench.html) |
 
 ## Roadmap
 Near-term focus:
