@@ -1,119 +1,104 @@
 # AgentBench
 
-This to set up env for Agentbench Task Server, and train interactive agents on AgentBench environments (WebShop, ALFWorld) using M2PO.
+Reinforcement learning for multi-turn, interactive agents on the ALFWorld and WebShop environments from [AgentBench](https://github.com/THUDM/AgentBench), with M2PO.
 
-## Prerequisites
+**AgentBench recipes**:
 
-Both ALFWorld and WebShop require the AgentBench environment:
+- ALFWorld: [`examples/alfworld/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/alfworld)
+- WebShop: [`examples/webshop/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/webshop)
+
+Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
+
+## Environment setup
+
+The AgentBench recipes need the AgentBench environment installed in its own conda env, plus the task container image:
 
 ```bash
-# 0. Prepare the AstraFlow env first.
-
-# 1. Set up env for AgentBench
 cd astraEnv/AgentBench
 conda create -n agent-bench python=3.9
 conda activate agent-bench
 pip install -r requirements.txt
 conda install podman
 
-# 2. Then pull docker images:
-docker pull longinyu/agentbench-alfworld
-docker pull longinyu/agentbench-webshop
+# pull the image for the environment you want to train on
+docker pull longinyu/agentbench-alfworld   # for ALFWorld
+docker pull longinyu/agentbench-webshop    # for WebShop
 ```
 
-## WebShop
+The all-in-one `run_*.sh` starts the task server itself; the standalone `0_<env>_server.sh` is provided for split launches.
 
-Train a model to navigate and purchase products on a simulated e-commerce site.
+## ALFWorld — Qwen2.5-7B-Instruct — 8 GPUs
 
-- **Model**: Qwen2.5-7B-Instruct
-- **Algorithm**: M2PO (m2_threshold=0.004), LR: 1e-6
-- **Workflow**: `webshop_task_server`, max_turns: 10
-- **Eval frequency**: every 10 steps
+Trains an agent to complete embodied household tasks in a text-based environment. Each rollout is a multi-turn episode (up to 15 turns) against an AgentBench task server. The recipe comes in two variants that differ **only** in weight transfer mode:
 
-**Config**: `examples/webshop/qwen2.5-7b-instruct-m2po-full/`
+- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-full) — full weight transfer
+- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (full sync every 10 steps)
 
-Key settings:
-- Buffer: 262144, replay_ratio: 0, max_staleness: 8
-- Batch size: 256, max_new_tokens: 512, max_length: 4096
-- RaaS: SGLang on 4 GPUs
-- Trainer: FSDP on 4 GPUs, TCP weight transfer (full)
+### Run
 
-### Split launch (4 processes in separate terminals)
+One script launches four processes — the AgentBench ALFWorld environment server, the AstraFlow service, the RaaS inference server, and the trainer. The all-in-one script starts the local environment server itself; the standalone `0_alfworld_server.sh` is provided for split launches.
 
 ```bash
-# 0. astraEnv/AgentBench WebShop server
-bash examples/webshop/qwen2.5-7b-instruct-m2po-full/scripts/0_webshop_server.sh
-
-# 1. RaaS
-bash examples/webshop/qwen2.5-7b-instruct-m2po-full/scripts/2_raas.sh
-
-# 2. AstraFlow
-bash examples/webshop/qwen2.5-7b-instruct-m2po-full/scripts/1_astraflow.sh
-
-# 3. Trainer
-bash examples/webshop/qwen2.5-7b-instruct-m2po-full/scripts/3_trainer_model0.sh
-```
-
-### One-shot launch
-
-```bash
-bash examples/webshop/qwen2.5-7b-instruct-m2po-full/scripts/run_qwen2.5-7b-instruct-m2po-full.sh
-```
-
-### Stop WebShop Server
-```bash
-bash astraEnv/AgentBench/stop-webshop-server.sh
-```
-
-## ALFWorld
-
-Train a model to complete embodied household tasks in a text-based environment.
-
-- **Model**: Qwen2.5-7B-Instruct
-- **Algorithm**: M2PO (m2_threshold=0.004), LR: 1e-6
-- **Workflow**: `alfworld_task_server`, max_turns: 15
-- **Eval frequency**: every 10 steps
-
-**Config**: `examples/alfworld/qwen2.5-7b-instruct-m2po-full/`
-
-Key settings:
-- Nearly identical to WebShop, except:
-  - max_turns: 15 (vs. 10 for WebShop)
-  - mem_fraction_static: 0.7 (vs. 0.6 for WebShop)
-
-### Split launch (4 processes in separate terminals)
-
-```bash
-# 0. astraEnv/AgentBench ALFWorld server
-bash examples/alfworld/qwen2.5-7b-instruct-m2po-full/scripts/0_alfworld_server.sh
-
-# 1. RaaS
-bash examples/alfworld/qwen2.5-7b-instruct-m2po-full/scripts/2_raas.sh
-
-# 2. AstraFlow
-bash examples/alfworld/qwen2.5-7b-instruct-m2po-full/scripts/1_astraflow.sh
-
-# 3. Trainer
-bash examples/alfworld/qwen2.5-7b-instruct-m2po-full/scripts/3_trainer.sh
-```
-
-### One-shot launch
-
-```bash
+# full weight transfer
 bash examples/alfworld/qwen2.5-7b-instruct-m2po-full/scripts/run_qwen2.5-7b-instruct-m2po-full.sh
+
+# delta weight transfer
+bash examples/alfworld/qwen2.5-7b-instruct-m2po-delta/scripts/run_qwen2.5-7b-instruct-m2po-delta.sh
 ```
 
-### Stop ALFWorld Server
+### Settings
+
+| Setting | Value |
+|---|---|
+| Model | Qwen2.5-7B-Instruct |
+| GPUs | 8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4) |
+| Algorithm | M2PO (`m2_threshold` 0.004) |
+| Weight transfer | TCP — full, or delta (`delta_full_sync_interval` 10) |
+| Context length | 16384 |
+| Max new tokens | 512 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 128 |
+| Learning rate | 1e-6 (Adam, constant schedule) |
+| Train steps | 1200 |
+| Workflow / reward | `alfworld_task_server` (max 15 turns) |
+| Train dataset | ALFWorld train indices |
+| Eval datasets | ALFWorld valid indices (eval max 10 turns, every 10 steps) |
+| Environment | ALFWorld AgentBench task server (`http://127.0.0.1:5000`) |
+
+## WebShop — Qwen2.5-7B-Instruct — 8 GPUs
+
+Trains an agent to navigate and purchase products on a simulated e-commerce site. Each rollout is a multi-turn episode (up to 10 turns) against an AgentBench task server. It also comes in full and delta transfer variants:
+
+- [`qwen2.5-7b-instruct-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-full) — full weight transfer
+- [`qwen2.5-7b-instruct-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-delta) — delta weight transfer (full sync every 10 steps)
+
+### Run
+
+The same single-script pattern launches four processes — the AgentBench WebShop environment server, the AstraFlow service, the RaaS inference server, and the trainer. The all-in-one script starts the local environment server itself; the standalone `0_webshop_server.sh` is provided for split launches.
+
 ```bash
-bash astraEnv/AgentBench/stop-alfworld-server.sh
+# full weight transfer
+bash examples/webshop/qwen2.5-7b-instruct-m2po-full/scripts/run_qwen2.5-7b-instruct-m2po-full.sh
+
+# delta weight transfer
+bash examples/webshop/qwen2.5-7b-instruct-m2po-delta/scripts/run_qwen2.5-7b-instruct-m2po-delta.sh
 ```
 
-## Key Differences from Math
+### Settings
 
-| | Math | AgentBench |
-|---|---|---|
-| Interaction | Single-turn generation | Multi-turn with environment |
-| Task server | None (offline dataset) | AgentBench server required |
-| Processes | 3 (RaaS, AstraFlow, Trainer) | 4 (+ task server) |
-| Buffer size | 10k | 262144 |
-| Max new tokens | 4096–12000 | 512 |
+| Setting | Value |
+|---|---|
+| Model | Qwen2.5-7B-Instruct |
+| GPUs | 8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4) |
+| Algorithm | M2PO (`m2_threshold` 0.004) |
+| Weight transfer | TCP — full, or delta (`delta_full_sync_interval` 10) |
+| Context length | 16384 |
+| Max new tokens | 512 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 256 |
+| Learning rate | 1e-6 (Adam, constant schedule) |
+| Train steps | 1200 |
+| Workflow / reward | `webshop_task_server` (max 10 turns) |
+| Train dataset | WebShop train indices |
+| Eval datasets | WebShop valid indices (eval max 10 turns, every 10 steps) |
+| Environment | WebShop AgentBench task server (`http://127.0.0.1:5000`) |

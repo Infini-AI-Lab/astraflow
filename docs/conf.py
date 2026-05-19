@@ -61,3 +61,5 @@ myst_heading_anchors = 3
 
 # Prefix auto-generated section labels with document path to avoid duplicates.
 autosectionlabel_prefix_document = True
+# Only auto-label up to h2; repeated h3 headings (Run/Settings) would collide.
+autosectionlabel_maxdepth = 2

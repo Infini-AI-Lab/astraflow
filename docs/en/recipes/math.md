@@ -1,11 +1,10 @@
 # Math
 
-Reinforcement learning for math reasoning with RLVR and the M2PO algorithm.
+Reinforcement learning for single-agent math reasoning with RLVR.
 
-- **Codebase**: [github.com/haizhongzheng/astraflow](https://github.com/haizhongzheng/astraflow)
-- **Math recipes**: [`examples/math/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math) — every math recipe lives in this folder, one subdirectory per recipe.
+**Math recipes**: [`examples/math/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math)
 
-Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`. Pick a recipe below based on how many GPUs you have.
+Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
 ## Qwen3-1.7B — 2 GPUs (minimal reproduction)
 

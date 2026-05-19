@@ -1,187 +1,80 @@
 # Code
 
-Train code-generation models on DeepCoder Preview using M2PO with AstraFlow.
+Reinforcement learning for code-generation reasoning with RLVR, rewarded by test-case execution.
 
-## Overview
+**Code recipes**: [`examples/code/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code) and [`examples/code-multi-agent/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent)
 
-- **Task**: Single-turn code generation
-- **Models**: Qwen3-0.6B, Qwen3-4B, Qwen3-8B
-- **Algorithm**: M2PO (m2_threshold=0.01)
-- **Workflow**: `livecodebench_single_turn`
-- **Training data**: `agentica-org/DeepCoder-Preview-Dataset` (`primeintellect` subset)
-- **Eval**: LiveCodeBench v5/v6, HumanEval, DeepCoder Codeforces
+Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
-## Eval Dataset Setup
+Eval datasets (HumanEval, LiveCodeBench v5) need a one-time manual download before launching. See the eval-dataset setup notes in [`examples/code-multi-agent/README.md`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent).
 
-### 1. LiveCodeBench v5 from AReaL-boba-2-RL-Code
+## Qwen3-8B — 8 GPUs (single-agent)
 
-Download the AReaL-boba-2-RL-Code dataset from the repo root:
+Single-agent code-generation RL on one 8-GPU node — 4 GPUs for inference, 4 for training. It comes in two variants that differ **only** in weight transfer mode:
 
-```bash
-huggingface-cli download inclusionAI/AReaL-boba-2-RL-Code \
-  --repo-type dataset \
-  --local-dir ./data-data/AReaL-boba-2-RL-Code
-```
+- [`code/qwen3-8b-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code/qwen3-8b-m2po-full) — full weight transfer
+- [`code/qwen3-8b-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code/qwen3-8b-m2po-delta) — delta weight transfer (only changed weights are sent)
 
-This provides:
+A near-identical single-agent baseline also lives at [`code-multi-agent/qwen3-8b-single-agent-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-single-agent-m2po-full) as the fair-comparison reference for the codegen+verifier recipe below.
 
-```text
-./data-data/AReaL-boba-2-RL-Code/code_benchmark/lcb_v5/test.jsonl
-```
+### Run
 
-### 2. LiveCodeBench v6 from code_generation_lite
-
-Download the official LiveCodeBench v6 slice from the repo root:
+One script launches all three processes — the AstraFlow service, the RaaS inference server, and the trainer:
 
 ```bash
-mkdir -p ./data-data/lcb_v6_raw ./data-data/lcb_v6
-
-huggingface-cli download livecodebench/code_generation_lite test6.jsonl \
-  --repo-type dataset \
-  --local-dir ./data-data/lcb_v6_raw
-```
-
-The official LiveCodeBench file uses the upstream schema (`question_content`,
-`public_test_cases`, encoded `private_test_cases`, and metadata). Convert it to
-the v5-compatible `question`/`input_output` schema used by
-`livecodebench_single_turn` and `livecodebench_reward`:
-
-```bash
-python astraflow/dataflow/dataset/scripts/convert_livecodebench_lite.py \
-  ./data-data/lcb_v6_raw/test6.jsonl \
-  ./data-data/lcb_v6/test.jsonl
-```
-
-This produces:
-
-```text
-./data-data/lcb_v6/test.jsonl
-```
-
-### 3. HumanEval from GitHub
-
-Clone the HumanEval repo into `astraEnv/`:
-
-```bash
-git clone https://github.com/openai/human-eval.git astraEnv/human-eval
-```
-
-Unzip the benchmark file:
-
-```bash
-gzip -dk astraEnv/human-eval/data/HumanEval.jsonl.gz
-```
-
-This produces:
-
-```text
-./astraEnv/human-eval/data/HumanEval.jsonl
-```
-
-### 4. DeepCoder Codeforces from Hugging Face
-
-No manual download is required for this eval dataset. It is loaded directly from Hugging Face during eval with:
-
-```yaml
-dataset_fn: "astraflow.dataflow.dataset.deepcoder_preview:get_deepcoder_preview_codeforces_test_dataset"
-dataset_name: "agentica-org/DeepCoder-Preview-Dataset"
-subset: "codeforces"
-split: "test"
-```
-
-## Example: Qwen3-8B
-
-**Config**: `examples/code/qwen3-8b-m2po-delta/`
-
-Key settings:
-- M2PO with delta weight transfer
-- RaaS: SGLang
-- Trainer: FSDP
-- Training data: DeepCoder Preview `primeintellect`
-- Eval data: HumanEval, LiveCodeBench v5/v6, DeepCoder Codeforces
-
-Refer to `examples/code/qwen3-8b-m2po-delta/yaml/experiment.yaml` for the exact knobs (context length, batch size, learning rate, sync interval).
-
-**Eval dataset block**:
-
-```yaml
-astraflow:
-  eval_datasets:
-    humaneval:
-      dataset_fn: "astraflow.dataflow.dataset.human_eval:get_human_eval_test_dataset"
-      path: "./astraEnv/human-eval/data/HumanEval.jsonl"
-      split: "test"
-      max_length: 6000
-      repeat: 1
-
-    lcb_v5:
-      dataset_fn: "astraflow.dataflow.dataset.livecodebench:get_livecodebench_single_turn_test_dataset"
-      path: "./data-data/AReaL-boba-2-RL-Code/code_benchmark/lcb_v5/test.jsonl"
-      split: "test"
-      max_length: 6000
-      repeat: 1
-
-    lcb_v6:
-      dataset_fn: "astraflow.dataflow.dataset.livecodebench:get_livecodebench_single_turn_test_dataset"
-      path: "./data-data/lcb_v6/test.jsonl"
-      split: "test"
-      max_length: 6000
-      repeat: 1
-
-    deepcoder_codeforces:
-      dataset_fn: "astraflow.dataflow.dataset.deepcoder_preview:get_deepcoder_preview_codeforces_test_dataset"
-      dataset_name: "agentica-org/DeepCoder-Preview-Dataset"
-      subset: "codeforces"
-      split: "test"
-      max_length: 6000
-      repeat: 1
-```
-
-**Eval workflow block**:
-
-`lcb_v5`, `lcb_v6`, and `deepcoder_codeforces` use the standard execution reward, while `HumanEval` uses the vendored HumanEval harness:
-
-```yaml
-astraflow:
-  eval_workflow_specs:
-    default:
-      workflow_cls: "livecodebench_single_turn"
-      reward_fn: "livecodebench_reward"
-      gconfig_overrides:
-        temperature: 0.6
-        n_samples: 1
-
-    humaneval_0:
-      workflow_cls: "livecodebench_single_turn"
-      reward_fn: "human_eval_reward"
-      gconfig_overrides:
-        temperature: 0.6
-        n_samples: 1
-```
-
-**Launch**: one-shot script that starts 3 processes internally:
-
-```bash
-# Run from the repo root.
+# delta weight transfer
 bash examples/code/qwen3-8b-m2po-delta/scripts/run_qwen3-8b-m2po-delta.sh
+
+# full weight transfer
+bash examples/code/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
 ```
 
-Default GPU layout:
-- `SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3` for RaaS
-- `TRAINER_MODEL0_GPUS=4,5,6,7` for Trainer
+### Settings
 
-The launcher starts:
-- RaaS inference server
-- AstraFlow HTTP service
-- Trainer using `examples/launch_trainer.py`
+| Setting | Value |
+|---|---|
+| Model | Qwen3-8B |
+| GPUs | 8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4) |
+| Algorithm | M2PO (`m2_threshold` 0.01) |
+| Weight transfer | TCP — full, or delta (`delta_full_sync_interval` 10) |
+| Context length | 12288 |
+| Max new tokens | 4096 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 128 |
+| Learning rate | 3e-6 (Adam, constant schedule) |
+| Train steps | 1200 |
+| Workflow / reward | `livecodebench_single_turn` / `livecodebench_reward` |
+| Train dataset | DeepCoder-Preview (`primeintellect` subset) |
+| Eval datasets | HumanEval, LiveCodeBench v5, DeepCoder Codeforces |
 
-## Config Knobs
+## Qwen3-8B codegen + verifier — 2 nodes × 8 GPUs (multi-agent)
 
-| Parameter | Description | Typical Values |
-|---|---|---|
-| `m2_threshold` | M2PO clipping threshold | `0.01` |
-| `replay_ratio` | Fraction of replay data in each batch | `0` |
-| `max_staleness` | Max weight version gap for accepted rollouts | `8` |
-| `n_samples` | Rollouts per prompt | `8` |
-| `max_new_tokens` | Maximum generated code length | `4000`, `6000` |
-| `weight_transfer_strategies` | Weight transfer mode | `delta` |
+A two-agent recipe: model0 generates code, model1 generates verification test cases, and the two are co-trained against each other's outputs. It spans two 8-GPU nodes — both nodes host both models for inference, while the two trainers live on the starting node:
+
+- [`code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node) — codegen + verifier, full weight transfer
+
+### Run
+
+Launch the all-in-one script on the first node; it starts the AstraFlow service, RaaS-B, and both trainers, then prints the exact command to run on the second node (RaaS-A):
+
+```bash
+bash examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/scripts/run_qwen3-8b-codegen-verifier-m2po-full-2node.sh
+```
+
+### Settings
+
+| Setting | Value |
+|---|---|
+| Models | model0 codegen (Qwen3-8B), model1 testcase verifier (Qwen3-8B) |
+| GPUs | 16 — RaaS-A ×8 (SGLang, model0 DP=6 / model1 DP=2), RaaS-B ×4 (SGLang, model0 DP=3 / model1 DP=1), Trainer model0 ×2 (FSDP, DP=2), Trainer model1 ×2 (FSDP, DP=2) |
+| Algorithm | M2PO (`m2_threshold` 0.01) |
+| Weight transfer | TCP — full |
+| Context length | 12288 |
+| Max new tokens | 4096 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 256 |
+| Learning rate | 3e-6 (Adam, constant schedule) |
+| Train steps | 800 |
+| Workflow / reward | `code_actor_and_verify_v2` / `livecodebench_reward` (2 generated test cases, `verify_timeout` 6s) |
+| Train dataset | DeepCoder-Preview (`primeintellect` subset) |
+| Eval datasets | HumanEval, LiveCodeBench v5, DeepCoder Codeforces |
