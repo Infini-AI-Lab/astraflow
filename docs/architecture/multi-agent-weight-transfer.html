@@ -1,369 +1,152 @@
-
 <!DOCTYPE html>
-
-
-<html lang="en" data-content_root="../" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Multi-Agent Weight Transfer &#8212; AstraFlow 0.1.0 documentation</title>
-  
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
-  </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Multi-Agent Weight Transfer - AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=96ea4a36" />
-  
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
-
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/multi-agent-weight-transfer';</script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.0" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=338524fc" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Multi-Agent Weight Transfer"/>
+    <meta name="twitter:card" content="summary"/>
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
-  
-  
-  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
-  
-  <div id="pst-scroll-pixel-helper"></div>
-  
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
-  
-  <dialog id="pst-search-dialog">
-    
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         placeholder="Search..."
-         aria-label="Search..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
-
-  <div class="pst-async-banner-revealer d-none">
-  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
-</div>
-
-  
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
-    </header>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
       
       
-      
-        
-      
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
-        
-
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
+      <strong>AstraFlow</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
   </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-
-  
-    
-  
-
-<a class="navbar-brand logo" href="../index.html">
-  
-  
-  
-  
-  
-    
-    
-      
-    
-    
-    <img src="../_static/logo.jpg" class="logo__image only-light" alt="AstraFlow 0.1.0 documentation - Home"/>
-    <img src="../_static/logo.jpg" class="logo__image only-dark pst-js-only" alt="AstraFlow 0.1.0 documentation - Home"/>
-  
-  
-</a></div>
-        <div class="sidebar-primary-item">
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
-        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Overview</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="nav bd-sidenav">
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quick Start</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Components</span></p>
-<ul class="nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="astraflow.html">AstraFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataflow.html">Dataflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="raas.html">RaaS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom-trainer.html">Custom Trainer Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom-raas.html">Custom RaaS Integration</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes</span></p>
-<ul class="nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent (Math)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search (ASearcher)</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer-guide/contributing.html">Contributing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search</a></li>
 </ul>
 
-    </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
-  </div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main" role="main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article d-print-none">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</button></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/architecture/multi-agent-weight-transfer.md" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.md</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
-
-
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
-<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>Multi-Agent Weight Transfer</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sender-side-trainer-weightmanager-senderagent">Sender Side: Trainer → WeightManager → SenderAgent</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coordination-astraflow-version-barrier">Coordination: AstraFlow Version Barrier</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-notifications">Async Notifications</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#receiver-side-astraflow-raas-tcp-pull">Receiver Side: AstraFlow → RaaS → TCP Pull</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#one-http-request-per-model-per-raas">One HTTP Request Per Model Per RaaS</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#per-model-weight-update-cycle">Per-Model Weight Update Cycle</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-model-ordering">Multi-Model Ordering</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#end-to-end-timeline">End-to-End Timeline</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-eval-step-async-fire-and-forget">Non-Eval Step (async fire-and-forget)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eval-step-deferred-leader-serialises-loads">Eval Step (deferred, leader serialises loads)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-source-files">Key Source Files</a></li>
-</ul>
-            </nav>
         </div>
+      </div>
     </div>
-</div>
-
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article">
-                  
-  <section class="tex2jax_ignore mathjax_ignore" id="multi-agent-weight-transfer">
-<h1>Multi-Agent Weight Transfer<a class="headerlink" href="#multi-agent-weight-transfer" title="Link to this heading">#</a></h1>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#sender-side-trainer-weightmanager-senderagent">Sender Side: Trainer &#8594; WeightManager &#8594; SenderAgent</a></li>
+<li><a class="reference internal" href="#coordination-astraflow-version-barrier">Coordination: AstraFlow Version Barrier</a><ul>
+<li><a class="reference internal" href="#async-notifications">Async Notifications</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#receiver-side-astraflow-raas-tcp-pull">Receiver Side: AstraFlow &#8594; RaaS &#8594; TCP Pull</a><ul>
+<li><a class="reference internal" href="#one-http-request-per-model-per-raas">One HTTP Request Per Model Per RaaS</a></li>
+<li><a class="reference internal" href="#per-model-weight-update-cycle">Per-Model Weight Update Cycle</a></li>
+<li><a class="reference internal" href="#multi-model-ordering">Multi-Model Ordering</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#end-to-end-timeline">End-to-End Timeline</a><ul>
+<li><a class="reference internal" href="#non-eval-step-async-fire-and-forget">Non-Eval Step (async fire-and-forget)</a></li>
+<li><a class="reference internal" href="#eval-step-deferred-leader-serialises-loads">Eval Step (deferred, leader serialises loads)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#key-source-files">Key Source Files</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">AstraFlow</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Multi-Agent Weight Transfer</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="multi-agent-weight-transfer">
+<h1>Multi-Agent Weight Transfer<a class="headerlink" href="#multi-agent-weight-transfer" title="Link to this heading">¶</a></h1>
 <p>This page describes how weight transfer works in multi-agent (multi-model)
 training, where multiple independently-trained models (e.g., a solver and a
 verifier) share the same RaaS inference cluster.</p>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
 <p>In a 2-model setup (e.g., <code class="docutils literal notranslate"><span class="pre">actor_and_verify</span></code> workflow):</p>
 <ul class="simple">
 <li><p><strong>model0 (solver)</strong> and <strong>model1 (verifier)</strong> are separate FSDP trainers,
@@ -372,24 +155,24 @@ each with their own GPU group, WeightManager, and sender agent.</p></li>
 separate SGLang instances per model.</p></li>
 <li><p><strong>AstraFlow</strong> orchestrates the coordination via a <strong>version barrier</strong>.</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Trainer model0 (GPU 4,5)       Trainer model1 (GPU 6,7)
-  WeightManager                  WeightManager
-  SenderAgent :19861             SenderAgent :19862
-        │                              │
-        └──────────┐    ┌──────────────┘
-                   ▼    ▼
-              AstraFlow Service
-              (version barrier)
-                   │
-                   ▼
-              RaaS Manager
-        ┌──────────┴──────────┐
-  SGLang model0 (GPU 0,1)  SGLang model1 (GPU 2,3)
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Trainer model0 (GPU 4,5)       Trainer model1 (GPU 6,7)
+</span><span data-line="2">  WeightManager                  WeightManager
+</span><span data-line="3">  SenderAgent :19861             SenderAgent :19862
+</span><span data-line="4">        │                              │
+</span><span data-line="5">        └──────────┐    ┌──────────────┘
+</span><span data-line="6">                   ▼    ▼
+</span><span data-line="7">              AstraFlow Service
+</span><span data-line="8">              (version barrier)
+</span><span data-line="9">                   │
+</span><span data-line="10">                   ▼
+</span><span data-line="11">              RaaS Manager
+</span><span data-line="12">        ┌──────────┴──────────┐
+</span><span data-line="13">  SGLang model0 (GPU 0,1)  SGLang model1 (GPU 2,3)
+</span></pre></div>
 </div>
 </section>
 <section id="sender-side-trainer-weightmanager-senderagent">
-<h2>Sender Side: Trainer → WeightManager → SenderAgent<a class="headerlink" href="#sender-side-trainer-weightmanager-senderagent" title="Link to this heading">#</a></h2>
+<h2>Sender Side: Trainer → WeightManager → SenderAgent<a class="headerlink" href="#sender-side-trainer-weightmanager-senderagent" title="Link to this heading">¶</a></h2>
 <p>Each trainer is an independent <code class="docutils literal notranslate"><span class="pre">torchrun</span></code> process group. After each training
 step, the trainer offloads weights to its own WeightManager:</p>
 <ol class="arabic">
@@ -413,7 +196,7 @@ server on a distinct port (configured via <code class="docutils literal notransl
 </ol>
 </section>
 <section id="coordination-astraflow-version-barrier">
-<h2>Coordination: AstraFlow Version Barrier<a class="headerlink" href="#coordination-astraflow-version-barrier" title="Link to this heading">#</a></h2>
+<h2>Coordination: AstraFlow Version Barrier<a class="headerlink" href="#coordination-astraflow-version-barrier" title="Link to this heading">¶</a></h2>
 <p>The trainers are independent, but weight loading is <strong>coordinated</strong> — RaaS
 loads both models’ weights atomically so the solver and verifier are always
 at the same version during rollout generation.</p>
@@ -436,15 +219,15 @@ records its version under <code class="docutils literal notranslate"><span class
 <li><p>Each trainer calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> with
 <code class="docutils literal notranslate"><span class="pre">{agent_name,</span> <span class="pre">version,</span> <span class="pre">run_eval,</span> <span class="pre">model_id}</span></code>.</p></li>
 <li><p>AstraFlow records the version in <code class="docutils literal notranslate"><span class="pre">_pending_versions</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_pending_versions</span> <span class="o">=</span> <span class="p">{(</span><span class="n">default</span><span class="p">,</span> <span class="n">model0</span><span class="p">):</span> <span class="n">N</span><span class="p">}</span>   <span class="c1"># model0 arrived first</span>
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">_pending_versions</span> <span class="o">=</span> <span class="p">{(</span><span class="n">default</span><span class="p">,</span> <span class="n">model0</span><span class="p">):</span> <span class="n">N</span><span class="p">}</span>   <span class="c1"># model0 arrived first</span>
+</span></pre></div>
 </div>
 </li>
 <li><p>The first trainer’s HTTP handler thread <strong>blocks</strong> on
 <code class="docutils literal notranslate"><span class="pre">_version_barrier_cond.wait()</span></code>.</p></li>
 <li><p>When the second trainer arrives:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_pending_versions</span> <span class="o">=</span> <span class="p">{(</span><span class="n">default</span><span class="p">,</span> <span class="n">model0</span><span class="p">):</span> <span class="n">N</span><span class="p">,</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">model1</span><span class="p">):</span> <span class="n">N</span><span class="p">}</span>
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">_pending_versions</span> <span class="o">=</span> <span class="p">{(</span><span class="n">default</span><span class="p">,</span> <span class="n">model0</span><span class="p">):</span> <span class="n">N</span><span class="p">,</span> <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">model1</span><span class="p">):</span> <span class="n">N</span><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>All registered model_ids have the same version → this thread becomes
 the <strong>leader</strong>.</p>
@@ -456,19 +239,19 @@ registered model_ids sequentially, calling
 <code class="docutils literal notranslate"><span class="pre">_trigger_raas_weight_load_single()</span></code> for each. Non-leaders are woken
 via <code class="docutils literal notranslate"><span class="pre">_version_barrier_cond.notify_all()</span></code>.</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>model0: notify_version(v=5) ──► (async fire-and-forget load) ──► barrier (wait)
-                                                                       │
-model1: notify_version(v=5) ──► (async fire-and-forget load) ──► barrier (leader)
-                                                                       │
-                                                                       ▼
-                                                       (eval? run reset + sync load per model + eval)
-                                                                       │
-                                                                       ▼
-                                                       notify_all() → both return
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">model0: notify_version(v=5) ──► (async fire-and-forget load) ──► barrier (wait)
+</span><span data-line="2">                                                                       │
+</span><span data-line="3">model1: notify_version(v=5) ──► (async fire-and-forget load) ──► barrier (leader)
+</span><span data-line="4">                                                                       │
+</span><span data-line="5">                                                                       ▼
+</span><span data-line="6">                                                       (eval? run reset + sync load per model + eval)
+</span><span data-line="7">                                                                       │
+</span><span data-line="8">                                                                       ▼
+</span><span data-line="9">                                                       notify_all() → both return
+</span></pre></div>
 </div>
 <section id="async-notifications">
-<h3>Async Notifications<a class="headerlink" href="#async-notifications" title="Link to this heading">#</a></h3>
+<h3>Async Notifications<a class="headerlink" href="#async-notifications" title="Link to this heading">¶</a></h3>
 <p>Non-eval steps on the trainer side use <code class="docutils literal notranslate"><span class="pre">notify_version_async</span></code>
 (<code class="docutils literal notranslate"><span class="pre">astraflow/train_worker/trainer/astraflow_client.py:275</span></code>), which submits
 to a single-threaded background executor. The trainer can run <strong>one step
@@ -477,14 +260,14 @@ waits for the previous one to complete before submitting.</p>
 </section>
 </section>
 <section id="receiver-side-astraflow-raas-tcp-pull">
-<h2>Receiver Side: AstraFlow → RaaS → TCP Pull<a class="headerlink" href="#receiver-side-astraflow-raas-tcp-pull" title="Link to this heading">#</a></h2>
+<h2>Receiver Side: AstraFlow → RaaS → TCP Pull<a class="headerlink" href="#receiver-side-astraflow-raas-tcp-pull" title="Link to this heading">¶</a></h2>
 <section id="one-http-request-per-model-per-raas">
-<h3>One HTTP Request Per Model Per RaaS<a class="headerlink" href="#one-http-request-per-model-per-raas" title="Link to this heading">#</a></h3>
+<h3>One HTTP Request Per Model Per RaaS<a class="headerlink" href="#one-http-request-per-model-per-raas" title="Link to this heading">¶</a></h3>
 <p>AstraFlow sends <strong>one</strong> <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> call per model per live
 RaaS instance. There is no batched multi-model endpoint. Each request
 body is pickle-serialized:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;sender_endpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;host:19861&quot;</span><span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;sender_endpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;host:19861&quot;</span><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>Fan-out happens in <code class="docutils literal notranslate"><span class="pre">RaaSPool.notify_version()</span></code>
 (<code class="docutils literal notranslate"><span class="pre">astraflow/dataflow/raas_pool.py:442</span></code>), which submits one
@@ -492,7 +275,7 @@ body is pickle-serialized:</p>
 <code class="docutils literal notranslate"><span class="pre">max(instances)</span></code>, not <code class="docutils literal notranslate"><span class="pre">sum(instances)</span></code>.</p>
 </section>
 <section id="per-model-weight-update-cycle">
-<h3>Per-Model Weight Update Cycle<a class="headerlink" href="#per-model-weight-update-cycle" title="Link to this heading">#</a></h3>
+<h3>Per-Model Weight Update Cycle<a class="headerlink" href="#per-model-weight-update-cycle" title="Link to this heading">¶</a></h3>
 <p>Inside each RaaS, <code class="docutils literal notranslate"><span class="pre">RaaS3Manager.notify_version()</span></code>
 (<code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py:1556</span></code>) handles exactly one model.
 Calls for different models proceed independently; calls for the same
@@ -502,41 +285,41 @@ updates cannot race on the same safetensors file.</p>
 which runs two phases — <strong>pull</strong> then <strong>pause/load/resume</strong> — both
 delegated to the thread-pool executor so they do not block the FastAPI
 event loop:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>RaaS Manager (one model_id)                Sender Agent (e.g. port 19861)
-     │                                           │
-     │  [First pull only — setup]                │
-     │── GET  /get_buffer_info ─────────────────&gt;│  Query model metadata
-     │&lt;── {tensors_meta, buffer_length} ─────────│  (param names, shapes, dtypes)
-     │                                           │
-     │  Allocate TransferBuffer                  │
-     │  Start TCP listener (auto port)           │
-     │  Start ZMQ listener (auto port)           │
-     │                                           │
-     │── POST /register_sglang_instance ────────&gt;│  Register as receiver
-     │   {session_ids, handshake_ports,          │  (TCP/ZMQ addresses)
-     │    zmq_endpoint, zmq_port, ...}           │
-     │&lt;── {trainer_session_ids, rank} ───────────│
-     │                                           │
-     │  [Every pull — phase 1: pull to disk]     │
-     │── POST /request_transfer ────────────────&gt;│  &quot;Send me the weights&quot;
-     │   {instance_id, mode: &quot;full&quot; | &quot;delta&quot;}   │
-     │&lt;── {ok: true} ───────────────────────────│
-     │                                           │
-     │&lt;══════ TCP data push ════════════════════│  Sender reads from shm buffer,
-     │   (sendfile, parallel streams)            │  pushes via TCP to receiver&#39;s
-     │                                           │  listener ports
-     │                                           │
-     │&lt;── ZMQ [rank, SUCCESS] ──────────────────│  &quot;Transfer complete&quot;
-     │                                           │
-     │  save_as_safetensors()                    │
-     │  → /dev/shm/astraflow_weights/{tag}/{model_id}/model.safetensors
-     │                                           │
-     │  [Phase 2: pause / load / resume THIS model&#39;s engine]
-     │  engine.pause_generation()                │
-     │  engine.load_weights_from_path(shm_path)  │
-     │  engine.continue_generation()             │
-     │  self._weight_versions[model_id] = version│
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">RaaS Manager (one model_id)                Sender Agent (e.g. port 19861)
+</span><span data-line="2">     │                                           │
+</span><span data-line="3">     │  [First pull only — setup]                │
+</span><span data-line="4">     │── GET  /get_buffer_info ─────────────────&gt;│  Query model metadata
+</span><span data-line="5">     │&lt;── {tensors_meta, buffer_length} ─────────│  (param names, shapes, dtypes)
+</span><span data-line="6">     │                                           │
+</span><span data-line="7">     │  Allocate TransferBuffer                  │
+</span><span data-line="8">     │  Start TCP listener (auto port)           │
+</span><span data-line="9">     │  Start ZMQ listener (auto port)           │
+</span><span data-line="10">     │                                           │
+</span><span data-line="11">     │── POST /register_sglang_instance ────────&gt;│  Register as receiver
+</span><span data-line="12">     │   {session_ids, handshake_ports,          │  (TCP/ZMQ addresses)
+</span><span data-line="13">     │    zmq_endpoint, zmq_port, ...}           │
+</span><span data-line="14">     │&lt;── {trainer_session_ids, rank} ───────────│
+</span><span data-line="15">     │                                           │
+</span><span data-line="16">     │  [Every pull — phase 1: pull to disk]     │
+</span><span data-line="17">     │── POST /request_transfer ────────────────&gt;│  &quot;Send me the weights&quot;
+</span><span data-line="18">     │   {instance_id, mode: &quot;full&quot; | &quot;delta&quot;}   │
+</span><span data-line="19">     │&lt;── {ok: true} ───────────────────────────│
+</span><span data-line="20">     │                                           │
+</span><span data-line="21">     │&lt;══════ TCP data push ════════════════════│  Sender reads from shm buffer,
+</span><span data-line="22">     │   (sendfile, parallel streams)            │  pushes via TCP to receiver&#39;s
+</span><span data-line="23">     │                                           │  listener ports
+</span><span data-line="24">     │                                           │
+</span><span data-line="25">     │&lt;── ZMQ [rank, SUCCESS] ──────────────────│  &quot;Transfer complete&quot;
+</span><span data-line="26">     │                                           │
+</span><span data-line="27">     │  save_as_safetensors()                    │
+</span><span data-line="28">     │  → /dev/shm/astraflow_weights/{tag}/{model_id}/model.safetensors
+</span><span data-line="29">     │                                           │
+</span><span data-line="30">     │  [Phase 2: pause / load / resume THIS model&#39;s engine]
+</span><span data-line="31">     │  engine.pause_generation()                │
+</span><span data-line="32">     │  engine.load_weights_from_path(shm_path)  │
+</span><span data-line="33">     │  engine.continue_generation()             │
+</span><span data-line="34">     │  self._weight_versions[model_id] = version│
+</span></pre></div>
 </div>
 <p>Each model_id gets its own:</p>
 <ul class="simple">
@@ -551,7 +334,7 @@ across steps. Only the <code class="docutils literal notranslate"><span class="p
 pause/load/resume cycle repeats each step.</p>
 </section>
 <section id="multi-model-ordering">
-<h3>Multi-Model Ordering<a class="headerlink" href="#multi-model-ordering" title="Link to this heading">#</a></h3>
+<h3>Multi-Model Ordering<a class="headerlink" href="#multi-model-ordering" title="Link to this heading">¶</a></h3>
 <p>Because each model’s <code class="docutils literal notranslate"><span class="pre">notify_version</span></code> call is independent, the orchestrator
 controls whether updates are effectively parallel or serialized:</p>
 <ul class="simple">
@@ -568,57 +351,57 @@ before eval rollouts start.</p></li>
 </section>
 </section>
 <section id="end-to-end-timeline">
-<h2>End-to-End Timeline<a class="headerlink" href="#end-to-end-timeline" title="Link to this heading">#</a></h2>
+<h2>End-to-End Timeline<a class="headerlink" href="#end-to-end-timeline" title="Link to this heading">¶</a></h2>
 <section id="non-eval-step-async-fire-and-forget">
-<h3>Non-Eval Step (async fire-and-forget)<a class="headerlink" href="#non-eval-step-async-fire-and-forget" title="Link to this heading">#</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Trainer model0          AstraFlow                 RaaS Manager           Trainer model1
-     │                      │                         │                       │
- train step N               │                         │                   train step N
- offload v=N+1              │                         │                   offload v=N+1
-     │                      │                         │                       │
- notify_version_async ─► phase 1: fire daemon thread  │       ◄─ notify_version_async
-     │             POST /notify_version{model0=N+1} ─►│                       │
-     │             POST /notify_version{model1=N+1} ─►│                       │
-     │                      │                         │                       │
-     │                      │          pull model0 from :19861                │
-     │                      │          pause/load/resume model0 engine        │
-     │                      │                         │                       │
-     │                      │          pull model1 from :19862                │
-     │                      │          pause/load/resume model1 engine        │
-     │                      │                         │                       │
-     │             phase 2: both trainers at v=N+1 → leader wakes all
-     │                      │                         │                       │
- barrier released ◄───────────────────────────────────────────►  barrier released
-     │                      │                         │                       │
- train step N+1             │                         │                   train step N+1
-</pre></div>
+<h3>Non-Eval Step (async fire-and-forget)<a class="headerlink" href="#non-eval-step-async-fire-and-forget" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Trainer model0          AstraFlow                 RaaS Manager           Trainer model1
+</span><span data-line="2">     │                      │                         │                       │
+</span><span data-line="3"> train step N               │                         │                   train step N
+</span><span data-line="4"> offload v=N+1              │                         │                   offload v=N+1
+</span><span data-line="5">     │                      │                         │                       │
+</span><span data-line="6"> notify_version_async ─► phase 1: fire daemon thread  │       ◄─ notify_version_async
+</span><span data-line="7">     │             POST /notify_version{model0=N+1} ─►│                       │
+</span><span data-line="8">     │             POST /notify_version{model1=N+1} ─►│                       │
+</span><span data-line="9">     │                      │                         │                       │
+</span><span data-line="10">     │                      │          pull model0 from :19861                │
+</span><span data-line="11">     │                      │          pause/load/resume model0 engine        │
+</span><span data-line="12">     │                      │                         │                       │
+</span><span data-line="13">     │                      │          pull model1 from :19862                │
+</span><span data-line="14">     │                      │          pause/load/resume model1 engine        │
+</span><span data-line="15">     │                      │                         │                       │
+</span><span data-line="16">     │             phase 2: both trainers at v=N+1 → leader wakes all
+</span><span data-line="17">     │                      │                         │                       │
+</span><span data-line="18"> barrier released ◄───────────────────────────────────────────►  barrier released
+</span><span data-line="19">     │                      │                         │                       │
+</span><span data-line="20"> train step N+1             │                         │                   train step N+1
+</span></pre></div>
 </div>
 <p>Per-model loads on RaaS can overlap — only same-model calls serialize
 via the per-model <code class="docutils literal notranslate"><span class="pre">asyncio.Lock</span></code>. Trainers can run one step ahead of
 the async load.</p>
 </section>
 <section id="eval-step-deferred-leader-serialises-loads">
-<h3>Eval Step (deferred, leader serialises loads)<a class="headerlink" href="#eval-step-deferred-leader-serialises-loads" title="Link to this heading">#</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Trainer model0           AstraFlow                    RaaS Manager
-     │                      │                              │
- offload v=N+1              │                              │
- notify_version (sync) ─► phase 1 DEFERRED (eval path)     │
-                         phase 2: wait for all             │
- Trainer model1 arrives ─────────────► leader triggered    │
-                         │                                 │
-                         │  leader:                        │
-                         │    1. flow.pause() data acq     │
-                         │    2. clear suspects            │
-                         │    3. reset_training_engine ────►│ cancel arun_episode tasks
-                         │    4. /notify_version{model0} ──►│ pull + pause/load/resume m0
-                         │    5. /notify_version{model1} ──►│ pull + pause/load/resume m1
-                         │    6. run eval                  │
-                         │    7. flow.resume()             │
-                         │                                 │
-                         │  notify_all() → return eval_results
- ◄─── eval_results ──────┘                                 │
- train step N+1                                            │
-</pre></div>
+<h3>Eval Step (deferred, leader serialises loads)<a class="headerlink" href="#eval-step-deferred-leader-serialises-loads" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Trainer model0           AstraFlow                    RaaS Manager
+</span><span data-line="2">     │                      │                              │
+</span><span data-line="3"> offload v=N+1              │                              │
+</span><span data-line="4"> notify_version (sync) ─► phase 1 DEFERRED (eval path)     │
+</span><span data-line="5">                         phase 2: wait for all             │
+</span><span data-line="6"> Trainer model1 arrives ─────────────► leader triggered    │
+</span><span data-line="7">                         │                                 │
+</span><span data-line="8">                         │  leader:                        │
+</span><span data-line="9">                         │    1. flow.pause() data acq     │
+</span><span data-line="10">                         │    2. clear suspects            │
+</span><span data-line="11">                         │    3. reset_training_engine ────►│ cancel arun_episode tasks
+</span><span data-line="12">                         │    4. /notify_version{model0} ──►│ pull + pause/load/resume m0
+</span><span data-line="13">                         │    5. /notify_version{model1} ──►│ pull + pause/load/resume m1
+</span><span data-line="14">                         │    6. run eval                  │
+</span><span data-line="15">                         │    7. flow.resume()             │
+</span><span data-line="16">                         │                                 │
+</span><span data-line="17">                         │  notify_all() → return eval_results
+</span><span data-line="18"> ◄─── eval_results ──────┘                                 │
+</span><span data-line="19"> train step N+1                                            │
+</span></pre></div>
 </div>
 <p>Eval runs synchronously because the trainer needs eval results before
 continuing. The sequential load
@@ -629,41 +412,42 @@ preventing the multi-model deadlock that earlier designs suffered from.</p>
 </section>
 </section>
 <section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
 <p>In the launch script, each trainer gets a distinct HTTP port for its
 sender agent:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># TCP weight-transfer ports (one per trainer)</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL0</span><span class="o">=</span><span class="m">19861</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL1</span><span class="o">=</span><span class="m">19862</span>
-
-<span class="c1"># Trainer model0</span>
-<span class="nv">WEIGHT_TRANSFER_HTTP_PORT</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL0</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>torchrun<span class="w"> </span>...<span class="w"> </span>--trainer<span class="w"> </span>trainer_model0
-
-<span class="c1"># Trainer model1</span>
-<span class="nv">WEIGHT_TRANSFER_HTTP_PORT</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL1</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>torchrun<span class="w"> </span>...<span class="w"> </span>--trainer<span class="w"> </span>trainer_model1
-</pre></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># TCP weight-transfer ports (one per trainer)</span>
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL0</span><span class="o">=</span><span class="m">19861</span>
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL1</span><span class="o">=</span><span class="m">19862</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># Trainer model0</span>
+</span><span data-line="6"><span class="nv">WEIGHT_TRANSFER_HTTP_PORT</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL0</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span data-line="7"><span class="w">  </span>torchrun<span class="w"> </span>...<span class="w"> </span>--trainer<span class="w"> </span>trainer_model0
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Trainer model1</span>
+</span><span data-line="10"><span class="nv">WEIGHT_TRANSFER_HTTP_PORT</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">WEIGHT_TRANSFER_HTTP_PORT_MODEL1</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span data-line="11"><span class="w">  </span>torchrun<span class="w"> </span>...<span class="w"> </span>--trainer<span class="w"> </span>trainer_model1
+</span></pre></div>
 </div>
 <p>The experiment YAML defines model_ids that link trainers to RaaS engines:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">raas</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">models</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">model0</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sglang</span>
-<span class="w">    </span><span class="nt">model1</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sglang</span>
-
-<span class="nt">trainer_model0</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model0</span><span class="w">    </span><span class="c1"># links to raas.models.model0</span>
-
-<span class="nt">trainer_model1</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model1</span><span class="w">    </span><span class="c1"># links to raas.models.model1</span>
-</pre></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nt">raas</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">models</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">model0</span><span class="p">:</span>
+</span><span data-line="4"><span class="w">      </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sglang</span>
+</span><span data-line="5"><span class="w">    </span><span class="nt">model1</span><span class="p">:</span>
+</span><span data-line="6"><span class="w">      </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sglang</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="nt">trainer_model0</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model0</span><span class="w">    </span><span class="c1"># links to raas.models.model0</span>
+</span><span data-line="10">
+</span><span data-line="11"><span class="nt">trainer_model1</span><span class="p">:</span>
+</span><span data-line="12"><span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model1</span><span class="w">    </span><span class="c1"># links to raas.models.model1</span>
+</span></pre></div>
 </div>
 </section>
 <section id="key-source-files">
-<h2>Key Source Files<a class="headerlink" href="#key-source-files" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="table">
+<h2>Key Source Files<a class="headerlink" href="#key-source-files" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Component</p></th>
 <th class="head"><p>File</p></th>
@@ -709,106 +493,40 @@ sender agent:</p>
 </section>
 </section>
 
-
-                </article>
-              
-
-              
-              
-              
-              
-                <footer class="prev-next-footer d-print-none">
-                  
-<div class="prev-next-area">
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
 </div>
-                </footer>
-              
-            </div>
-            
-            
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item"><div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sender-side-trainer-weightmanager-senderagent">Sender Side: Trainer → WeightManager → SenderAgent</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coordination-astraflow-version-barrier">Coordination: AstraFlow Version Barrier</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#async-notifications">Async Notifications</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#receiver-side-astraflow-raas-tcp-pull">Receiver Side: AstraFlow → RaaS → TCP Pull</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#one-http-request-per-model-per-raas">One HTTP Request Per Model Per RaaS</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#per-model-weight-update-cycle">Per-Model Weight Update Cycle</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-model-ordering">Multi-Model Ordering</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#end-to-end-timeline">End-to-End Timeline</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-eval-step-async-fire-and-forget">Non-Eval Step (async fire-and-forget)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eval-step-deferred-leader-serialises-loads">Eval Step (deferred, leader serialises loads)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-source-files">Key Source Files</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
-          </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025-2026, AstraFlow Team</p>
   
-  <div class="footer-item">
+  <p>
+    Made with
     
-<p class="component-author">
-By AstraFlow Team
-</p>
-
-  </div>
-  
-  <div class="footer-item">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
     
-
-  <p class="copyright">
-    
-      © Copyright 2025-2026, AstraFlow Team.
-      <br/>
-    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
   </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
 </div>
-          </footer>
-        
-
-      </main>
+      <div class="sy-foot-socials">
+<a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
     </div>
   </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
-
-  <footer class="bd-footer">
-  </footer>
-  </body>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
 </html>

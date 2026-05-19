@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="violet" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Trainer - AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="WeightManager" href="weight-manager.html" /><link rel="prev" title="RaaS" href="raas.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dataflow - AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="RaaS" href="raas.html" /><link rel="prev" title="System Overview" href="overview.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
@@ -19,7 +19,7 @@
   --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
 }
 </style>
-    <meta property="og:type" content="website"/><meta property="og:title" content="Trainer"/>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Dataflow"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -67,9 +67,9 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dataflow.html">Dataflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="raas.html">RaaS</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
 </ul>
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
@@ -91,11 +91,8 @@ data-aria-dark="Switch to auto color mode">
       <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
-<li><a class="reference internal" href="#design-principle-swappable-trainer">Design Principle: Swappable Trainer</a><ul>
-<li><a class="reference internal" href="#trainer-dataflow-api">Trainer &#8594; Dataflow API</a></li>
-<li><a class="reference internal" href="#raas-trainer-api-weight-sender">RaaS &#8594; Trainer API (weight sender)</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#key-components">Key Components</a></li>
+<li><a class="reference internal" href="#how-it-fits">How It Fits</a></li>
 </ul>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
@@ -113,7 +110,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="1" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">Trainer</strong>
+        <strong itemprop="name">Dataflow</strong>
         <meta itemprop="position" content="2" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -126,112 +123,28 @@ data-aria-dark="Switch to auto color mode">
 </div><div class="flex flex-col break-words justify-between">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="trainer">
-<h1>Trainer<a class="headerlink" href="#trainer" title="Link to this heading">¶</a></h1>
-<p>The Trainer (<code class="docutils literal notranslate"><span class="pre">astraflow/train_worker/</span></code>) is the distributed training engine
-supporting FSDP and Megatron backends.</p>
-<section id="design-principle-swappable-trainer">
-<h2>Design Principle: Swappable Trainer<a class="headerlink" href="#design-principle-swappable-trainer" title="Link to this heading">¶</a></h2>
-<p>The trainer is a <strong>swappable component</strong>. AstraFlow provides a built-in
-PPO trainer, but the system is designed so that users can replace it with
-their own training framework. The trainer communicates with Dataflow
-purely over HTTP — there is no shared library or class hierarchy coupling
-the two.</p>
-<p>Customizing a trainer is extremely simple — the entire integration surface
-is just <strong>6 HTTP APIs</strong> (3 outbound calls to Dataflow + 3 inbound
-endpoints for weight transfer). Any training framework (PyTorch, JAX,
-Megatron, custom) can integrate with Dataflow as long as it speaks this
-protocol:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">┌──────────────┐     HTTP (3 calls)     ┌──────────────┐
-</span><span data-line="2">│              │ ──────────────────────► │              │
-</span><span data-line="3">│   Trainer    │                        │  Dataflow    │
-</span><span data-line="4">│  (swappable) │                        │  (stable)    │
-</span><span data-line="5">│              │ ◄────────────────────  │              │
-</span><span data-line="6">└──────┬───────┘                        └──────────────┘
-</span><span data-line="7">       │
-</span><span data-line="8">       │  TCP weight pull (3 endpoints)
-</span><span data-line="9">       │
-</span><span data-line="10">┌──────▼───────┐
-</span><span data-line="11">│    RaaS      │
-</span><span data-line="12">│  (swappable) │
-</span><span data-line="13">└──────────────┘
-</span></pre></div>
-</div>
-<p>The trainer interacts with two components:</p>
+          <section class="tex2jax_ignore mathjax_ignore" id="dataflow">
+<h1>Dataflow<a class="headerlink" href="#dataflow" title="Link to this heading">¶</a></h1>
+<p>The Dataflow core (<code class="docutils literal notranslate"><span class="pre">astraflow/dataflow/</span></code>) is the orchestration layer that manages async data flow between rollout generation and training.</p>
+<section id="key-components">
+<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Dataflow service</strong> (outbound) — 3 HTTP calls for registration, data
-pulling, and version notification.</p></li>
-<li><p><strong>RaaS</strong> (inbound) — 3 HTTP endpoints served by a weight sender agent
-that RaaS connects to for pulling updated weights.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">AstraFlow</span></code></strong> — Main orchestrator that composes data acquisition and serving. Manages rollout buffers, filtering, staleness tracking, and replay logic.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">DataAcquisition</span></code></strong> — Runs threaded producer loops that pull rollouts from RaaS, filter accepted samples, and publish to data serving.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">DataServing</span></code></strong> — Owns fresh/replay buffers, manages staleness and normalization, and exposes batch-fetch APIs.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">RaaS2InferenceEngine</span></code></strong> — HTTP client that submits rollout requests to RaaS and polls for completions.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">RaaSPool</span></code></strong> — Manages a pool of RaaS instances with heartbeating and dynamic registration.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">AstraFlowService</span></code></strong> — Flask HTTP service exposing REST endpoints. Trainers register via <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code>, fetch batches via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code>, and trigger weight sync via <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code>. RaaS instances join the pool via <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code> and are removed via <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/deregister_raas</span></code>.</p></li>
 </ul>
-<section id="trainer-dataflow-api">
-<h3>Trainer → Dataflow API<a class="headerlink" href="#trainer-dataflow-api" title="Link to this heading">¶</a></h3>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Category</p></th>
-<th class="head"><p>Method</p></th>
-<th class="head"><p>Endpoint</p></th>
-<th class="head"><p>Purpose</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Registration</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">/ready</span></code></p></td>
-<td><p>Signal readiness, pass batch size and sender endpoint</p></td>
-</tr>
-<tr class="row-odd"><td><p>Data</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">/batch</span></code></p></td>
-<td><p>Pull a training batch (blocks until available)</p></td>
-</tr>
-<tr class="row-even"><td><p>Weights</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">/notify_version</span></code></p></td>
-<td><p>Notify new weight version, trigger RaaS broadcast</p></td>
-</tr>
-</tbody>
-</table>
-</div>
 </section>
-<section id="raas-trainer-api-weight-sender">
-<h3>RaaS → Trainer API (weight sender)<a class="headerlink" href="#raas-trainer-api-weight-sender" title="Link to this heading">¶</a></h3>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Category</p></th>
-<th class="head"><p>Method</p></th>
-<th class="head"><p>Endpoint</p></th>
-<th class="head"><p>Frequency</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Weights</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">GET</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">/get_buffer_info</span></code></p></td>
-<td><p>Once per RaaS (query tensor layout)</p></td>
-</tr>
-<tr class="row-odd"><td><p>Weights</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">/register_sglang_instance</span></code></p></td>
-<td><p>Once per RaaS (establish TCP link)</p></td>
-</tr>
-<tr class="row-even"><td><p>Weights</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">/request_transfer</span></code></p></td>
-<td><p>Every step (pull weights over TCP)</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>The weight sender is provided as a reusable library
-(<code class="docutils literal notranslate"><span class="pre">astraflow.weight_manager.transfer.sender_agent</span></code>) so custom trainers
-don’t need to reimplement TCP/ZMQ machinery. See
-<a class="reference internal" href="weight-manager.html"><span class="std std-doc">WeightManager</span></a> for details.</p>
-<p>For a full guide on implementing a custom trainer, see
-<a class="reference internal" href="custom-trainer.html"><span class="std std-doc">Custom Trainer Integration</span></a>.</p>
-</section>
+<section id="how-it-fits">
+<h2>How It Fits<a class="headerlink" href="#how-it-fits" title="Link to this heading">¶</a></h2>
+<p>Dataflow sits between RaaS (upstream) and Trainer (downstream):</p>
+<ul class="simple">
+<li><p>Requests rollouts from RaaS via <code class="docutils literal notranslate"><span class="pre">RaaS2InferenceEngine</span></code></p></li>
+<li><p>Buffers and serves training batches to Trainer via <code class="docutils literal notranslate"><span class="pre">AstraFlowService</span></code></p></li>
+<li><p>Coordinates weight sync timing between Trainer and RaaS</p></li>
+</ul>
 </section>
 </section>
 
@@ -241,16 +154,16 @@ don’t need to reimplement TCP/ZMQ machinery. See
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="raas.html">
+    <a href="overview.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">RaaS</div></div>
+        <span>Previous</span><div class="title">System Overview</div></div>
     </a>
   </div><div class="navigation-next">
-    <a href="weight-manager.html">
+    <a href="raas.html">
       <div class="page-info">
         <span>Next</span>
-        <div class="title">WeightManager</div>
+        <div class="title">RaaS</div>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>

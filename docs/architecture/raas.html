@@ -1,378 +1,161 @@
-
 <!DOCTYPE html>
-
-
-<html lang="en" data-content_root="../" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>RaaS &#8212; AstraFlow 0.1.0 documentation</title>
-  
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
-  </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>RaaS - AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Trainer" href="trainer.html" /><link rel="prev" title="Dataflow" href="dataflow.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=96ea4a36" />
-  
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
-
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/raas';</script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Trainer" href="trainer.html" />
-    <link rel="prev" title="AstraFlow" href="astraflow.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.0" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=338524fc" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="RaaS"/>
+    <meta name="twitter:card" content="summary"/>
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
-  
-  
-  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
-  
-  <div id="pst-scroll-pixel-helper"></div>
-  
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
-  
-  <dialog id="pst-search-dialog">
-    
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         placeholder="Search..."
-         aria-label="Search..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
-
-  <div class="pst-async-banner-revealer d-none">
-  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
-</div>
-
-  
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
-    </header>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
       
       
-      
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
-        
-
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
+      <strong>AstraFlow</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
   </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-
-  
-    
-  
-
-<a class="navbar-brand logo" href="../index.html">
-  
-  
-  
-  
-  
-    
-    
-      
-    
-    
-    <img src="../_static/logo.jpg" class="logo__image only-light" alt="AstraFlow 0.1.0 documentation - Home"/>
-    <img src="../_static/logo.jpg" class="logo__image only-dark pst-js-only" alt="AstraFlow 0.1.0 documentation - Home"/>
-  
-  
-</a></div>
-        <div class="sidebar-primary-item">
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
-        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Overview</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="nav bd-sidenav">
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quick Start</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Components</span></p>
-<ul class="current nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="astraflow.html">AstraFlow</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">RaaS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataflow.html">Dataflow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">RaaS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom-trainer.html">Custom Trainer Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom-raas.html">Custom RaaS Integration</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes</span></p>
-<ul class="nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent (Math)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search (ASearcher)</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer-guide/contributing.html">Contributing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search</a></li>
 </ul>
 
-    </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
-  </div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main" role="main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article d-print-none">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</button></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/architecture/raas.md" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.md</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
-
-
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
-<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>RaaS</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-components">Key Components</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#responsibilities">Responsibilities</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-fits">How It Fits</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#raas-http-api">RaaS HTTP API</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#health-status-json">Health &amp; Status (JSON)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rollout-pickle">Rollout (pickle)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-sync-pickle">Weight Sync (pickle)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-pickle">Evaluation (pickle)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lifecycle-pickle">Lifecycle (pickle)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apis-that-raas-calls-raas-as-client">APIs That RaaS Calls (RaaS as Client)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#astraflow-service">AstraFlow Service</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer-sender-agent-weight-transfer">Trainer Sender Agent (Weight Transfer)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#call-graph-raas-centric">Call Graph (RaaS-Centric)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-startup-vs-recovery">Initial Startup vs Recovery</a></li>
-</ul>
-</li>
-</ul>
-            </nav>
         </div>
+      </div>
     </div>
-</div>
-
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article">
-                  
-  <section class="tex2jax_ignore mathjax_ignore" id="raas">
-<h1>RaaS<a class="headerlink" href="#raas" title="Link to this heading">#</a></h1>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#key-components">Key Components</a></li>
+<li><a class="reference internal" href="#responsibilities">Responsibilities</a></li>
+<li><a class="reference internal" href="#how-it-fits">How It Fits</a></li>
+<li><a class="reference internal" href="#raas-http-api">RaaS HTTP API</a><ul>
+<li><a class="reference internal" href="#health-status-json">Health &amp; Status (JSON)</a></li>
+<li><a class="reference internal" href="#rollout-pickle">Rollout (pickle)</a></li>
+<li><a class="reference internal" href="#weight-sync-pickle">Weight Sync (pickle)</a></li>
+<li><a class="reference internal" href="#evaluation-pickle">Evaluation (pickle)</a></li>
+<li><a class="reference internal" href="#lifecycle-pickle">Lifecycle (pickle)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#apis-that-raas-calls-raas-as-client">APIs That RaaS Calls (RaaS as Client)</a><ul>
+<li><a class="reference internal" href="#dataflow-service">Dataflow Service</a></li>
+<li><a class="reference internal" href="#trainer-sender-agent-weight-transfer">Trainer Sender Agent (Weight Transfer)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#call-graph-raas-centric">Call Graph (RaaS-Centric)</a><ul>
+<li><a class="reference internal" href="#initial-startup-vs-recovery">Initial Startup vs Recovery</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">AstraFlow</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">RaaS</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="raas">
+<h1>RaaS<a class="headerlink" href="#raas" title="Link to this heading">¶</a></h1>
 <p>RaaS (Remote Agentic Serving, <code class="docutils literal notranslate"><span class="pre">astraflow/raas/</span></code>) manages inference engines and rollout generation.</p>
 <section id="key-components">
-<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">#</a></h2>
+<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">RaaS3Manager</span></code></strong> — Central async manager that maintains per-model inference engines, handles workflow registration, and manages pause/resume for weight sync.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">routes.py</span></code></strong> — FastAPI routes exposing the RaaS HTTP API.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">tcp_receiver.py</span></code></strong> — TCP weight receiver that pulls weights from the Trainer’s sender agent.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">server/routes.py</span></code></strong> — FastAPI routes exposing the RaaS HTTP API.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">server/tcp_receiver.py</span></code></strong> — TCP weight receiver that pulls weights from the Trainer’s sender agent.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">engine/</span></code></strong> — Backend engine implementations (SGLang, vLLM wrappers).</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">api/</span></code></strong> — Configuration dataclasses and engine specs.</p></li>
 </ul>
 </section>
 <section id="responsibilities">
-<h2>Responsibilities<a class="headerlink" href="#responsibilities" title="Link to this heading">#</a></h2>
+<h2>Responsibilities<a class="headerlink" href="#responsibilities" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Launch and manage vLLM/SGLang inference servers.</p></li>
 <li><p>Execute rollout workflows with registered reward functions.</p></li>
@@ -381,10 +164,10 @@
 </ul>
 </section>
 <section id="how-it-fits">
-<h2>How It Fits<a class="headerlink" href="#how-it-fits" title="Link to this heading">#</a></h2>
+<h2>How It Fits<a class="headerlink" href="#how-it-fits" title="Link to this heading">¶</a></h2>
 <p>RaaS is the inference side of the loop:</p>
 <ul class="simple">
-<li><p>Receives rollout requests from AstraFlow</p></li>
+<li><p>Receives rollout requests from Dataflow</p></li>
 <li><p>Generates completions using managed inference engines</p></li>
 <li><p>Accepts weight updates from Trainer via pull-based TCP transfer</p></li>
 </ul>
@@ -393,15 +176,16 @@
 </section>
 <hr class="docutils" />
 <section id="raas-http-api">
-<h2>RaaS HTTP API<a class="headerlink" href="#raas-http-api" title="Link to this heading">#</a></h2>
+<h2>RaaS HTTP API<a class="headerlink" href="#raas-http-api" title="Link to this heading">¶</a></h2>
 <p>All endpoints use binary pickle/cloudpickle serialization
 (<code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/octet-stream</span></code>) <strong>except</strong> <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> and
 <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code>, which return JSON. Pickle endpoints wrap responses
 as <code class="docutils literal notranslate"><span class="pre">{&quot;ok&quot;:</span> <span class="pre">True,</span> <span class="pre">&quot;result&quot;:</span> <span class="pre">...}</span></code> on success or <code class="docutils literal notranslate"><span class="pre">{&quot;ok&quot;:</span> <span class="pre">False,</span> <span class="pre">&quot;error&quot;:</span> <span class="pre">...}</span></code>
 on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/routes.py</span></code>.</p>
 <section id="health-status-json">
-<h3>Health &amp; Status (JSON)<a class="headerlink" href="#health-status-json" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table">
+<h3>Health &amp; Status (JSON)<a class="headerlink" href="#health-status-json" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Path</p></th>
@@ -422,8 +206,9 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="rollout-pickle">
-<h3>Rollout (pickle)<a class="headerlink" href="#rollout-pickle" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table">
+<h3>Rollout (pickle)<a class="headerlink" href="#rollout-pickle" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Path</p></th>
@@ -448,8 +233,9 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="weight-sync-pickle">
-<h3>Weight Sync (pickle)<a class="headerlink" href="#weight-sync-pickle" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table">
+<h3>Weight Sync (pickle)<a class="headerlink" href="#weight-sync-pickle" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Path</p></th>
@@ -466,8 +252,9 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="evaluation-pickle">
-<h3>Evaluation (pickle)<a class="headerlink" href="#evaluation-pickle" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table">
+<h3>Evaluation (pickle)<a class="headerlink" href="#evaluation-pickle" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Path</p></th>
@@ -500,8 +287,9 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="lifecycle-pickle">
-<h3>Lifecycle (pickle)<a class="headerlink" href="#lifecycle-pickle" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table">
+<h3>Lifecycle (pickle)<a class="headerlink" href="#lifecycle-pickle" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Path</p></th>
@@ -520,12 +308,13 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </section>
 <hr class="docutils" />
 <section id="apis-that-raas-calls-raas-as-client">
-<h2>APIs That RaaS Calls (RaaS as Client)<a class="headerlink" href="#apis-that-raas-calls-raas-as-client" title="Link to this heading">#</a></h2>
+<h2>APIs That RaaS Calls (RaaS as Client)<a class="headerlink" href="#apis-that-raas-calls-raas-as-client" title="Link to this heading">¶</a></h2>
 <p>RaaS is not only a server — it also acts as a client to two external services.</p>
-<section id="astraflow-service">
-<h3>AstraFlow Service<a class="headerlink" href="#astraflow-service" title="Link to this heading">#</a></h3>
-<p>On startup, RaaS self-registers with the AstraFlow orchestrator:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<section id="dataflow-service">
+<h3>Dataflow Service<a class="headerlink" href="#dataflow-service" title="Link to this heading">¶</a></h3>
+<p>On startup, RaaS self-registers with the Dataflow orchestrator:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Target</p></th>
@@ -534,20 +323,21 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
-<td><p>AstraFlow <code class="docutils literal notranslate"><span class="pre">/register_raas</span></code></p></td>
+<td><p>Dataflow <code class="docutils literal notranslate"><span class="pre">/register_raas</span></code></p></td>
 <td><p>Register this RaaS instance into the global pool</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>This is triggered at boot when <code class="docutils literal notranslate"><span class="pre">--astraflow-url</span></code> is provided. AstraFlow then knows to route rollout requests to this instance.</p>
+<p>This is triggered at boot when <code class="docutils literal notranslate"><span class="pre">--astraflow-url</span></code> is provided. Dataflow then knows to route rollout requests to this instance.</p>
 </section>
 <section id="trainer-sender-agent-weight-transfer">
-<h3>Trainer Sender Agent (Weight Transfer)<a class="headerlink" href="#trainer-sender-agent-weight-transfer" title="Link to this heading">#</a></h3>
+<h3>Trainer Sender Agent (Weight Transfer)<a class="headerlink" href="#trainer-sender-agent-weight-transfer" title="Link to this heading">¶</a></h3>
 <p>When <code class="docutils literal notranslate"><span class="pre">/notify_version</span></code> is called (one call per model) and RaaS detects a
 version lag, it initiates a <strong>pull-based TCP weight transfer</strong> by calling
 the Trainer’s sender agent:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Target</p></th>
@@ -571,211 +361,140 @@ the Trainer’s sender agent:</p>
 </table>
 </div>
 <p>The flow inside <code class="docutils literal notranslate"><span class="pre">manager.notify_version(model_id,</span> <span class="pre">version,</span> <span class="pre">sender_endpoint)</span></code>
-(<code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py:1556</span></code>):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>AstraFlow ──POST /notify_version──&gt; RaaS (for one model_id)
-  {model_id, version, sender_endpoint}          │
-                                                │ acquire per-model asyncio.Lock
-                                                │
-                                                ├─ GET  /get_buffer_info ─────────&gt; Trainer SenderAgent (first pull only)
-                                                ├─ POST /register_sglang_instance ─&gt; Trainer SenderAgent (first pull only)
-                                                ├─ POST /request_transfer ────────&gt; Trainer SenderAgent
-                                                ├─ ← TCP bulk transfer + ZMQ signal
-                                                │
-                                                ├─ save bytes to /dev/shm as safetensors
-                                                ├─ engine.pause_generation()
-                                                ├─ engine.load_weights_from_path(...)
-                                                └─ engine.continue_generation()
-</pre></div>
+(<code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py:1648</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Dataflow  ──POST /notify_version──&gt; RaaS (for one model_id)
+</span><span data-line="2">  {model_id, version, sender_endpoint}          │
+</span><span data-line="3">                                                │ acquire per-model asyncio.Lock
+</span><span data-line="4">                                                │
+</span><span data-line="5">                                                ├─ GET  /get_buffer_info ─────────&gt; Trainer SenderAgent (first pull only)
+</span><span data-line="6">                                                ├─ POST /register_sglang_instance ─&gt; Trainer SenderAgent (first pull only)
+</span><span data-line="7">                                                ├─ POST /request_transfer ────────&gt; Trainer SenderAgent
+</span><span data-line="8">                                                ├─ ← TCP bulk transfer + ZMQ signal
+</span><span data-line="9">                                                │
+</span><span data-line="10">                                                ├─ save bytes to /dev/shm as safetensors
+</span><span data-line="11">                                                ├─ engine.pause_generation()
+</span><span data-line="12">                                                ├─ engine.load_weights_from_path(...)
+</span><span data-line="13">                                                └─ engine.continue_generation()
+</span></pre></div>
 </div>
-<p>For multi-model training, AstraFlow’s Python-side barrier sends one such
+<p>For multi-model training, Dataflow’s Python-side barrier sends one such
 call per model, in sequence or in parallel depending on whether eval is
 requested — see <a class="reference internal" href="multi-agent-weight-transfer.html"><span class="std std-doc">Multi-Agent Weight Transfer</span></a>.</p>
 </section>
 </section>
 <hr class="docutils" />
 <section id="call-graph-raas-centric">
-<h2>Call Graph (RaaS-Centric)<a class="headerlink" href="#call-graph-raas-centric" title="Link to this heading">#</a></h2>
+<h2>Call Graph (RaaS-Centric)<a class="headerlink" href="#call-graph-raas-centric" title="Link to this heading">¶</a></h2>
 <p>All HTTP calls to and from RaaS, organized by phase.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                                    ┌─────────────────────┐
-                                    │        RaaS         │
-                                    │      (raas/)        │
-                                    └──────────┬──────────┘
-                                               │
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║  STARTUP                                                       ║
-    ╚══════════════════════════════════════════════════════════════════╝
-                                               │
-      RaaS ──POST /register_raas──────────&gt; AstraFlow     join the pool
-                                               │
-      AstraFlow ──POST /register_workflow─&gt; RaaS          register rollout workflows
-                                               │
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║  ROLLOUT (continuous, async)                                   ║
-    ╚══════════════════════════════════════════════════════════════════╝
-                                               │
-      AstraFlow ──GET /availability───────&gt; RaaS          check capacity
-      AstraFlow ──POST /submit────────────&gt; RaaS          submit prompts
-      AstraFlow ──POST /pull──────────────&gt; RaaS          collect results
-                                               │
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║  WEIGHT SYNC (per training step, one call per model)             ║
-    ╚══════════════════════════════════════════════════════════════════╝
-                                               │
-      AstraFlow ──POST /notify_version──────&gt; RaaS        trigger weight load
-                  {model_id, version,
-                   sender_endpoint}             │
-                                               │
-        RaaS ──POST /register_sglang_instance──&gt; Trainer      register as receiver (first pull only)
-        RaaS ──POST /request_transfer──────────&gt; Trainer      pull weights via TCP
-                                               │
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║  EVALUATION (triggered after weight sync)                      ║
-    ╚══════════════════════════════════════════════════════════════════╝
-                                               │
-      AstraFlow ──POST /eval_start────────&gt; RaaS          begin eval session
-      AstraFlow ──POST /eval_submit───────&gt; RaaS          submit eval samples
-      AstraFlow ──POST /eval_pull─────────&gt; RaaS          collect eval results
-      AstraFlow ──POST /eval_end──────────&gt; RaaS          end eval session
-                                               │
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║  LIFECYCLE                                                     ║
-    ╚══════════════════════════════════════════════════════════════════╝
-                                               │
-      AstraFlow ──GET /status─────────────&gt; RaaS          health check
-      AstraFlow ──POST /shutdown──────────&gt; RaaS          graceful shutdown
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">                                    ┌─────────────────────┐
+</span><span data-line="2">                                    │        RaaS         │
+</span><span data-line="3">                                    │      (raas/)        │
+</span><span data-line="4">                                    └──────────┬──────────┘
+</span><span data-line="5">                                               │
+</span><span data-line="6">    ╔══════════════════════════════════════════════════════════════════╗
+</span><span data-line="7">    ║  STARTUP                                                       ║
+</span><span data-line="8">    ╚══════════════════════════════════════════════════════════════════╝
+</span><span data-line="9">                                               │
+</span><span data-line="10">      RaaS ──POST /register_raas──────────&gt; Dataflow      join the pool
+</span><span data-line="11">                                               │
+</span><span data-line="12">      Dataflow ──POST /register_workflow──&gt; RaaS          register rollout workflows
+</span><span data-line="13">                                               │
+</span><span data-line="14">    ╔══════════════════════════════════════════════════════════════════╗
+</span><span data-line="15">    ║  ROLLOUT (continuous, async)                                   ║
+</span><span data-line="16">    ╚══════════════════════════════════════════════════════════════════╝
+</span><span data-line="17">                                               │
+</span><span data-line="18">      Dataflow ──GET /availability────────&gt; RaaS          check capacity
+</span><span data-line="19">      Dataflow ──POST /submit─────────────&gt; RaaS          submit prompts
+</span><span data-line="20">      Dataflow ──POST /pull───────────────&gt; RaaS          collect results
+</span><span data-line="21">                                               │
+</span><span data-line="22">    ╔══════════════════════════════════════════════════════════════════╗
+</span><span data-line="23">    ║  WEIGHT SYNC (per training step, one call per model)             ║
+</span><span data-line="24">    ╚══════════════════════════════════════════════════════════════════╝
+</span><span data-line="25">                                               │
+</span><span data-line="26">      Dataflow ──POST /notify_version───────&gt; RaaS        trigger weight load
+</span><span data-line="27">                  {model_id, version,
+</span><span data-line="28">                   sender_endpoint}             │
+</span><span data-line="29">                                               │
+</span><span data-line="30">        RaaS ──POST /register_sglang_instance──&gt; Trainer      register as receiver (first pull only)
+</span><span data-line="31">        RaaS ──POST /request_transfer──────────&gt; Trainer      pull weights via TCP
+</span><span data-line="32">                                               │
+</span><span data-line="33">    ╔══════════════════════════════════════════════════════════════════╗
+</span><span data-line="34">    ║  EVALUATION (triggered after weight sync)                      ║
+</span><span data-line="35">    ╚══════════════════════════════════════════════════════════════════╝
+</span><span data-line="36">                                               │
+</span><span data-line="37">      Dataflow ──POST /eval_start─────────&gt; RaaS          begin eval session
+</span><span data-line="38">      Dataflow ──POST /eval_submit────────&gt; RaaS          submit eval samples
+</span><span data-line="39">      Dataflow ──POST /eval_pull──────────&gt; RaaS          collect eval results
+</span><span data-line="40">      Dataflow ──POST /eval_end───────────&gt; RaaS          end eval session
+</span><span data-line="41">                                               │
+</span><span data-line="42">    ╔══════════════════════════════════════════════════════════════════╗
+</span><span data-line="43">    ║  LIFECYCLE                                                     ║
+</span><span data-line="44">    ╚══════════════════════════════════════════════════════════════════╝
+</span><span data-line="45">                                               │
+</span><span data-line="46">      Dataflow ──GET /status──────────────&gt; RaaS          health check
+</span><span data-line="47">      Dataflow ──POST /shutdown───────────&gt; RaaS          graceful shutdown
+</span></pre></div>
 </div>
-<p><strong>Inbound (RaaS as server):</strong> AstraFlow calls RaaS for rollout, eval, weight sync, and lifecycle management.
-<strong>Outbound (RaaS as client):</strong> RaaS calls AstraFlow once at startup (registration) and calls Trainer directly during weight sync (TCP pull).</p>
+<p><strong>Inbound (RaaS as server):</strong> Dataflow calls RaaS for rollout, eval, weight sync, and lifecycle management.
+<strong>Outbound (RaaS as client):</strong> RaaS calls Dataflow once at startup (registration) and calls Trainer directly during weight sync (TCP pull).</p>
 <section id="initial-startup-vs-recovery">
-<h3>Initial Startup vs Recovery<a class="headerlink" href="#initial-startup-vs-recovery" title="Link to this heading">#</a></h3>
+<h3>Initial Startup vs Recovery<a class="headerlink" href="#initial-startup-vs-recovery" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><strong>Fresh start (version=0):</strong> Both RaaS and Trainer load the same model checkpoint independently. No weight transfer needed — data acquisition begins immediately.</p></li>
-<li><p><strong>Recovery (version &gt; 0):</strong> Trainer sends <code class="docutils literal notranslate"><span class="pre">recovered_version</span></code> in <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code>. AstraFlow then fans out <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> to all RaaS instances (once per registered model) before starting data acquisition, ensuring every RaaS loads the recovered weights.</p></li>
+<li><p><strong>Recovery (version &gt; 0):</strong> Trainer sends <code class="docutils literal notranslate"><span class="pre">recovered_version</span></code> in <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code>. Dataflow then fans out <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> to all RaaS instances (once per registered model) before starting data acquisition, ensuring every RaaS loads the recovered weights.</p></li>
 </ul>
 </section>
 </section>
 </section>
 
-
-                </article>
-              
-
-              
-              
-              
-              
-                <footer class="prev-next-footer d-print-none">
-                  
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="astraflow.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">AstraFlow</p>
-      </div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="dataflow.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Dataflow</div></div>
     </a>
-    <a class="right-next"
-       href="trainer.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Trainer</p>
+  </div><div class="navigation-next">
+    <a href="trainer.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Trainer</div>
       </div>
-      <i class="fa-solid fa-angle-right"></i>
+      <i class="i-lucide chevron-right"></i>
     </a>
+  </div></div></div>
+    </div>
+  </main>
 </div>
-                </footer>
-              
-            </div>
-            
-            
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item"><div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-components">Key Components</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#responsibilities">Responsibilities</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-fits">How It Fits</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#raas-http-api">RaaS HTTP API</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#health-status-json">Health &amp; Status (JSON)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rollout-pickle">Rollout (pickle)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-sync-pickle">Weight Sync (pickle)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation-pickle">Evaluation (pickle)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lifecycle-pickle">Lifecycle (pickle)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apis-that-raas-calls-raas-as-client">APIs That RaaS Calls (RaaS as Client)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#astraflow-service">AstraFlow Service</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trainer-sender-agent-weight-transfer">Trainer Sender Agent (Weight Transfer)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#call-graph-raas-centric">Call Graph (RaaS-Centric)</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-startup-vs-recovery">Initial Startup vs Recovery</a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
-          </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025-2026, AstraFlow Team</p>
   
-  <div class="footer-item">
+  <p>
+    Made with
     
-<p class="component-author">
-By AstraFlow Team
-</p>
-
-  </div>
-  
-  <div class="footer-item">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
     
-
-  <p class="copyright">
-    
-      © Copyright 2025-2026, AstraFlow Team.
-      <br/>
-    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
   </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
 </div>
-          </footer>
-        
-
-      </main>
+      <div class="sy-foot-socials">
+<a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
     </div>
   </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
-
-  <footer class="bd-footer">
-  </footer>
-  </body>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
 </html>

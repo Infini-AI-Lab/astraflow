@@ -1,4 +1,60 @@
-.navbar-brand img {
-    max-height: 80px !important;
-    width: auto !important;
+/* Pin the accent to the AstraFlow website violet (#7c3aed / #6d28d9).
+   accent_color="violet" in conf.py sets the coherent family; this matches the exact brand hue. */
+html.light {
+    --sy-c-link: #7c3aed;
+    --sy-c-link-hover: #6d28d9;
+}
+
+/* Logo image sizing (Shibuya: header brand). Applies once logo.jpg is restored. */
+.sy-head-brand img {
+    max-height: 32px;
+    width: auto;
+}
+
+/* Larger "AstraFlow" brand text in the top header */
+.sy-head-brand strong {
+    font-size: 1.6rem;
+}
+
+/* Version number, inline to the right of the AstraFlow brand text */
+.sy-head-brand strong::after {
+    content: "v0.1.0";
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    opacity: 0.55;
+    margin-left: 0.4rem;
+}
+
+/* Top header bar (light mode only): a soft violet wash + a crisp violet underline.
+   #f3f1fb is the website's --code-bg — a refined tint that warms the bar without
+   looking like a colored band. The 2px underline carries the actual accent. */
+html.light .sy-head-blur {
+    background-color: rgba(243, 241, 251, 0.92);
+    box-shadow: 0 2px 4px var(--gray-a1), 0 2px 0 var(--sy-c-link);
+}
+
+/* Index-page toctree links: normal text color with a violet underline. */
+.toctree-wrapper a.reference {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--sy-c-link);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+}
+.toctree-wrapper a.reference:hover {
+    color: var(--sy-c-link);
+}
+
+/* Section captions on the index page (Get Started, System Components, ...).
+   Needs the `.yue` prefix to match Shibuya's own selector specificity. */
+.yue .toctree-wrapper p.caption {
+    font-size: 1.15rem;
+    color: var(--sy-c-text);
+}
+
+/* Left-sidebar section captions: larger and darker than Shibuya's muted default. */
+.globaltoc p.caption {
+    font-size: 1.05rem;
+    color: var(--sy-c-text);
 }

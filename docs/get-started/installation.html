@@ -1,615 +1,270 @@
-
 <!DOCTYPE html>
-
-
-<html lang="en" data-content_root="../" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Installation &#8212; AstraFlow 0.1.0 documentation</title>
-  
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
-  </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation - AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quick Start" href="quickstart.html" /><link rel="prev" title="AstraFlow v0.1.0 Documentation" href="../index.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=96ea4a36" />
-  
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
-
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'get-started/installation';</script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Quickstart" href="quickstart.html" />
-    <link rel="prev" title="Overview" href="../overview.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.0" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=338524fc" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Installation"/>
+    <meta name="twitter:card" content="summary"/>
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
-  
-  
-  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
-  
-  <div id="pst-scroll-pixel-helper"></div>
-  
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
-  
-  <dialog id="pst-search-dialog">
-    
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         placeholder="Search..."
-         aria-label="Search..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
-
-  <div class="pst-async-banner-revealer d-none">
-  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
-</div>
-
-  
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
-    </header>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
       
       
-      
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
-        
-
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
+      <strong>AstraFlow</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
   </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-
-  
-    
-  
-
-<a class="navbar-brand logo" href="../index.html">
-  
-  
-  
-  
-  
-    
-    
-      
-    
-    
-    <img src="../_static/logo.jpg" class="logo__image only-light" alt="AstraFlow 0.1.0 documentation - Home"/>
-    <img src="../_static/logo.jpg" class="logo__image only-dark pst-js-only" alt="AstraFlow 0.1.0 documentation - Home"/>
-  
-  
-</a></div>
-        <div class="sidebar-primary-item">
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
-        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Overview</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Get Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Components</span></p>
-<ul class="nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/overview.html">System Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/astraflow.html">AstraFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/dataflow.html">Dataflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/raas.html">RaaS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/weight-manager.html">WeightManager</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/custom-trainer.html">Custom Trainer Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture/custom-raas.html">Custom RaaS Integration</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes</span></p>
-<ul class="nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent (Math)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search (ASearcher)</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer-guide/contributing.html">Contributing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search</a></li>
 </ul>
 
-    </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
-  </div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main" role="main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article d-print-none">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</button></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/get-started/installation.md" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.md</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
-
-
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
-<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>Installation</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-a-docker-fastest">Option A: Docker (fastest)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-b-from-source">Option B: From source</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-create-conda-environment">Step 1: Create conda environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-install-uv-fast-pip-replacement">Step 2: Install uv (fast pip replacement)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-install-astraflow-core-dev-tools">Step 3: Install AstraFlow (core + dev tools)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-install-pre-commit-hooks">Step 4: Install pre-commit hooks</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-install-optional-extras">Step 5: Install optional extras</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flash-attention">Flash Attention</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vllm-inference-backend">vLLM (inference backend)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sglang-inference-backend">SGLang (inference backend)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformer-engine">Transformer Engine</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-verify-installation">Step 6: Verify installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformer-engine-fails-with-cudnn-h-no-such-file-or-directory"><code class="docutils literal notranslate"><span class="pre">transformer-engine</span></code> fails with <code class="docutils literal notranslate"><span class="pre">cudnn.h:</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nvidia-smi-not-found-but-cuda-works"><code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> not found but CUDA works</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cuda-version-mismatch-between-nvcc-and-pytorch">CUDA version mismatch between <code class="docutils literal notranslate"><span class="pre">nvcc</span></code> and PyTorch</a></li>
-</ul>
-</li>
-</ul>
-            </nav>
         </div>
+      </div>
     </div>
-</div>
-
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article">
-                  
-  <section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#option-a-custom-installation-conda">Option A: Custom Installation (Conda)</a><ul>
+<li><a class="reference internal" href="#step-1-create-conda-environment">Step 1: Create conda environment</a></li>
+<li><a class="reference internal" href="#step-2-install-uv-fast-pip-replacement">Step 2: Install uv (fast pip replacement)</a></li>
+<li><a class="reference internal" href="#step-3-install-astraflow-core-dev-tools">Step 3: Install AstraFlow (core + dev tools)</a></li>
+<li><a class="reference internal" href="#step-4-install-flash-attention-and-sglang">Step 4: Install Flash Attention and SGLang</a><ul>
+<li><a class="reference internal" href="#flash-attention">Flash Attention</a></li>
+<li><a class="reference internal" href="#sglang-inference-backend">SGLang (inference backend)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#step-5-verify-installation">Step 5: Verify installation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#option-b-docker">Option B: Docker</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">AstraFlow</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Installation</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Linux (Ubuntu 20.04+ recommended)</p></li>
 <li><p>NVIDIA GPU with CUDA support</p></li>
-<li><p>Conda (Miniconda or Anaconda)</p></li>
-<li><p>Python 3.10, 3.11, or 3.12</p></li>
 </ul>
 </section>
-<section id="option-a-docker-fastest">
-<h2>Option A: Docker (fastest)<a class="headerlink" href="#option-a-docker-fastest" title="Link to this heading">#</a></h2>
-<p>A pre-built image is published on Docker Hub and skips the steps below entirely.
-Requires the NVIDIA Container Toolkit so <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> works.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>16g<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.0
-</pre></div>
-</div>
-<p>The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (<code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>) for
-reproducibility; <code class="docutils literal notranslate"><span class="pre">:latest</span></code> tracks the most recent release. See <code class="docutils literal notranslate"><span class="pre">docker/README.md</span></code> for
-build details and the NVIDIA Container Toolkit install guide.</p>
-</section>
-<section id="option-b-from-source">
-<h2>Option B: From source<a class="headerlink" href="#option-b-from-source" title="Link to this heading">#</a></h2>
-<p>The remaining steps install AstraFlow into a local conda environment.</p>
-</section>
+<section id="option-a-custom-installation-conda">
+<h2>Option A: Custom Installation (Conda)<a class="headerlink" href="#option-a-custom-installation-conda" title="Link to this heading">¶</a></h2>
+<p>These steps install AstraFlow into a local conda environment.</p>
 <section id="step-1-create-conda-environment">
-<h2>Step 1: Create conda environment<a class="headerlink" href="#step-1-create-conda-environment" title="Link to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>astraflow<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>-y
-conda<span class="w"> </span>activate<span class="w"> </span>astraflow
-</pre></div>
+<h3>Step 1: Create conda environment<a class="headerlink" href="#step-1-create-conda-environment" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>astraflow<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>-y
+</span><span data-line="2">conda<span class="w"> </span>activate<span class="w"> </span>astraflow
+</span></pre></div>
 </div>
 </section>
 <section id="step-2-install-uv-fast-pip-replacement">
-<h2>Step 2: Install uv (fast pip replacement)<a class="headerlink" href="#step-2-install-uv-fast-pip-replacement" title="Link to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>uv
-</pre></div>
+<h3>Step 2: Install uv (fast pip replacement)<a class="headerlink" href="#step-2-install-uv-fast-pip-replacement" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>uv
+</span></pre></div>
 </div>
 </section>
 <section id="step-3-install-astraflow-core-dev-tools">
-<h2>Step 3: Install AstraFlow (core + dev tools)<a class="headerlink" href="#step-3-install-astraflow-core-dev-tools" title="Link to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
-</pre></div>
+<h3>Step 3: Install AstraFlow (core + dev tools)<a class="headerlink" href="#step-3-install-astraflow-core-dev-tools" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</span></pre></div>
 </div>
 <p>This installs all core dependencies (~260 packages) including PyTorch 2.8.0,
 Transformers 4.57.1, Megatron-Core 0.13.1, Ray, W&amp;B, and dev tools (pytest, ruff,
 ipython).</p>
 </section>
-<section id="step-4-install-pre-commit-hooks">
-<h2>Step 4: Install pre-commit hooks<a class="headerlink" href="#step-4-install-pre-commit-hooks" title="Link to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
-pre-commit<span class="w"> </span>install
-</pre></div>
-</div>
-</section>
-<section id="step-5-install-optional-extras">
-<h2>Step 5: Install optional extras<a class="headerlink" href="#step-5-install-optional-extras" title="Link to this heading">#</a></h2>
+<section id="step-4-install-flash-attention-and-sglang">
+<h3>Step 4: Install Flash Attention and SGLang<a class="headerlink" href="#step-4-install-flash-attention-and-sglang" title="Link to this heading">¶</a></h3>
 <section id="flash-attention">
-<h3>Flash Attention<a class="headerlink" href="#flash-attention" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;flash-attn==2.8.3&quot;</span><span class="w"> </span>--no-build-isolation
-</pre></div>
-</div>
-</section>
-<section id="vllm-inference-backend">
-<h3>vLLM (inference backend)<a class="headerlink" href="#vllm-inference-backend" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;vllm==0.11.0&quot;</span>
-</pre></div>
+<h4>Flash Attention<a class="headerlink" href="#flash-attention" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;flash-attn==2.8.3&quot;</span><span class="w"> </span>--no-build-isolation
+</span></pre></div>
 </div>
 </section>
 <section id="sglang-inference-backend">
-<h3>SGLang (inference backend)<a class="headerlink" href="#sglang-inference-backend" title="Link to this heading">#</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;sglang==0.5.5.post1&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="transformer-engine">
-<h3>Transformer Engine<a class="headerlink" href="#transformer-engine" title="Link to this heading">#</a></h3>
-<p>Transformer Engine requires cuDNN headers on the include path. PyTorch installs cuDNN
-via pip, but the headers are not on the system path by default. Set the following
-environment variables before building:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_INCLUDE_DIR</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import nvidia.cudnn, os; print(os.path.join(os.path.dirname(nvidia.cudnn.__file__), &#39;include&#39;))&quot;</span><span class="k">)</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_LIB_DIR</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import nvidia.cudnn, os; print(os.path.join(os.path.dirname(nvidia.cudnn.__file__), &#39;lib&#39;))&quot;</span><span class="k">)</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">CPATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUDNN_INCLUDE_DIR</span><span class="s2">:</span><span class="nv">$CPATH</span><span class="s2">&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUDNN_LIB_DIR</span><span class="s2">:</span><span class="nv">$LIBRARY_PATH</span><span class="s2">&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUDNN_LIB_DIR</span><span class="s2">:</span><span class="nv">$LD_LIBRARY_PATH</span><span class="s2">&quot;</span>
-<span class="nv">NVTE_FRAMEWORK</span><span class="o">=</span>pytorch<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;transformer-engine[pytorch]&gt;=2.13.0&quot;</span><span class="w"> </span>--no-build-isolation
-</pre></div>
+<h4>SGLang (inference backend)<a class="headerlink" href="#sglang-inference-backend" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;sglang==0.5.5.post1&quot;</span>
+</span></pre></div>
 </div>
 </section>
 </section>
-<section id="step-6-verify-installation">
-<h2>Step 6: Verify installation<a class="headerlink" href="#step-6-verify-installation" title="Link to this heading">#</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
-<span class="s2">import astraflow, torch, transformers</span>
-<span class="s2">print(f&#39;astraflow:    {astraflow.version.__version__}&#39;)</span>
-<span class="s2">print(f&#39;torch:        {torch.__version__}, CUDA: {torch.cuda.is_available()}, GPUs: {torch.cuda.device_count()}&#39;)</span>
-<span class="s2">print(f&#39;transformers: {transformers.__version__}&#39;)</span>
-<span class="s2">&quot;</span>
-</pre></div>
+<section id="step-5-verify-installation">
+<h3>Step 5: Verify installation<a class="headerlink" href="#step-5-verify-installation" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span data-line="2"><span class="s2">import astraflow, torch, transformers</span>
+</span><span data-line="3"><span class="s2">print(f&#39;astraflow:    {astraflow.version.__version__}&#39;)</span>
+</span><span data-line="4"><span class="s2">print(f&#39;torch:        {torch.__version__}, CUDA: {torch.cuda.is_available()}, GPUs: {torch.cuda.device_count()}&#39;)</span>
+</span><span data-line="5"><span class="s2">print(f&#39;transformers: {transformers.__version__}&#39;)</span>
+</span><span data-line="6"><span class="s2">&quot;</span>
+</span></pre></div>
 </div>
-<p>Verify optional packages (if installed):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
-<span class="s2">import flash_attn, transformer_engine, vllm, sglang</span>
-<span class="s2">print(f&#39;flash-attn:          {flash_attn.__version__}&#39;)</span>
-<span class="s2">print(f&#39;transformer-engine:  {transformer_engine.__version__}&#39;)</span>
-<span class="s2">print(f&#39;vllm:                {vllm.__version__}&#39;)</span>
-<span class="s2">print(f&#39;sglang:              {sglang.__version__}&#39;)</span>
-<span class="s2">&quot;</span>
-</pre></div>
+<p>Verify Flash Attention and SGLang:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span data-line="2"><span class="s2">import flash_attn, sglang</span>
+</span><span data-line="3"><span class="s2">print(f&#39;flash-attn: {flash_attn.__version__}&#39;)</span>
+</span><span data-line="4"><span class="s2">print(f&#39;sglang:     {sglang.__version__}&#39;)</span>
+</span><span data-line="5"><span class="s2">&quot;</span>
+</span></pre></div>
 </div>
 </section>
-<section id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
-<section id="transformer-engine-fails-with-cudnn-h-no-such-file-or-directory">
-<h3><code class="docutils literal notranslate"><span class="pre">transformer-engine</span></code> fails with <code class="docutils literal notranslate"><span class="pre">cudnn.h:</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory</span></code><a class="headerlink" href="#transformer-engine-fails-with-cudnn-h-no-such-file-or-directory" title="Link to this heading">#</a></h3>
-<p>cuDNN is installed via pip (<code class="docutils literal notranslate"><span class="pre">nvidia-cudnn-cu12</span></code>) but the headers are not on the system
-include path. Export <code class="docutils literal notranslate"><span class="pre">CPATH</span></code> and <code class="docutils literal notranslate"><span class="pre">LIBRARY_PATH</span></code> as shown in Step 5 before building.</p>
 </section>
-<section id="nvidia-smi-not-found-but-cuda-works">
-<h3><code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> not found but CUDA works<a class="headerlink" href="#nvidia-smi-not-found-but-cuda-works" title="Link to this heading">#</a></h3>
-<p>Some machines have the NVIDIA driver functional but <code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> not in PATH. Verify
-CUDA via PyTorch instead: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-c</span> <span class="pre">&quot;import</span> <span class="pre">torch;</span> <span class="pre">print(torch.cuda.is_available())&quot;</span></code>.</p>
-</section>
-<section id="cuda-version-mismatch-between-nvcc-and-pytorch">
-<h3>CUDA version mismatch between <code class="docutils literal notranslate"><span class="pre">nvcc</span></code> and PyTorch<a class="headerlink" href="#cuda-version-mismatch-between-nvcc-and-pytorch" title="Link to this heading">#</a></h3>
-<p>This is normal. PyTorch ships its own CUDA runtime (e.g., 12.8). The system <code class="docutils literal notranslate"><span class="pre">nvcc</span></code>
-version only matters when building custom CUDA extensions.</p>
-</section>
+<section id="option-b-docker">
+<h2>Option B: Docker<a class="headerlink" href="#option-b-docker" title="Link to this heading">¶</a></h2>
+<p>A pre-built image is published on Docker Hub — it skips the from-source steps above
+entirely. Requires the NVIDIA Container Toolkit so <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> works.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>16g<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.0
+</span></pre></div>
+</div>
+<p>The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (<code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>) for
+reproducibility; <code class="docutils literal notranslate"><span class="pre">:latest</span></code> tracks the most recent release. See <code class="docutils literal notranslate"><span class="pre">docker/README.md</span></code> for
+build details and the NVIDIA Container Toolkit install guide.</p>
 </section>
 </section>
 
-
-                </article>
-              
-
-              
-              
-              
-              
-                <footer class="prev-next-footer d-print-none">
-                  
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="../overview.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Overview</p>
-      </div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="../index.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Home</div></div>
     </a>
-    <a class="right-next"
-       href="quickstart.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Quickstart</p>
+  </div><div class="navigation-next">
+    <a href="quickstart.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Quick Start</div>
       </div>
-      <i class="fa-solid fa-angle-right"></i>
+      <i class="i-lucide chevron-right"></i>
     </a>
+  </div></div></div>
+    </div>
+  </main>
 </div>
-                </footer>
-              
-            </div>
-            
-            
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item"><div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-a-docker-fastest">Option A: Docker (fastest)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#option-b-from-source">Option B: From source</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-create-conda-environment">Step 1: Create conda environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-install-uv-fast-pip-replacement">Step 2: Install uv (fast pip replacement)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-install-astraflow-core-dev-tools">Step 3: Install AstraFlow (core + dev tools)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-install-pre-commit-hooks">Step 4: Install pre-commit hooks</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-install-optional-extras">Step 5: Install optional extras</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flash-attention">Flash Attention</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vllm-inference-backend">vLLM (inference backend)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sglang-inference-backend">SGLang (inference backend)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformer-engine">Transformer Engine</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-verify-installation">Step 6: Verify installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transformer-engine-fails-with-cudnn-h-no-such-file-or-directory"><code class="docutils literal notranslate"><span class="pre">transformer-engine</span></code> fails with <code class="docutils literal notranslate"><span class="pre">cudnn.h:</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nvidia-smi-not-found-but-cuda-works"><code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> not found but CUDA works</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cuda-version-mismatch-between-nvcc-and-pytorch">CUDA version mismatch between <code class="docutils literal notranslate"><span class="pre">nvcc</span></code> and PyTorch</a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
-          </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025-2026, AstraFlow Team</p>
   
-  <div class="footer-item">
+  <p>
+    Made with
     
-<p class="component-author">
-By AstraFlow Team
-</p>
-
-  </div>
-  
-  <div class="footer-item">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
     
-
-  <p class="copyright">
-    
-      © Copyright 2025-2026, AstraFlow Team.
-      <br/>
-    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
   </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
 </div>
-          </footer>
-        
-
-      </main>
+      <div class="sy-foot-socials">
+<a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
     </div>
   </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
-
-  <footer class="bd-footer">
-  </footer>
-  </body>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
 </html>

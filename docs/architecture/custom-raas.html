@@ -1,386 +1,169 @@
-
 <!DOCTYPE html>
-
-
-<html lang="en" data-content_root="../" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Custom RaaS Integration &#8212; AstraFlow 0.1.0 documentation</title>
-  
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
-  </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Custom RaaS Integration - AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=96ea4a36" />
-  
-  <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
-
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
-    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
-    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'architecture/custom-raas';</script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Math" href="../recipes/math.html" />
-    <link rel="prev" title="Custom Trainer Integration" href="custom-trainer.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.0" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=338524fc" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Custom RaaS Integration"/>
+    <meta name="twitter:card" content="summary"/>
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
-  
-  
-  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
-  
-  <div id="pst-scroll-pixel-helper"></div>
-  
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
-  
-  <dialog id="pst-search-dialog">
-    
-<form class="bd-search d-flex align-items-center"
-      action="../search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         placeholder="Search..."
-         aria-label="Search..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
-
-  <div class="pst-async-banner-revealer d-none">
-  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
-</div>
-
-  
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
-    </header>
-  
-
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
       
       
-      
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
-        
-
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-    
-    
+      <strong>AstraFlow</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
   </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-
-  
-    
-  
-
-<a class="navbar-brand logo" href="../index.html">
-  
-  
-  
-  
-  
-    
-    
-      
-    
-    
-    <img src="../_static/logo.jpg" class="logo__image only-light" alt="AstraFlow 0.1.0 documentation - Home"/>
-    <img src="../_static/logo.jpg" class="logo__image only-dark pst-js-only" alt="AstraFlow 0.1.0 documentation - Home"/>
-  
-  
-</a></div>
-        <div class="sidebar-primary-item">
-
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button></div>
-        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Overview</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
-<ul class="nav bd-sidenav">
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Get Started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quick Start</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">System Components</span></p>
-<ul class="current nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="astraflow.html">AstraFlow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataflow.html">Dataflow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="raas.html">RaaS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom-trainer.html">Custom Trainer Integration</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Custom RaaS Integration</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Recipes</span></p>
-<ul class="nav bd-sidenav">
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent (Math)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search (ASearcher)</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Guide</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../developer-guide/contributing.html">Contributing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">References</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../references/roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search</a></li>
 </ul>
 
-    </div>
-</nav></div>
-    </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
-  </div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main" role="main">
-        
-        
-
-<div class="sbt-scroll-pixel-helper"></div>
-
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article d-print-none">
-<div class="header-article-items header-article__inner">
-  
-    <div class="header-article-items__start">
-      
-        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <span class="fa-solid fa-bars"></span>
-</button></div>
-      
-    </div>
-  
-  
-    <div class="header-article-items__end">
-      
-        <div class="header-article-item">
-
-<div class="article-header-buttons">
-
-
-
-
-
-<div class="dropdown dropdown-download-buttons">
-  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
-    <i class="fas fa-download"></i>
-  </button>
-  <ul class="dropdown-menu">
-      
-      
-      
-      <li><a href="../_sources/architecture/custom-raas.md" target="_blank"
-   class="btn btn-sm btn-download-source-button dropdown-item"
-   title="Download source file"
-   data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file"></i>
-  </span>
-<span class="btn__text-container">.md</span>
-</a>
-</li>
-      
-      
-      
-      
-      <li>
-<button onclick="window.print()"
-  class="btn btn-sm btn-download-pdf-button dropdown-item"
-  title="Print to PDF"
-  data-bs-placement="left" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-file-pdf"></i>
-  </span>
-<span class="btn__text-container">.pdf</span>
-</button>
-</li>
-      
-  </ul>
-</div>
-
-
-
-
-<button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
-  title="Fullscreen mode"
-  data-bs-placement="bottom" data-bs-toggle="tooltip"
->
-  
-
-<span class="btn__icon-container">
-  <i class="fas fa-expand"></i>
-  </span>
-
-</button>
-
-
-
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
-
-
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-</button>
-<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
-</div></div>
-      
-    </div>
-  
-</div>
-</div>
-              
-              
-
-<div id="jb-print-docs-body" class="onlyprint">
-    <h1>Custom RaaS Integration</h1>
-    <!-- Table of contents -->
-    <div id="print-main-content">
-        <div id="jb-print-toc">
-            
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture">Architecture</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-a-raas-is">What a RaaS Is</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#invariants-your-implementation-must-preserve">Invariants your implementation MUST preserve</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-raas-is-not">What RaaS is NOT</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inbound-astraflow-raas">Inbound: AstraFlow → RaaS</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#get-status-readiness-json"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> — Readiness (JSON)</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#get-availability-capacity-json"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code> — Capacity (JSON)</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-register-workflow"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_workflow</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-submit-enqueue-one-rollout"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/submit</span></code> — Enqueue One Rollout</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-pull-drain-completed-rollouts"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/pull</span></code> — Drain Completed Rollouts</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-notify-version-per-model-weight-update"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> — Per-Model Weight Update</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-shutdown"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/shutdown</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inbound-eval-support-optional">Inbound: Eval Support (Optional)</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-reset-training-engine"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/reset_training_engine</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-eval-start-post-eval-end"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_start</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_end</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-eval-submit-enqueue-one-eval-rollout"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_submit</span></code> — Enqueue One Eval Rollout</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-eval-pull-drain-eval-results-note-dict-not-list"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_pull</span></code> — Drain Eval Results (Note: Dict, not List)</a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#outbound-raas-astraflow">Outbound: RaaS → AstraFlow</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-register-raas"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#outbound-raas-trainer-weight-sender-agent">Outbound: RaaS → Trainer (Weight Sender Agent)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow-execution-contract">Workflow Execution Contract</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-update-lifecycle-end-to-end">Weight Update Lifecycle (end-to-end)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimum-viable-skeleton">Minimum Viable Skeleton</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#done-checklist">Done Checklist</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-files">Reference Files</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-summary">API Summary</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#required-8-inbound-1-outbound-3-outbound">Required (8 inbound + 1 outbound + 3 outbound)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-eval-support-5-inbound">Optional — Eval Support (5 inbound)</a></li>
-</ul>
-</li>
-</ul>
-            </nav>
         </div>
+      </div>
     </div>
-</div>
-
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article">
-                  
-  <section class="tex2jax_ignore mathjax_ignore" id="custom-raas-integration">
-<h1>Custom RaaS Integration<a class="headerlink" href="#custom-raas-integration" title="Link to this heading">#</a></h1>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#architecture">Architecture</a></li>
+<li><a class="reference internal" href="#what-a-raas-is">What a RaaS Is</a><ul>
+<li><a class="reference internal" href="#invariants-your-implementation-must-preserve">Invariants your implementation MUST preserve</a></li>
+<li><a class="reference internal" href="#what-raas-is-not">What RaaS is NOT</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li><a class="reference internal" href="#inbound-astraflow-raas">Inbound: AstraFlow &#8594; RaaS</a><ul>
+<li><a class="reference internal" href="#get-status-readiness-json"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> &#8212; Readiness (JSON)</a></li>
+<li><a class="reference internal" href="#get-availability-capacity-json"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code> &#8212; Capacity (JSON)</a></li>
+<li><a class="reference internal" href="#post-register-workflow"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_workflow</span></code></a></li>
+<li><a class="reference internal" href="#post-submit-enqueue-one-rollout"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/submit</span></code> &#8212; Enqueue One Rollout</a></li>
+<li><a class="reference internal" href="#post-pull-drain-completed-rollouts"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/pull</span></code> &#8212; Drain Completed Rollouts</a></li>
+<li><a class="reference internal" href="#post-notify-version-per-model-weight-update"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> &#8212; Per-Model Weight Update</a></li>
+<li><a class="reference internal" href="#post-shutdown"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/shutdown</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#inbound-eval-support-optional">Inbound: Eval Support (Optional)</a><ul>
+<li><a class="reference internal" href="#post-reset-training-engine"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/reset_training_engine</span></code></a></li>
+<li><a class="reference internal" href="#post-eval-start-post-eval-end"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_start</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_end</span></code></a></li>
+<li><a class="reference internal" href="#post-eval-submit-enqueue-one-eval-rollout"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_submit</span></code> &#8212; Enqueue One Eval Rollout</a></li>
+<li><a class="reference internal" href="#post-eval-pull-drain-eval-results-note-dict-not-list"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_pull</span></code> &#8212; Drain Eval Results (Note: Dict, not List)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outbound-raas-astraflow">Outbound: RaaS &#8594; AstraFlow</a><ul>
+<li><a class="reference internal" href="#post-register-raas"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#outbound-raas-trainer-weight-sender-agent">Outbound: RaaS &#8594; Trainer (Weight Sender Agent)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#workflow-execution-contract">Workflow Execution Contract</a></li>
+<li><a class="reference internal" href="#weight-update-lifecycle-end-to-end">Weight Update Lifecycle (end-to-end)</a></li>
+<li><a class="reference internal" href="#minimum-viable-skeleton">Minimum Viable Skeleton</a></li>
+<li><a class="reference internal" href="#done-checklist">Done Checklist</a></li>
+<li><a class="reference internal" href="#reference-files">Reference Files</a></li>
+<li><a class="reference internal" href="#api-summary">API Summary</a><ul>
+<li><a class="reference internal" href="#required-8-inbound-1-outbound-3-outbound">Required (8 inbound + 1 outbound + 3 outbound)</a></li>
+<li><a class="reference internal" href="#optional-eval-support-5-inbound">Optional &#8212; Eval Support (5 inbound)</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">AstraFlow</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Custom RaaS Integration</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="custom-raas-integration">
+<h1>Custom RaaS Integration<a class="headerlink" href="#custom-raas-integration" title="Link to this heading">¶</a></h1>
 <p>AstraFlow’s RaaS (Remote Agentic Serving) is a swappable component. You
 can replace the built-in implementation with your own inference service
 as long as it speaks the correct HTTP protocol. This guide documents the
@@ -390,27 +173,27 @@ recommended mode). Weights flow trainer → RaaS via a pull-based TCP
 pipeline; see <a class="reference internal" href="weight-manager.html"><span class="std std-doc">Weight Manager</span></a> for the transport
 layer used by both sides.</p>
 <section id="architecture">
-<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h2>
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
 <p>A RaaS has three communication surfaces:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                   ┌───────────────────────┐
-   Inbound HTTP    │                       │   Outbound HTTP
-   (12 endpoints)  │     Custom RaaS       │   (1 + 3 endpoints)
-                   │                       │
-  AstraFlow ──────►│                       │──────► AstraFlow
-  calls RaaS       │  ┌─────────────────┐  │        /register_raas
-                   │  │   Inference     │  │         (once, startup)
-                   │  │   Engine(s)     │  │
-                   │  │ (vLLM / SGLang /│  │──────► Trainer SenderAgent
-                   │  │    custom)      │  │        /get_buffer_info
-                   │  └─────────────────┘  │        /register_sglang_instance
-                   │                       │        /request_transfer
-                   │  ┌─────────────────┐  │         (every weight update)
-                   │  │  Weight         │  │
-                   │  │  Receiver       │  │
-                   │  │  (reusable lib) │  │
-                   │  └─────────────────┘  │
-                   └───────────────────────┘
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">                   ┌───────────────────────┐
+</span><span data-line="2">   Inbound HTTP    │                       │   Outbound HTTP
+</span><span data-line="3">   (12 endpoints)  │     Custom RaaS       │   (1 + 3 endpoints)
+</span><span data-line="4">                   │                       │
+</span><span data-line="5">  AstraFlow ──────►│                       │──────► AstraFlow
+</span><span data-line="6">  calls RaaS       │  ┌─────────────────┐  │        /register_raas
+</span><span data-line="7">                   │  │   Inference     │  │         (once, startup)
+</span><span data-line="8">                   │  │   Engine(s)     │  │
+</span><span data-line="9">                   │  │ (vLLM / SGLang /│  │──────► Trainer SenderAgent
+</span><span data-line="10">                   │  │    custom)      │  │        /get_buffer_info
+</span><span data-line="11">                   │  └─────────────────┘  │        /register_sglang_instance
+</span><span data-line="12">                   │                       │        /request_transfer
+</span><span data-line="13">                   │  ┌─────────────────┐  │         (every weight update)
+</span><span data-line="14">                   │  │  Weight         │  │
+</span><span data-line="15">                   │  │  Receiver       │  │
+</span><span data-line="16">                   │  │  (reusable lib) │  │
+</span><span data-line="17">                   │  └─────────────────┘  │
+</span><span data-line="18">                   └───────────────────────┘
+</span></pre></div>
 </div>
 <ul class="simple">
 <li><p><strong>Inbound (AstraFlow → RaaS)</strong>: 12 HTTP endpoints covering health,
@@ -427,7 +210,7 @@ reimplement.</p></li>
 </ul>
 </section>
 <section id="what-a-raas-is">
-<h2>What a RaaS Is<a class="headerlink" href="#what-a-raas-is" title="Link to this heading">#</a></h2>
+<h2>What a RaaS Is<a class="headerlink" href="#what-a-raas-is" title="Link to this heading">¶</a></h2>
 <p>A RaaS is a <strong>weight-versioned rollout service</strong>. Its three jobs:</p>
 <ol class="arabic simple">
 <li><p><strong>Host a policy.</strong> Run an inference backend that can generate from
@@ -440,7 +223,7 @@ loop.</p></li>
 publishes version N+1, pull the bytes, hot-swap, keep serving.</p></li>
 </ol>
 <section id="invariants-your-implementation-must-preserve">
-<h3>Invariants your implementation MUST preserve<a class="headerlink" href="#invariants-your-implementation-must-preserve" title="Link to this heading">#</a></h3>
+<h3>Invariants your implementation MUST preserve<a class="headerlink" href="#invariants-your-implementation-must-preserve" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p><strong>Tag every output token with its weight version</strong>
 (<code class="docutils literal notranslate"><span class="pre">output_versions</span></code> in the <code class="docutils literal notranslate"><span class="pre">ModelResponse</span></code>). The orchestrator uses
@@ -462,7 +245,7 @@ safetensors file.</p></li>
 </ul>
 </section>
 <section id="what-raas-is-not">
-<h3>What RaaS is NOT<a class="headerlink" href="#what-raas-is-not" title="Link to this heading">#</a></h3>
+<h3>What RaaS is NOT<a class="headerlink" href="#what-raas-is-not" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Not a stateless inference server. It owns a task queue, a version
 counter, and workflow instances.</p></li>
@@ -474,9 +257,9 @@ functions are user-provided and passed in at
 </section>
 </section>
 <section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
 <section id="inbound-astraflow-raas">
-<h3>Inbound: AstraFlow → RaaS<a class="headerlink" href="#inbound-astraflow-raas" title="Link to this heading">#</a></h3>
+<h3>Inbound: AstraFlow → RaaS<a class="headerlink" href="#inbound-astraflow-raas" title="Link to this heading">¶</a></h3>
 <p>All endpoints below live on the RaaS HTTP server. Two wire formats
 coexist:</p>
 <ul class="simple">
@@ -493,18 +276,18 @@ denote “this is the Python dict <em>before</em> pickling.”</p>
 <p><strong>Response envelope (pickle endpoints only).</strong> Every pickle endpoint
 wraps its return value in an envelope
 (<code class="docutils literal notranslate"><span class="pre">_encode_ok</span></code> / <code class="docutils literal notranslate"><span class="pre">_encode_error</span></code> in <code class="docutils literal notranslate"><span class="pre">routes.py:27-41</span></code>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Success — HTTP 200</span>
-<span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">handler</span><span class="o">-</span><span class="n">specific</span> <span class="n">value</span><span class="o">&gt;</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="c1"># Failure — HTTP 500</span>
-<span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;repr(exception)&gt;&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Success — HTTP 200</span>
+</span><span data-line="2"><span class="p">{</span>
+</span><span data-line="3">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="4">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">handler</span><span class="o">-</span><span class="n">specific</span> <span class="n">value</span><span class="o">&gt;</span><span class="p">,</span>
+</span><span data-line="5"><span class="p">}</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="c1"># Failure — HTTP 500</span>
+</span><span data-line="8"><span class="p">{</span>
+</span><span data-line="9">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="10">    <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;repr(exception)&gt;&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>Clients check <code class="docutils literal notranslate"><span class="pre">ok</span></code> first, then read <code class="docutils literal notranslate"><span class="pre">result</span></code> or <code class="docutils literal notranslate"><span class="pre">error</span></code>. The examples
 below show the <strong>full envelope</strong> for every pickle response so you can
@@ -521,26 +304,27 @@ called when eval windows are enabled. Training-only RaaS
 implementations can omit them.</p></li>
 </ul>
 <section id="get-status-readiness-json">
-<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> — Readiness (JSON)<a class="headerlink" href="#get-status-readiness-json" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> — Readiness (JSON)<a class="headerlink" href="#get-status-readiness-json" title="Link to this heading">¶</a></h4>
 <p>Also used as the heartbeat. Must respond quickly; do not block on
 engine work.</p>
 <p><strong>Response</strong> — raw JSON text (no envelope):</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ready&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optional details&quot;</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ready&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optional details&quot;</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">status</span></code> values: <code class="docutils literal notranslate"><span class="pre">&quot;ready&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;idle&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;starting&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code>. Only
 <code class="docutils literal notranslate"><span class="pre">&quot;ready&quot;</span></code> means the pool can route traffic.</p>
 </section>
 <section id="get-availability-capacity-json">
-<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code> — Capacity (JSON)<a class="headerlink" href="#get-availability-capacity-json" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code> — Capacity (JSON)<a class="headerlink" href="#get-availability-capacity-json" title="Link to this heading">¶</a></h4>
 <p>Called on <strong>every submit tick</strong> by the orchestrator’s data-acquisition
 loop. Governs load balancing across the RaaS pool — the orchestrator
 routes each request to the instance with the highest <code class="docutils literal notranslate"><span class="pre">available</span></code>.</p>
 <p>Fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -568,20 +352,21 @@ routes each request to the instance with the highest <code class="docutils liter
 </table>
 </div>
 <p><strong>Response</strong> — raw JSON text (no envelope):</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;available&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;inflight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;max_concurrency&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">&quot;available&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">&quot;inflight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">&quot;max_concurrency&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span>
+</span><span data-line="5"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>Return slowly or never and you throttle the whole pipeline.</p>
 </section>
 <section id="post-register-workflow">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_workflow</span></code><a class="headerlink" href="#post-register-workflow" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_workflow</span></code><a class="headerlink" href="#post-register-workflow" title="Link to this heading">¶</a></h4>
 <p>Register a workflow class by string name plus its reward function.</p>
 <p>Request fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -620,27 +405,28 @@ routes each request to the instance with the highest <code class="docutils liter
 </div>
 <p><strong>Request</strong> (Python dict → <code class="docutils literal notranslate"><span class="pre">cloudpickle.dumps</span></code> → POST as
 <code class="docutils literal notranslate"><span class="pre">application/octet-stream</span></code>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;workflow_id&quot;</span><span class="p">:</span> <span class="s2">&quot;rlvr-math&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;workflow_cls&quot;</span><span class="p">:</span> <span class="s2">&quot;RLVRWorkflow&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;reward_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;math_verify&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;gconfig_overrides&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">},</span>
-    <span class="s2">&quot;workflow_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tokenizer_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/models/qwen3-8b&quot;</span><span class="p">},</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;workflow_id&quot;</span><span class="p">:</span> <span class="s2">&quot;rlvr-math&quot;</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;workflow_cls&quot;</span><span class="p">:</span> <span class="s2">&quot;RLVRWorkflow&quot;</span><span class="p">,</span>
+</span><span data-line="4">    <span class="s2">&quot;reward_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;math_verify&quot;</span><span class="p">,</span>
+</span><span data-line="5">    <span class="s2">&quot;gconfig_overrides&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">&quot;max_new_tokens&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">},</span>
+</span><span data-line="6">    <span class="s2">&quot;workflow_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;tokenizer_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/models/qwen3-8b&quot;</span><span class="p">},</span>
+</span><span data-line="7"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> (full envelope — pickled):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{},</span>   <span class="c1"># implementation-defined ack; AstraFlow only checks `ok`</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{},</span>   <span class="c1"># implementation-defined ack; AstraFlow only checks `ok`</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 </section>
 <section id="post-submit-enqueue-one-rollout">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/submit</span></code> — Enqueue One Rollout<a class="headerlink" href="#post-submit-enqueue-one-rollout" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/submit</span></code> — Enqueue One Rollout<a class="headerlink" href="#post-submit-enqueue-one-rollout" title="Link to this heading">¶</a></h4>
 <p>Request fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -663,18 +449,18 @@ routes each request to the instance with the highest <code class="docutils liter
 </table>
 </div>
 <p><strong>Request</strong> (Python dict, pickled):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="s2">&quot;What is 2+2?&quot;</span><span class="p">,</span> <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;workflow_id&quot;</span><span class="p">:</span> <span class="s2">&quot;rlvr-math&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="s2">&quot;What is 2+2?&quot;</span><span class="p">,</span> <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">},</span>
+</span><span data-line="3">    <span class="s2">&quot;workflow_id&quot;</span><span class="p">:</span> <span class="s2">&quot;rlvr-math&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> (full envelope):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">},</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>Your handler should (1) allocate a task id, (2) create an
 <code class="docutils literal notranslate"><span class="pre">asyncio.Task</span></code> wrapping <code class="docutils literal notranslate"><span class="pre">workflow.arun_episode(engine,</span> <span class="pre">data)</span></code>, and
@@ -682,9 +468,10 @@ routes each request to the instance with the highest <code class="docutils liter
 results dict keyed by task_id when done.</p>
 </section>
 <section id="post-pull-drain-completed-rollouts">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/pull</span></code> — Drain Completed Rollouts<a class="headerlink" href="#post-pull-drain-completed-rollouts" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/pull</span></code> — Drain Completed Rollouts<a class="headerlink" href="#post-pull-drain-completed-rollouts" title="Link to this heading">¶</a></h4>
 <p>Request fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -707,49 +494,50 @@ results dict keyed by task_id when done.</p>
 </table>
 </div>
 <p><strong>Request</strong> (Python dict, pickled):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;max_items&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
-    <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;max_items&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> (full envelope; <code class="docutils literal notranslate"><span class="pre">result</span></code> is a list):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="c1"># Successful task — `result` holds whatever arun_episode returned</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
-            <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>       <span class="c1"># list[int] or torch.Tensor</span>
-                <span class="s2">&quot;output_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>
-                <span class="s2">&quot;output_versions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>  <span class="c1"># per-token weight version</span>
-                <span class="s2">&quot;rewards&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
-                <span class="c1"># ... workflow-defined fields</span>
-            <span class="p">},</span>
-        <span class="p">},</span>
-        <span class="c1"># Rejected sample — workflow returned None</span>
-        <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
-        <span class="c1"># Per-task failure — workflow raised; error rides inside `result`</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">44</span><span class="p">,</span>
-            <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;RuntimeError(&#39;timeout&#39;)&quot;</span><span class="p">},</span>
-        <span class="p">},</span>
-    <span class="p">],</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span data-line="4">        <span class="c1"># Successful task — `result` holds whatever arun_episode returned</span>
+</span><span data-line="5">        <span class="p">{</span>
+</span><span data-line="6">            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+</span><span data-line="7">            <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="8">                <span class="s2">&quot;input_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>       <span class="c1"># list[int] or torch.Tensor</span>
+</span><span data-line="9">                <span class="s2">&quot;output_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>
+</span><span data-line="10">                <span class="s2">&quot;output_versions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span>  <span class="c1"># per-token weight version</span>
+</span><span data-line="11">                <span class="s2">&quot;rewards&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+</span><span data-line="12">                <span class="c1"># ... workflow-defined fields</span>
+</span><span data-line="13">            <span class="p">},</span>
+</span><span data-line="14">        <span class="p">},</span>
+</span><span data-line="15">        <span class="c1"># Rejected sample — workflow returned None</span>
+</span><span data-line="16">        <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+</span><span data-line="17">        <span class="c1"># Per-task failure — workflow raised; error rides inside `result`</span>
+</span><span data-line="18">        <span class="p">{</span>
+</span><span data-line="19">            <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">44</span><span class="p">,</span>
+</span><span data-line="20">            <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;RuntimeError(&#39;timeout&#39;)&quot;</span><span class="p">},</span>
+</span><span data-line="21">        <span class="p">},</span>
+</span><span data-line="22">    <span class="p">],</span>
+</span><span data-line="23"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>The workflow’s trajectory dict is passed through unmodified. Per-task
 failures are reported inline so one bad sample doesn’t fail the whole
 drain.</p>
 </section>
 <section id="post-notify-version-per-model-weight-update">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> — Per-Model Weight Update<a class="headerlink" href="#post-notify-version-per-model-weight-update" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> — Per-Model Weight Update<a class="headerlink" href="#post-notify-version-per-model-weight-update" title="Link to this heading">¶</a></h4>
 <p>Fires when AstraFlow has new weights to load. <strong>One call per
 <code class="docutils literal notranslate"><span class="pre">(RaaS,</span> <span class="pre">model_id)</span></code></strong> — multi-model training sends N calls, not a
 batched one.</p>
 <p>Request fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -777,58 +565,58 @@ batched one.</p>
 </table>
 </div>
 <p><strong>Request</strong> (Python dict, pickled):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="s2">&quot;sender_endpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.1:19861&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span data-line="4">    <span class="s2">&quot;sender_endpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.1:19861&quot;</span><span class="p">,</span>
+</span><span data-line="5"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> — note <strong>two <code class="docutils literal notranslate"><span class="pre">ok</span></code> fields</strong>: the outer one is the
 transport envelope; the inner one is the manager’s semantic status
 (e.g., whether any pull actually happened):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Successful update</span>
-<span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                     <span class="c1"># envelope — handler ran without raising</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                 <span class="c1"># manager — update succeeded</span>
-        <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-        <span class="s2">&quot;pulled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;pull_result&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>         <span class="c1"># or &quot;delta&quot;</span>
-            <span class="s2">&quot;shm_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/dev/shm/astraflow_weights/.../model0/model.safetensors&quot;</span><span class="p">,</span>
-        <span class="p">},</span>
-        <span class="s2">&quot;timing&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;pull_s&quot;</span><span class="p">:</span> <span class="mf">1.05</span><span class="p">,</span>
-            <span class="s2">&quot;pause_s&quot;</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span>
-            <span class="s2">&quot;load_s&quot;</span><span class="p">:</span> <span class="mf">2.81</span><span class="p">,</span>
-            <span class="s2">&quot;resume_s&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span>
-        <span class="p">},</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-
-<span class="c1"># Fast skip (version already loaded)</span>
-<span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pulled&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;version=5 &lt;= local=5&quot;</span><span class="p">,</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-
-<span class="c1"># Pull/load failed — envelope still ok, inner ok=False</span>
-<span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;TCP pull timed out&quot;</span><span class="p">,</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Successful update</span>
+</span><span data-line="2"><span class="p">{</span>
+</span><span data-line="3">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                     <span class="c1"># envelope — handler ran without raising</span>
+</span><span data-line="4">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="5">        <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>                 <span class="c1"># manager — update succeeded</span>
+</span><span data-line="6">        <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
+</span><span data-line="7">        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span data-line="8">        <span class="s2">&quot;pulled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="9">        <span class="s2">&quot;pull_result&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="10">            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>         <span class="c1"># or &quot;delta&quot;</span>
+</span><span data-line="11">            <span class="s2">&quot;shm_path&quot;</span><span class="p">:</span> <span class="s2">&quot;/dev/shm/astraflow_weights/.../model0/model.safetensors&quot;</span><span class="p">,</span>
+</span><span data-line="12">        <span class="p">},</span>
+</span><span data-line="13">        <span class="s2">&quot;timing&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="14">            <span class="s2">&quot;pull_s&quot;</span><span class="p">:</span> <span class="mf">1.05</span><span class="p">,</span>
+</span><span data-line="15">            <span class="s2">&quot;pause_s&quot;</span><span class="p">:</span> <span class="mf">0.12</span><span class="p">,</span>
+</span><span data-line="16">            <span class="s2">&quot;load_s&quot;</span><span class="p">:</span> <span class="mf">2.81</span><span class="p">,</span>
+</span><span data-line="17">            <span class="s2">&quot;resume_s&quot;</span><span class="p">:</span> <span class="mf">0.08</span><span class="p">,</span>
+</span><span data-line="18">        <span class="p">},</span>
+</span><span data-line="19">    <span class="p">},</span>
+</span><span data-line="20"><span class="p">}</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="c1"># Fast skip (version already loaded)</span>
+</span><span data-line="23"><span class="p">{</span>
+</span><span data-line="24">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="25">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="26">        <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="27">        <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
+</span><span data-line="28">        <span class="s2">&quot;pulled&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="29">        <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;version=5 &lt;= local=5&quot;</span><span class="p">,</span>
+</span><span data-line="30">    <span class="p">},</span>
+</span><span data-line="31"><span class="p">}</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="c1"># Pull/load failed — envelope still ok, inner ok=False</span>
+</span><span data-line="34"><span class="p">{</span>
+</span><span data-line="35">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="36">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="37">        <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="38">        <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="s2">&quot;model0&quot;</span><span class="p">,</span>
+</span><span data-line="39">        <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;TCP pull timed out&quot;</span><span class="p">,</span>
+</span><span data-line="40">    <span class="p">},</span>
+</span><span data-line="41"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Required behavior:</strong></p>
 <ol class="arabic simple">
@@ -847,24 +635,24 @@ not inline).</p></li>
 below for the full sequence.</p>
 </section>
 <section id="post-shutdown">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/shutdown</span></code><a class="headerlink" href="#post-shutdown" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/shutdown</span></code><a class="headerlink" href="#post-shutdown" title="Link to this heading">¶</a></h4>
 <p>Destroy all engines, kill child processes, exit the uvicorn process.
 Respond <em>before</em> exiting so the client doesn’t see a connection reset.</p>
 <p><strong>Request</strong> — empty dict, pickled:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> (full envelope):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="s2">&quot;shutting down&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="s2">&quot;shutting down&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 </section>
 </section>
 <section id="inbound-eval-support-optional">
-<h3>Inbound: Eval Support (Optional)<a class="headerlink" href="#inbound-eval-support-optional" title="Link to this heading">#</a></h3>
+<h3>Inbound: Eval Support (Optional)<a class="headerlink" href="#inbound-eval-support-optional" title="Link to this heading">¶</a></h3>
 <p>The five endpoints below are called <strong>only</strong> when the orchestrator
 runs eval windows (any recipe with <code class="docutils literal notranslate"><span class="pre">eval.freq_steps</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). A
 training-only RaaS can omit them entirely — AstraFlow will never
@@ -874,12 +662,13 @@ call them unless eval is enabled.</p>
 pairs with <code class="docutils literal notranslate"><span class="pre">/eval_end</span></code>, and <code class="docutils literal notranslate"><span class="pre">/eval_pull</span></code> consumes what <code class="docutils literal notranslate"><span class="pre">/eval_submit</span></code>
 produces). Half-implementing the eval stack is worse than omitting it.</p>
 <section id="post-reset-training-engine">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/reset_training_engine</span></code><a class="headerlink" href="#post-reset-training-engine" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/reset_training_engine</span></code><a class="headerlink" href="#post-reset-training-engine" title="Link to this heading">¶</a></h4>
 <p>Called before each eval window to quiesce the server. Cancel all
 in-flight training rollout tasks, drain the underlying inference
 engine, clear completed-results, and verify zero inflight requests.</p>
 <p>Request fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -897,7 +686,8 @@ engine, clear completed-results, and verify zero inflight requests.</p>
 </table>
 </div>
 <p>Response fields (inside <code class="docutils literal notranslate"><span class="pre">result</span></code>):</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -929,59 +719,60 @@ engine, clear completed-results, and verify zero inflight requests.</p>
 </table>
 </div>
 <p><strong>Request</strong> (Python dict, pickled):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> (full envelope):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;ready_for_eval&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;cancelled&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
-        <span class="s2">&quot;stragglers&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;sglang_running&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="s2">&quot;reset_epoch&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="4">        <span class="s2">&quot;ready_for_eval&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="5">        <span class="s2">&quot;cancelled&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+</span><span data-line="6">        <span class="s2">&quot;stragglers&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="7">        <span class="s2">&quot;sglang_running&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span data-line="8">        <span class="s2">&quot;reset_epoch&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+</span><span data-line="9">    <span class="p">},</span>
+</span><span data-line="10"><span class="p">}</span>
+</span></pre></div>
 </div>
 </section>
 <section id="post-eval-start-post-eval-end">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_start</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_end</span></code><a class="headerlink" href="#post-eval-start-post-eval-end" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_start</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_end</span></code><a class="headerlink" href="#post-eval-start-post-eval-end" title="Link to this heading">¶</a></h4>
 <p>Mark the boundary of an eval window so you can reset eval-specific
 tracking counters (separate from training’s).</p>
 <p><strong>Request</strong> — empty dict, pickled:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> (full envelope, both endpoints):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{}}</span>  <span class="c1"># ack only; payload is implementation-defined</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{}}</span>  <span class="c1"># ack only; payload is implementation-defined</span>
+</span></pre></div>
 </div>
 </section>
 <section id="post-eval-submit-enqueue-one-eval-rollout">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_submit</span></code> — Enqueue One Eval Rollout<a class="headerlink" href="#post-eval-submit-enqueue-one-eval-rollout" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_submit</span></code> — Enqueue One Eval Rollout<a class="headerlink" href="#post-eval-submit-enqueue-one-eval-rollout" title="Link to this heading">¶</a></h4>
 <p>Same request shape as <code class="docutils literal notranslate"><span class="pre">/submit</span></code>. Internally route through a separate
 eval task dict so training and eval do not share state.</p>
 <p><strong>Request</strong> (Python dict, pickled):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="s2">&quot;evaluate: ...&quot;</span><span class="p">,</span> <span class="s2">&quot;ref&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">},</span>
-    <span class="s2">&quot;workflow_id&quot;</span><span class="p">:</span> <span class="s2">&quot;eval-math&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="s2">&quot;evaluate: ...&quot;</span><span class="p">,</span> <span class="s2">&quot;ref&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">},</span>
+</span><span data-line="3">    <span class="s2">&quot;workflow_id&quot;</span><span class="p">:</span> <span class="s2">&quot;eval-math&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> (full envelope):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">101</span><span class="p">},</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">101</span><span class="p">},</span>
+</span><span data-line="4"><span class="p">}</span>
+</span></pre></div>
 </div>
 </section>
 <section id="post-eval-pull-drain-eval-results-note-dict-not-list">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_pull</span></code> — Drain Eval Results (Note: Dict, not List)<a class="headerlink" href="#post-eval-pull-drain-eval-results-note-dict-not-list" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_pull</span></code> — Drain Eval Results (Note: Dict, not List)<a class="headerlink" href="#post-eval-pull-drain-eval-results-note-dict-not-list" title="Link to this heading">¶</a></h4>
 <p>Request fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -1004,37 +795,38 @@ eval task dict so training and eval do not share state.</p>
 </table>
 </div>
 <p><strong>Request</strong> (Python dict, pickled):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;max_items&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="s2">&quot;max_items&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> — asymmetric with <code class="docutils literal notranslate"><span class="pre">/pull</span></code>: <code class="docutils literal notranslate"><span class="pre">result</span></code> is a <strong>dict with
 progress counters</strong>, not a list:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span> <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]}},</span>
-            <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">102</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>          <span class="c1"># rejected</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;inflight&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>           <span class="c1"># tasks still running on RaaS</span>
-        <span class="s2">&quot;pending&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>            <span class="c1"># ready to drain but not yet pulled</span>
-        <span class="s2">&quot;total_submitted&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>  <span class="c1"># cumulative since eval_start</span>
-    <span class="p">},</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2">    <span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+</span><span data-line="4">        <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span data-line="5">            <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span> <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]}},</span>
+</span><span data-line="6">            <span class="p">{</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="mi">102</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>          <span class="c1"># rejected</span>
+</span><span data-line="7">        <span class="p">],</span>
+</span><span data-line="8">        <span class="s2">&quot;inflight&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>           <span class="c1"># tasks still running on RaaS</span>
+</span><span data-line="9">        <span class="s2">&quot;pending&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>            <span class="c1"># ready to drain but not yet pulled</span>
+</span><span data-line="10">        <span class="s2">&quot;total_submitted&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>  <span class="c1"># cumulative since eval_start</span>
+</span><span data-line="11">    <span class="p">},</span>
+</span><span data-line="12"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p>The extra counters let the client detect stuck or lost tasks. Don’t
 flatten to a list — the eval manager expects this shape.</p>
 </section>
 </section>
 <section id="outbound-raas-astraflow">
-<h3>Outbound: RaaS → AstraFlow<a class="headerlink" href="#outbound-raas-astraflow" title="Link to this heading">#</a></h3>
+<h3>Outbound: RaaS → AstraFlow<a class="headerlink" href="#outbound-raas-astraflow" title="Link to this heading">¶</a></h3>
 <p>One call, once, at startup.</p>
 <section id="post-register-raas">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code><a class="headerlink" href="#post-register-raas" title="Link to this heading">#</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code><a class="headerlink" href="#post-register-raas" title="Link to this heading">¶</a></h4>
 <p>Join the pool. <strong>JSON</strong> (not pickle) — no envelope.</p>
 <p>Request fields:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -1062,18 +854,18 @@ flatten to a list — the eval manager expects this shape.</p>
 </table>
 </div>
 <p><strong>Request</strong> — raw JSON, <code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/json</span></code>:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;raas-0-d4a2&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;raas_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://10.0.0.5:19190&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;gpu_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">&quot;uid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;raas-0-d4a2&quot;</span><span class="p">,</span>
+</span><span data-line="3"><span class="w">  </span><span class="nt">&quot;raas_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://10.0.0.5:19190&quot;</span><span class="p">,</span>
+</span><span data-line="4"><span class="w">  </span><span class="nt">&quot;gpu_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span>
+</span><span data-line="5"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Response</strong> — raw JSON, no envelope:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;pool_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
-<span class="p">}</span>
-</pre></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">&quot;pool_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+</span><span data-line="3"><span class="p">}</span>
+</span></pre></div>
 </div>
 <p><strong>Before calling</strong>, wait for your own <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> to return
 <code class="docutils literal notranslate"><span class="pre">&quot;ready&quot;</span></code>. Registering before engines are healthy causes the pool to
@@ -1083,12 +875,13 @@ is not yet reachable (components can start in any order).</p>
 </section>
 </section>
 <section id="outbound-raas-trainer-weight-sender-agent">
-<h3>Outbound: RaaS → Trainer (Weight Sender Agent)<a class="headerlink" href="#outbound-raas-trainer-weight-sender-agent" title="Link to this heading">#</a></h3>
+<h3>Outbound: RaaS → Trainer (Weight Sender Agent)<a class="headerlink" href="#outbound-raas-trainer-weight-sender-agent" title="Link to this heading">¶</a></h3>
 <p>Three endpoints on the trainer’s weight sender, called during
 <code class="docutils literal notranslate"><span class="pre">/notify_version</span></code>. These are fully documented from the trainer side in
 <a class="reference internal" href="custom-trainer.html#raas-trainer-inbound-weight-sender"><span class="std std-ref">Custom Trainer Integration</span></a>.
 Summary:</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Method</p></th>
 <th class="head"><p>Endpoint</p></th>
@@ -1123,18 +916,18 @@ streams, and ZMQ completion signaling. Your RaaS just calls
 </section>
 </section>
 <section id="workflow-execution-contract">
-<h2>Workflow Execution Contract<a class="headerlink" href="#workflow-execution-contract" title="Link to this heading">#</a></h2>
+<h2>Workflow Execution Contract<a class="headerlink" href="#workflow-execution-contract" title="Link to this heading">¶</a></h2>
 <p>A workflow is user code that RaaS must execute correctly. Contract:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># astraflow/workflow/api/workflow_api.py</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">RolloutWorkflow</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">arun_episode</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">engine</span><span class="p">:</span> <span class="n">InferenceEngine</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="o">...</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># astraflow/workflow/api/workflow_api.py</span>
+</span><span data-line="2"><span class="k">class</span><span class="w"> </span><span class="nc">RolloutWorkflow</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+</span><span data-line="3">    <span class="nd">@abstractmethod</span>
+</span><span data-line="4">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">arun_episode</span><span class="p">(</span>
+</span><span data-line="5">        <span class="bp">self</span><span class="p">,</span>
+</span><span data-line="6">        <span class="n">engine</span><span class="p">:</span> <span class="n">InferenceEngine</span><span class="p">,</span>
+</span><span data-line="7">        <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+</span><span data-line="8">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="9">        <span class="o">...</span>
+</span></pre></div>
 </div>
 <ul class="simple">
 <li><p>Must be <code class="docutils literal notranslate"><span class="pre">async</span></code>.</p></li>
@@ -1147,48 +940,48 @@ workflow can look it up.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">InferenceEngine</span></code> protocol your RaaS passes to workflows
 (<code class="docutils literal notranslate"><span class="pre">astraflow/workflow/api/engine_api.py</span></code>):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">InferenceEngine</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">agenerate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ModelRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelResponse</span><span class="p">:</span> <span class="o">...</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
-
-    <span class="nd">@asynccontextmanager</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">managed_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">InferenceEngine</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span data-line="2">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">agenerate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">ModelRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModelResponse</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="3">    <span class="k">def</span><span class="w"> </span><span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="4">    <span class="k">def</span><span class="w"> </span><span class="nf">set_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5">
+</span><span data-line="6">    <span class="nd">@asynccontextmanager</span>
+</span><span data-line="7">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">managed_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="o">...</span>
+</span></pre></div>
 </div>
 <p>For multi-model training, RaaS wraps per-model engines in an
 <code class="docutils literal notranslate"><span class="pre">EngineGroup</span></code> so the workflow can call <code class="docutils literal notranslate"><span class="pre">engine[&quot;model0&quot;].agenerate(...)</span></code>.</p>
 </section>
 <section id="weight-update-lifecycle-end-to-end">
-<h2>Weight Update Lifecycle (end-to-end)<a class="headerlink" href="#weight-update-lifecycle-end-to-end" title="Link to this heading">#</a></h2>
+<h2>Weight Update Lifecycle (end-to-end)<a class="headerlink" href="#weight-update-lifecycle-end-to-end" title="Link to this heading">¶</a></h2>
 <p>What your <code class="docutils literal notranslate"><span class="pre">/notify_version</span></code> handler must do, in order:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[client] POST /notify_version {model_id, version, sender_endpoint}
-   │
-   ▼
-[handler] version &lt;= local? → {ok: True, pulled: False} (fast skip)
-   │
-   ▼
-[handler] acquire per-model asyncio.Lock
-   │
-   ▼
-[executor] pull_weights_to_disk(sender_endpoint, model_id)
-   │    ├── GET /get_buffer_info            (first pull only)
-   │    ├── POST /register_sglang_instance  (first pull only)
-   │    ├── POST /request_transfer
-   │    ├── ← TCP bulk transfer
-   │    ├── ← ZMQ transfer-complete signal
-   │    └── write safetensors to /dev/shm/.../{model_id}/
-   │
-   ▼
-[executor] engine.pause_generation()
-[executor] engine.load_weights_from_path(shm_path)
-[executor] engine.continue_generation()
-   │
-   ▼
-[handler] self._weight_versions[model_id] = version
-[handler] engine.set_version(version)
-[handler] release lock → return {ok: True, pull_result, timing}
-</pre></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">[client] POST /notify_version {model_id, version, sender_endpoint}
+</span><span data-line="2">   │
+</span><span data-line="3">   ▼
+</span><span data-line="4">[handler] version &lt;= local? → {ok: True, pulled: False} (fast skip)
+</span><span data-line="5">   │
+</span><span data-line="6">   ▼
+</span><span data-line="7">[handler] acquire per-model asyncio.Lock
+</span><span data-line="8">   │
+</span><span data-line="9">   ▼
+</span><span data-line="10">[executor] pull_weights_to_disk(sender_endpoint, model_id)
+</span><span data-line="11">   │    ├── GET /get_buffer_info            (first pull only)
+</span><span data-line="12">   │    ├── POST /register_sglang_instance  (first pull only)
+</span><span data-line="13">   │    ├── POST /request_transfer
+</span><span data-line="14">   │    ├── ← TCP bulk transfer
+</span><span data-line="15">   │    ├── ← ZMQ transfer-complete signal
+</span><span data-line="16">   │    └── write safetensors to /dev/shm/.../{model_id}/
+</span><span data-line="17">   │
+</span><span data-line="18">   ▼
+</span><span data-line="19">[executor] engine.pause_generation()
+</span><span data-line="20">[executor] engine.load_weights_from_path(shm_path)
+</span><span data-line="21">[executor] engine.continue_generation()
+</span><span data-line="22">   │
+</span><span data-line="23">   ▼
+</span><span data-line="24">[handler] self._weight_versions[model_id] = version
+</span><span data-line="25">[handler] engine.set_version(version)
+</span><span data-line="26">[handler] release lock → return {ok: True, pull_result, timing}
+</span></pre></div>
 </div>
 <p>Every step involving inference backend I/O (pull, pause, load,
 resume) must run in a thread executor via
@@ -1198,114 +991,114 @@ other async endpoints including <code class="docutils literal notranslate"><span
 (<code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py:1612</span></code>).</p>
 </section>
 <section id="minimum-viable-skeleton">
-<h2>Minimum Viable Skeleton<a class="headerlink" href="#minimum-viable-skeleton" title="Link to this heading">#</a></h2>
+<h2>Minimum Viable Skeleton<a class="headerlink" href="#minimum-viable-skeleton" title="Link to this heading">¶</a></h2>
 <p>Below is a FastAPI skeleton that wires the required endpoints. Replace
 the stubs with your inference backend and workflow runner.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_raas/server.py</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Request</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">JSONResponse</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">Manager</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">&quot;starting&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_workflows</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_versions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_locks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># ... your inference engine handles go here</span>
-
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># launch inference engines, load base model, etc.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">&quot;ready&quot;</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">}</span>
-
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_availability</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_CONCURRENCY</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">)),</span>
-            <span class="s2">&quot;inflight&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">),</span>
-        <span class="p">}</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">register_workflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">workflow_id</span><span class="p">,</span> <span class="n">workflow_cls</span><span class="p">,</span>
-                          <span class="n">reward_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gconfig_overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="bp">cls</span> <span class="o">=</span> <span class="n">resolve_workflow</span><span class="p">(</span><span class="n">workflow_cls</span><span class="p">)</span>
-        <span class="n">rfn</span> <span class="o">=</span> <span class="n">resolve_reward</span><span class="p">(</span><span class="n">reward_fn</span><span class="p">)</span> <span class="k">if</span> <span class="n">reward_fn</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_workflows</span><span class="p">[</span><span class="n">workflow_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">reward_fn</span><span class="o">=</span><span class="n">rfn</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{}</span>
-
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">workflow_id</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="n">wf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workflows</span><span class="p">[</span><span class="n">workflow_id</span><span class="p">]</span>
-        <span class="n">tid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span><span class="p">;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">arun_episode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
-        <span class="n">task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">tid</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-            <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span> <span class="k">else</span>
-                 <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">exception</span><span class="p">())})}))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span>
-        <span class="k">return</span> <span class="n">tid</span>
-
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pull_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_done</span> <span class="ow">and</span> <span class="n">timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>  <span class="c1"># simple implementation</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="p">)[:</span><span class="n">max_items</span><span class="p">]:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">tid</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">tid</span><span class="p">)})</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">out</span>
-
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">sender_endpoint</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">version</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_versions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;pulled&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
-        <span class="n">lock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_locks</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">())</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
-            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-            <span class="n">shm_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
-                <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_receiver</span><span class="o">.</span><span class="n">pull</span><span class="p">,</span>
-                <span class="n">sender_endpoint</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
-            <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">pause_generation</span><span class="p">)</span>
-            <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
-                <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">load_weights_from_path</span><span class="p">,</span> <span class="n">shm_path</span><span class="p">)</span>
-            <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">continue_generation</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_weight_versions</span><span class="p">[</span><span class="n">model_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">set_version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">}</span>
-
-    <span class="c1"># ... eval_start / eval_end / eval_submit / eval_pull /</span>
-    <span class="c1"># reset_training_engine / destroy ...</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_ok</span><span class="p">(</span><span class="n">result</span><span class="p">):</span> <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-    <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}),</span>
-    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_err</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span> <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
-    <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)}),</span>
-    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">build_app</span><span class="p">(</span><span class="n">mgr</span><span class="p">:</span> <span class="n">Manager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FastAPI</span><span class="p">:</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/status&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">():</span> <span class="k">return</span> <span class="n">mgr</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/availability&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">avail</span><span class="p">():</span> <span class="k">return</span> <span class="k">await</span> <span class="n">mgr</span><span class="o">.</span><span class="n">get_availability</span><span class="p">()</span>
-
-    <span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/register_workflow&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">reg_wf</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="k">await</span> <span class="n">r</span><span class="o">.</span><span class="n">body</span><span class="p">())</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="k">return</span> <span class="n">_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">_ok</span><span class="p">(</span><span class="n">mgr</span><span class="o">.</span><span class="n">register_workflow</span><span class="p">(</span><span class="o">**</span><span class="n">p</span><span class="p">))</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="k">return</span> <span class="n">_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-
-    <span class="c1"># ... /submit, /pull, /notify_version, /shutdown ...</span>
-    <span class="c1"># To support eval, also wire: /reset_training_engine,</span>
-    <span class="c1"># /eval_start, /eval_end, /eval_submit, /eval_pull.</span>
-    <span class="k">return</span> <span class="n">app</span>
-</pre></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># my_raas/server.py</span>
+</span><span data-line="2"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span data-line="3"><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+</span><span data-line="5"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Request</span>
+</span><span data-line="6"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi.responses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">JSONResponse</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span><span class="w"> </span><span class="nc">Manager</span><span class="p">:</span>
+</span><span data-line="9">    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="10">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">&quot;starting&quot;</span>
+</span><span data-line="11">        <span class="bp">self</span><span class="o">.</span><span class="n">_workflows</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="12">        <span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="13">        <span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="14">        <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span data-line="15">        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_versions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="16">        <span class="bp">self</span><span class="o">.</span><span class="n">_weight_locks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="17">        <span class="c1"># ... your inference engine handles go here</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">bootstrap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span data-line="20">        <span class="c1"># launch inference engines, load base model, etc.</span>
+</span><span data-line="21">        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">&quot;ready&quot;</span>
+</span><span data-line="22">
+</span><span data-line="23">    <span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="24">        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">}</span>
+</span><span data-line="25">
+</span><span data-line="26">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_availability</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="27">        <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="28">            <span class="s2">&quot;available&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_CONCURRENCY</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">)),</span>
+</span><span data-line="29">            <span class="s2">&quot;inflight&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">),</span>
+</span><span data-line="30">        <span class="p">}</span>
+</span><span data-line="31">
+</span><span data-line="32">    <span class="k">def</span><span class="w"> </span><span class="nf">register_workflow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">workflow_id</span><span class="p">,</span> <span class="n">workflow_cls</span><span class="p">,</span>
+</span><span data-line="33">                          <span class="n">reward_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gconfig_overrides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+</span><span data-line="34">        <span class="bp">cls</span> <span class="o">=</span> <span class="n">resolve_workflow</span><span class="p">(</span><span class="n">workflow_cls</span><span class="p">)</span>
+</span><span data-line="35">        <span class="n">rfn</span> <span class="o">=</span> <span class="n">resolve_reward</span><span class="p">(</span><span class="n">reward_fn</span><span class="p">)</span> <span class="k">if</span> <span class="n">reward_fn</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="36">        <span class="bp">self</span><span class="o">.</span><span class="n">_workflows</span><span class="p">[</span><span class="n">workflow_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">reward_fn</span><span class="o">=</span><span class="n">rfn</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+</span><span data-line="37">        <span class="k">return</span> <span class="p">{}</span>
+</span><span data-line="38">
+</span><span data-line="39">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">workflow_id</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span data-line="40">        <span class="n">wf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workflows</span><span class="p">[</span><span class="n">workflow_id</span><span class="p">]</span>
+</span><span data-line="41">        <span class="n">tid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span><span class="p">;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_id</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span data-line="42">        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">wf</span><span class="o">.</span><span class="n">arun_episode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+</span><span data-line="43">        <span class="n">task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">tid</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+</span><span data-line="44">            <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span> <span class="k">else</span>
+</span><span data-line="45">                 <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">exception</span><span class="p">())})}))</span>
+</span><span data-line="46">        <span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="p">[</span><span class="n">tid</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span>
+</span><span data-line="47">        <span class="k">return</span> <span class="n">tid</span>
+</span><span data-line="48">
+</span><span data-line="49">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">pull_completed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+</span><span data-line="50">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_done</span> <span class="ow">and</span> <span class="n">timeout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span data-line="51">            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>  <span class="c1"># simple implementation</span>
+</span><span data-line="52">        <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="53">        <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="p">)[:</span><span class="n">max_items</span><span class="p">]:</span>
+</span><span data-line="54">            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">tid</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">tid</span><span class="p">)})</span>
+</span><span data-line="55">            <span class="bp">self</span><span class="o">.</span><span class="n">_inflight</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="56">        <span class="k">return</span> <span class="n">out</span>
+</span><span data-line="57">
+</span><span data-line="58">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">notify_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">sender_endpoint</span><span class="p">):</span>
+</span><span data-line="59">        <span class="k">if</span> <span class="n">version</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_versions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+</span><span data-line="60">            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;pulled&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+</span><span data-line="61">        <span class="n">lock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_locks</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">())</span>
+</span><span data-line="62">        <span class="k">async</span> <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+</span><span data-line="63">            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+</span><span data-line="64">            <span class="n">shm_path</span> <span class="o">=</span> <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
+</span><span data-line="65">                <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_receiver</span><span class="o">.</span><span class="n">pull</span><span class="p">,</span>
+</span><span data-line="66">                <span class="n">sender_endpoint</span><span class="p">,</span> <span class="n">model_id</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
+</span><span data-line="67">            <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">pause_generation</span><span class="p">)</span>
+</span><span data-line="68">            <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span>
+</span><span data-line="69">                <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">load_weights_from_path</span><span class="p">,</span> <span class="n">shm_path</span><span class="p">)</span>
+</span><span data-line="70">            <span class="k">await</span> <span class="n">loop</span><span class="o">.</span><span class="n">run_in_executor</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">continue_generation</span><span class="p">)</span>
+</span><span data-line="71">            <span class="bp">self</span><span class="o">.</span><span class="n">_weight_versions</span><span class="p">[</span><span class="n">model_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
+</span><span data-line="72">            <span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">set_version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+</span><span data-line="73">        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;model_id&quot;</span><span class="p">:</span> <span class="n">model_id</span><span class="p">,</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">}</span>
+</span><span data-line="74">
+</span><span data-line="75">    <span class="c1"># ... eval_start / eval_end / eval_submit / eval_pull /</span>
+</span><span data-line="76">    <span class="c1"># reset_training_engine / destroy ...</span>
+</span><span data-line="77">
+</span><span data-line="78"><span class="k">def</span><span class="w"> </span><span class="nf">_ok</span><span class="p">(</span><span class="n">result</span><span class="p">):</span> <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="79">    <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}),</span>
+</span><span data-line="80">    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">)</span>
+</span><span data-line="81"><span class="k">def</span><span class="w"> </span><span class="nf">_err</span><span class="p">(</span><span class="n">exc</span><span class="p">):</span> <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="82">    <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">repr</span><span class="p">(</span><span class="n">exc</span><span class="p">)}),</span>
+</span><span data-line="83">    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</span><span data-line="84">
+</span><span data-line="85"><span class="k">def</span><span class="w"> </span><span class="nf">build_app</span><span class="p">(</span><span class="n">mgr</span><span class="p">:</span> <span class="n">Manager</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FastAPI</span><span class="p">:</span>
+</span><span data-line="86">    <span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+</span><span data-line="87">
+</span><span data-line="88">    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/status&quot;</span><span class="p">)</span>
+</span><span data-line="89">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">():</span> <span class="k">return</span> <span class="n">mgr</span><span class="o">.</span><span class="n">get_status</span><span class="p">()</span>
+</span><span data-line="90">
+</span><span data-line="91">    <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/availability&quot;</span><span class="p">)</span>
+</span><span data-line="92">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">avail</span><span class="p">():</span> <span class="k">return</span> <span class="k">await</span> <span class="n">mgr</span><span class="o">.</span><span class="n">get_availability</span><span class="p">()</span>
+</span><span data-line="93">
+</span><span data-line="94">    <span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/register_workflow&quot;</span><span class="p">)</span>
+</span><span data-line="95">    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">reg_wf</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+</span><span data-line="96">        <span class="k">try</span><span class="p">:</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="k">await</span> <span class="n">r</span><span class="o">.</span><span class="n">body</span><span class="p">())</span>
+</span><span data-line="97">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="k">return</span> <span class="n">_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span data-line="98">        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">_ok</span><span class="p">(</span><span class="n">mgr</span><span class="o">.</span><span class="n">register_workflow</span><span class="p">(</span><span class="o">**</span><span class="n">p</span><span class="p">))</span>
+</span><span data-line="99">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="k">return</span> <span class="n">_err</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span data-line="100">
+</span><span data-line="101">    <span class="c1"># ... /submit, /pull, /notify_version, /shutdown ...</span>
+</span><span data-line="102">    <span class="c1"># To support eval, also wire: /reset_training_engine,</span>
+</span><span data-line="103">    <span class="c1"># /eval_start, /eval_end, /eval_submit, /eval_pull.</span>
+</span><span data-line="104">    <span class="k">return</span> <span class="n">app</span>
+</span></pre></div>
 </div>
 <p>A real implementation should additionally: register with AstraFlow on
 startup (<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code>), wire a <code class="docutils literal notranslate"><span class="pre">RaaSWeightReceiver</span></code> into
@@ -1315,7 +1108,7 @@ custom).</p>
 <code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/routes.py</span></code> + <code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py</span></code>.</p>
 </section>
 <section id="done-checklist">
-<h2>Done Checklist<a class="headerlink" href="#done-checklist" title="Link to this heading">#</a></h2>
+<h2>Done Checklist<a class="headerlink" href="#done-checklist" title="Link to this heading">¶</a></h2>
 <p><strong>Required</strong> — a training-only RaaS is correct if:</p>
 <ul class="simple">
 <li><p>[ ] It answers <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> in &lt;100 ms even while a weight load is
@@ -1348,7 +1141,7 @@ of training tracking.</p></li>
 </ul>
 </section>
 <section id="reference-files">
-<h2>Reference Files<a class="headerlink" href="#reference-files" title="Link to this heading">#</a></h2>
+<h2>Reference Files<a class="headerlink" href="#reference-files" title="Link to this heading">¶</a></h2>
 <p>If you’re starting from scratch, read these in order:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/routes.py</span></code> — all 12 endpoints, 290 lines.</p></li>
@@ -1367,10 +1160,11 @@ ground-truth test of compatibility.</p></li>
 </ol>
 </section>
 <section id="api-summary">
-<h2>API Summary<a class="headerlink" href="#api-summary" title="Link to this heading">#</a></h2>
+<h2>API Summary<a class="headerlink" href="#api-summary" title="Link to this heading">¶</a></h2>
 <section id="required-8-inbound-1-outbound-3-outbound">
-<h3>Required (8 inbound + 1 outbound + 3 outbound)<a class="headerlink" href="#required-8-inbound-1-outbound-3-outbound" title="Link to this heading">#</a></h3>
-<div class="pst-scrollable-table-container"><table class="table">
+<h3>Required (8 inbound + 1 outbound + 3 outbound)<a class="headerlink" href="#required-8-inbound-1-outbound-3-outbound" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Direction</p></th>
 <th class="head"><p>Category</p></th>
@@ -1451,9 +1245,10 @@ ground-truth test of compatibility.</p></li>
 </div>
 </section>
 <section id="optional-eval-support-5-inbound">
-<h3>Optional — Eval Support (5 inbound)<a class="headerlink" href="#optional-eval-support-5-inbound" title="Link to this heading">#</a></h3>
+<h3>Optional — Eval Support (5 inbound)<a class="headerlink" href="#optional-eval-support-5-inbound" title="Link to this heading">¶</a></h3>
 <p>Implement all five or none.</p>
-<div class="pst-scrollable-table-container"><table class="table">
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Direction</p></th>
 <th class="head"><p>Category</p></th>
@@ -1504,146 +1299,40 @@ payload schemas.</p>
 </section>
 </section>
 
-
-                </article>
-              
-
-              
-              
-              
-              
-                <footer class="prev-next-footer d-print-none">
-                  
-<div class="prev-next-area">
-    <a class="left-prev"
-       href="custom-trainer.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Custom Trainer Integration</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="../recipes/math.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Math</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
 </div>
-                </footer>
-              
-            </div>
-            
-            
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item"><div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture">Architecture</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-a-raas-is">What a RaaS Is</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#invariants-your-implementation-must-preserve">Invariants your implementation MUST preserve</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-raas-is-not">What RaaS is NOT</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-reference">API Reference</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inbound-astraflow-raas">Inbound: AstraFlow → RaaS</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#get-status-readiness-json"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> — Readiness (JSON)</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#get-availability-capacity-json"><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code> — Capacity (JSON)</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-register-workflow"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_workflow</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-submit-enqueue-one-rollout"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/submit</span></code> — Enqueue One Rollout</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-pull-drain-completed-rollouts"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/pull</span></code> — Drain Completed Rollouts</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-notify-version-per-model-weight-update"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> — Per-Model Weight Update</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-shutdown"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/shutdown</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inbound-eval-support-optional">Inbound: Eval Support (Optional)</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-reset-training-engine"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/reset_training_engine</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-eval-start-post-eval-end"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_start</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_end</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-eval-submit-enqueue-one-eval-rollout"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_submit</span></code> — Enqueue One Eval Rollout</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-eval-pull-drain-eval-results-note-dict-not-list"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_pull</span></code> — Drain Eval Results (Note: Dict, not List)</a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#outbound-raas-astraflow">Outbound: RaaS → AstraFlow</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#post-register-raas"><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#outbound-raas-trainer-weight-sender-agent">Outbound: RaaS → Trainer (Weight Sender Agent)</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow-execution-contract">Workflow Execution Contract</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weight-update-lifecycle-end-to-end">Weight Update Lifecycle (end-to-end)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimum-viable-skeleton">Minimum Viable Skeleton</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#done-checklist">Done Checklist</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-files">Reference Files</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#api-summary">API Summary</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#required-8-inbound-1-outbound-3-outbound">Required (8 inbound + 1 outbound + 3 outbound)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-eval-support-5-inbound">Optional — Eval Support (5 inbound)</a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
-            
-          </div>
-          <footer class="bd-footer-content">
-            
-<div class="bd-footer-content__inner container">
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025-2026, AstraFlow Team</p>
   
-  <div class="footer-item">
+  <p>
+    Made with
     
-<p class="component-author">
-By AstraFlow Team
-</p>
-
-  </div>
-  
-  <div class="footer-item">
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
     
-
-  <p class="copyright">
-    
-      © Copyright 2025-2026, AstraFlow Team.
-      <br/>
-    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
   </p>
-
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
-  <div class="footer-item">
-    
-  </div>
-  
 </div>
-          </footer>
-        
-
-      </main>
+      <div class="sy-foot-socials">
+<a href="https://github.com/haizhongzheng/astraflow" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
     </div>
   </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
-
-  <footer class="bd-footer">
-  </footer>
-  </body>
+</footer>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
 </html>
