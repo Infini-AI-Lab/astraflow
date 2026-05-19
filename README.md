@@ -5,7 +5,7 @@
 </picture>
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.15565-b31b1b.svg)](https://arxiv.org/abs/2605.15565)
-[![Website](https://img.shields.io/badge/website-online-9cf.svg)](https://Infini-AI-Lab.github.io/astraflow/)
+[![Blog](https://img.shields.io/badge/blog-online-9cf.svg)](https://Infini-AI-Lab.github.io/astraflow/)
 [![Docs Site](https://img.shields.io/badge/docs-github%20pages-blue)](https://Infini-AI-Lab.github.io/astraflow/docs/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](./LICENSE)
 
