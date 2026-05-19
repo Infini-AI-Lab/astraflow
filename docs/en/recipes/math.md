@@ -2,7 +2,7 @@
 
 Reinforcement learning for single-agent math reasoning with RLVR.
 
-**Math recipes**: [`examples/math/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math)
+**Math recipes**: [`examples/math/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math)
 
 Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
@@ -10,8 +10,8 @@ Each recipe ships an all-in-one launch script under `scripts/` and its config un
 
 The smallest recipe. It runs on a single 2-GPU node — 1 GPU for inference, 1 for training — so it is the quickest way to verify an AstraFlow setup end to end. It comes in two variants that differ **only** in weight transfer mode:
 
-- [`qwen3-1.7b-m2po-2gpus-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-full) — full weight transfer
-- [`qwen3-1.7b-m2po-2gpus-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-delta) — delta weight transfer (only changed weights are sent)
+- [`qwen3-1.7b-m2po-2gpus-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-full) — full weight transfer
+- [`qwen3-1.7b-m2po-2gpus-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-delta) — delta weight transfer (only changed weights are sent)
 
 ### Run
 
@@ -47,8 +47,8 @@ bash examples/math/qwen3-1.7b-m2po-2gpus-full/scripts/run_qwen3-1.7b-m2po-2gpus-
 
 The full-scale recipe. It needs an 8-GPU node — 4 GPUs for inference, 4 for training — and also comes in full and delta transfer variants:
 
-- [`qwen3-8b-m2po-full/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-8b-m2po-full) — full weight transfer
-- [`qwen3-8b-m2po-delta/`](https://github.com/haizhongzheng/astraflow/tree/main/examples/math/qwen3-8b-m2po-delta) — delta weight transfer
+- [`qwen3-8b-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-8b-m2po-full) — full weight transfer
+- [`qwen3-8b-m2po-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-8b-m2po-delta) — delta weight transfer
 
 ### Run
 

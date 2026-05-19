@@ -41,7 +41,7 @@ html_static_path = ["_static"]
 # TODO: restore image logo once _static/logo.jpg is fixed (theme_options light_logo/dark_logo).
 html_theme_options = {
     "accent_color": "violet",
-    "github_url": "https://github.com/haizhongzheng/astraflow",
+    "github_url": "https://github.com/Infini-AI-Lab/astraflow",
 }
 html_css_files = ["css/custom.css"]
 

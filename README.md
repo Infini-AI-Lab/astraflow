@@ -5,8 +5,8 @@
 </picture>
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.15565-b31b1b.svg)](https://arxiv.org/abs/2605.15565)
-[![Website](https://img.shields.io/badge/website-online-9cf.svg)](https://haizhongzheng.github.io/astraflow/)
-[![Docs Site](https://img.shields.io/badge/docs-github%20pages-blue)](https://haizhongzheng.github.io/astraflow/docs/)
+[![Website](https://img.shields.io/badge/website-online-9cf.svg)](https://Infini-AI-Lab.github.io/astraflow/)
+[![Docs Site](https://img.shields.io/badge/docs-github%20pages-blue)](https://Infini-AI-Lab.github.io/astraflow/docs/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](./LICENSE)
 
 </div>
@@ -43,18 +43,18 @@ AstraFlow **natively** supports the following for LLM RL training **without any 
 <!-- <p align="center"><i>AstraFlow training a multi-policy workflow on an elastic, heterogeneous, cross-region rollout pool — all at once, with no feature-specific code.</i></p> -->
 
 ## News
-- **[2026/05]** AstraFlow **v0.1.0** released — first public release of the full system. See the [project website](https://haizhongzheng.github.io/astraflow/).
+- **[2026/05]** AstraFlow **v0.1.0** released — first public release of the full system. See the [project website](https://Infini-AI-Lab.github.io/astraflow/).
 - **[2026/05]** AstraFlow paper is on [arXiv](https://arxiv.org/abs/2605.15565).
 
 ----
 
 ## Getting Started
 
-- [Install AstraFlow](https://zhenghaizhong.com/astraflow/docs/get-started/installation.html)
-- [Quick Start](https://zhenghaizhong.com/astraflow/docs/get-started/quickstart.html)
+- [Install AstraFlow](https://Infini-AI-Lab.github.io/astraflow/docs/get-started/installation.html)
+- [Quick Start](https://Infini-AI-Lab.github.io/astraflow/docs/get-started/quickstart.html)
 
 ## Recipes
-AstraFlow currently supports the following recipes. Check the [documentation](https://haizhongzheng.github.io/astraflow/docs/) for more detailed instructions.
+AstraFlow currently supports the following recipes. Check the [documentation](https://Infini-AI-Lab.github.io/astraflow/docs/) for more detailed instructions.
 
 | Recipe | Description |
 |---|---|
