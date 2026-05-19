@@ -6,7 +6,31 @@ Reinforcement learning for code-generation reasoning with RLVR, rewarded by test
 
 Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
-Eval datasets (HumanEval, LiveCodeBench v5) need a one-time manual download before launching. See the eval-dataset setup notes in [`examples/code-multi-agent/README.md`](https://github.com/haizhongzheng/astraflow/tree/main/examples/code-multi-agent).
+LiveCodeBench v5 eval data needs a one-time manual download — see [Eval Dataset Setup](#eval-dataset-setup) below.
+
+## Eval Dataset Setup
+
+The recipes evaluate on HumanEval, LiveCodeBench v5, and DeepCoder Codeforces. Only
+LiveCodeBench v5 needs a one-time manual download before launching — otherwise the
+periodic eval steps fail.
+
+Download the AReaL-boba-2-RL-Code dataset from the repo root:
+
+```bash
+huggingface-cli download inclusionAI/AReaL-boba-2-RL-Code \
+  --repo-type dataset \
+  --local-dir ./data-data/AReaL-boba-2-RL-Code
+```
+
+This provides `./data-data/AReaL-boba-2-RL-Code/code_benchmark/lcb_v5/test.jsonl`.
+
+HumanEval ships vendored in the repo (`astraEnv/human-eval/data/HumanEval.jsonl`), and
+DeepCoder Codeforces is loaded directly from Hugging Face during eval — neither needs
+a download.
+
+The training dataset (DeepCoder-Preview, `primeintellect` subset) is fetched from
+Hugging Face automatically on first run, so LiveCodeBench v5 above is the only manual
+download needed to run a recipe end to end.
 
 ## Qwen3-8B — 8 GPUs (single-agent)
 

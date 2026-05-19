@@ -16,6 +16,7 @@ Browse task-specific recipes in their own subfolders:
 
 - `examples/math/`: RLVR-style math training recipes.
 - `examples/math-multi-agent/`: actor/verifier and multi-model math workflows.
+- `examples/math-efficient-data/`: composable data-algorithm math recipes (GRESO, dynamic sampling, buffer replay).
 - `examples/code/`: code generation training recipes.
 - `examples/code-multi-agent/`: codegen/verifier and multi-agent code workflows.
 - `examples/search/`: search-augmented agent training with local retrieval.

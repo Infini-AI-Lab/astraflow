@@ -17,8 +17,8 @@ covers the multi-agent design.
 - One or two 8-GPU nodes (8×H100 or similar), depending on the recipe.
 - Training data (`agentica-org/DeepCoder-Preview-Dataset`) is fetched from
   Hugging Face automatically on first run.
-- **Eval datasets need a one-time manual download** (HumanEval, LiveCodeBench
-  v5). Follow the "Eval Dataset Setup" section of
+- **LiveCodeBench v5 eval data needs a one-time manual download.** Follow the
+  "Eval Dataset Setup" section of
   [`docs/en/recipes/code.md`](../../docs/en/recipes/code.md) before launching —
   otherwise the periodic eval steps will fail.
 

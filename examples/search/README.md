@@ -53,5 +53,5 @@ Complete guidance: [`docs/en/recipes/search.md`](../../docs/en/recipes/search.md
 ---
 **GPU Resources**
 
-These recipes default to an 8xH100 node, with the launcher using 6 GPUs for
-training and inference and leaving 2 GPUs available for the retrieval server.
+These recipes default to an 8xH100 node — the launcher uses 4 GPUs for inference
+and 2 for training, leaving 2 GPUs for the retrieval server.
