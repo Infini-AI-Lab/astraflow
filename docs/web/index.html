@@ -462,7 +462,7 @@
     font-size: 16.5px;
     font-weight: 500;
     line-height: 1.5;
-    max-width: 430px;
+    max-width: 340px;
   }
   .oss-cta-text em {
     color: var(--accent-strong);
@@ -656,8 +656,8 @@
     padding-left: 12px;
     max-width: 100%;
   }
-  /* Larger variant: forces small SVGs to fill the wider container. */
-  figure.paper-fig.wrap-right.lg { width: 280px; }
+  /* Compact variant: used by the RaaS abstraction figure. */
+  figure.paper-fig.wrap-right.lg { width: 220px; }
   figure.paper-fig.wrap-right.lg img { width: 100%; }
   @media (max-width: 720px) {
     figure.paper-fig.wrap-right,
@@ -865,7 +865,7 @@
       </a>
       <a class="claim" href="#finding-sparsity" data-scroll-target="finding-sparsity">
         <span class="lbl"><span class="num">[ 03 ]</span> · sparse transfer</span>
-        <div class="claim-big claim-big-text">≥98.9%</div>
+        <div class="claim-big claim-big-text">≤1.1%</div>
         <p class="claim-sub">Sparse RL weight deltas shrink ~28 GB full syncs to ~1.5 GB for remote rollout.</p>
       </a>
     </div>
@@ -900,6 +900,10 @@
         <a class="btn btn-doc" href="https://Infini-AI-Lab.github.io/astraflow/docs/get-started/installation.html">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 19 12"/><polyline points="12 5 19 12 12 19"/></svg>
           Quick Start
+        </a>
+        <a class="btn btn-doc" href="https://Infini-AI-Lab.github.io/astraflow/docs/">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Docs
         </a>
       </div>
     </div>
@@ -955,10 +959,7 @@
     </figure>
 
     <p>
-      RaaS nodes pull rollout tasks from the layer and push completed trajectories back, while trainers independently pull batches. The layer exposes a programmable interface — <b>selective rollout, curriculum scheduling, post-rollout filtering, dynamic sampling, replay, data mixing, staleness correction</b> all become dataflow policies, with no trainer / RaaS / orchestration changes.
-    </p>
-    <p>
-      The layer also <em>regulates</em> autonomous components: throttling slow rollouts, prioritizing fresher trajectories, blocking unsuitable batches via backpressure. In multi-policy training, trajectory metadata (producing policy, model version, timestamp, reward, task type) lets the layer route policy-specific / shared / mixed streams to different trainers — no direct trainer-to-trainer coordination.
+      RaaS nodes pull rollout tasks from the data layer and push completed trajectories back, while trainers independently pull batches. The layer exposes programmable dataflow policies: <b>selective rollout, curriculum scheduling, filtering, sampling, replay, mixing, and staleness correction</b>, without requiring changes to trainers, RaaS nodes, or orchestration. It also regulates autonomous components by throttling slow rollouts, prioritizing fresh trajectories, blocking unsuitable batches via backpressure, and routing multi-policy data using metadata such as policy, model version, timestamp, reward, and task type.
     </p>
 
     <h3><span class="h3-num">2.</span>RaaS Abstraction: Rollout becomes a service contract</h3>
@@ -979,7 +980,7 @@
 
     <div class="fig-row cols-2">
       <figure>
-        <img src="figs/trainer-abstraction.svg" alt="Trainer abstraction">
+        <img src="figs/trainer-abstraction.svg" alt="Trainer abstraction" style="width: 220px; max-width: 100%;">
         <figcaption><b>(a)</b> Trainer abstraction.</figcaption>
       </figure>
       <figure>
@@ -989,13 +990,10 @@
     </div>
 
     <p>
-      A trainer consumes batches and publishes updated weights through a trainer-side weight interface. From the trainer's perspective, the dataflow layer is a streaming corpus and the weight interface is a publication target — it doesn't manage rollout workers, serve weights directly, or coordinate with other trainers.
+      A trainer consumes batches and publishes updated weights via a trainer-side interface. To the trainer, AstraFlow is just a streaming corpus plus a weight publication target: it does not manage rollout workers, serve weights, or coordinate with other trainers. This makes training backends <b>interchangeable</b>: any RL, SFT, or fault-tolerant backend can participate by consuming batches and publishing weights. For multi-policy training, each policy has its own trainer and weight stream while the dataflow layer routes trajectories.
     </p>
     <p>
-      This makes training backends <b>substitutable</b>: any existing RL / SFT / fault-tolerant backend participates in AstraFlow if it consumes batches and publishes weights. <b>Multi-policy collaborative training falls out</b> — each policy gets its own independent trainer and weight stream; the dataflow layer routes trajectories.
-    </p>
-    <p>
-      The weight-transfer mechanism stores model versions and exposes them to RaaS nodes; RaaS nodes <b>pull</b> when appropriate, so weight delivery is never on the trainer's critical path. The same interface implements full-model transfer, <b>sparse delta transfer</b>, and version-aware refresh — keeping constrained or remote weight transfer isolated from trainer logic.
+      Weight transfer is decoupled from training: model versions are stored and exposed to RaaS nodes, which pull updates when appropriate. The same interface supports full-model transfer, <b>sparse deltas</b>, and version-aware refresh without adding trainer-side complexity.
     </p>
   </div>
 </section>
