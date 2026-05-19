@@ -1,33 +1,44 @@
 # Quick Start
 
-## Architecture
+Run your first AstraFlow training job. This guide uses the smallest recipe — it
+needs just **2 GPUs**, the quickest way to see the whole system working end to end.
 
-AstraFlow runs as **3 separate services** that you launch in different terminals:
+## Prerequisites
 
-1. **RaaS** — Inference server (SGLang or vLLM backend), handles rollout generation
-2. **AstraFlow** — Async data orchestration HTTP service, manages buffering and data flow
-3. **Trainer** — Training worker launched via `torchrun`, performs gradient updates
+- AstraFlow installed — see [Installation](installation.md).
+- A machine with at least **2 NVIDIA GPUs**.
 
-Some agentic recipes (ALFWorld, WebShop) require a **4th service**: the task environment server (step 0).
+## Launch a training run
 
-## Launch a Training Run
+AstraFlow runs as three coordinated processes:
 
-Runnable recipes live under `examples/`. Each recipe ships a `yaml/` directory of
-configs and numbered launch scripts under `scripts/`. Task-specific walkthroughs:
-[math](../recipes/math.md), [code](../recipes/code.md),
-[multi-agent](../recipes/multi-agent.md),
-[agentbench](../recipes/agentbench.md) (ALFWorld + WebShop), and
-[search](../recipes/search.md).
+- **AstraFlow** — the data orchestrator (CPU-only HTTP service)
+- **RaaS** — the inference server that generates rollouts (1 GPU)
+- **Trainer** — the training worker that updates weights (1 GPU)
 
-## Validate Code Style
+Every recipe ships an all-in-one script that starts all three for you. The smallest
+recipe is Qwen3-1.7B math RL on 2 GPUs. From the repo root:
 
 ```bash
-pre-commit run --all-files
+bash examples/math/qwen3-1.7b-m2po-2gpus-full/scripts/run_qwen3-1.7b-m2po-2gpus-full.sh
 ```
 
-## Build & Serve Docs Locally
+The script launches the three processes in order — AstraFlow service, RaaS server,
+then the trainer — and training starts once the trainer connects. Per-process logs
+are written under `data-log/`.
 
-```bash
-bash docs/build.sh
-bash docs/serve.sh 8000
-```
+:::{note}
+This recipe logs to **Weights & Biases** (`stats_logger.wandb.mode: online` in its
+`experiment.yaml`). Run `wandb login` before launching, or set that field to
+`disabled` to skip W&B.
+:::
+
+## Next steps
+
+Explore the other recipes for larger models and other tasks:
+
+- [Math](../recipes/math.md) — including the 8-GPU Qwen3-8B recipe
+- [Code](../recipes/code.md)
+- [Multi-Agent (Math)](../recipes/multi-agent.md)
+- [AgentBench](../recipes/agentbench.md)
+- [Search](../recipes/search.md)

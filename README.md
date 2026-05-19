@@ -44,14 +44,14 @@ AstraFlow **natively** supports the following for LLM RL training without any fe
 
 ## News
 - **[2026/05]** AstraFlow **v0.1.0** released — first public release of the full system. See the [project website](https://haizhongzheng.github.io/astraflow/).
-- **[2026/05]** AstraFlow paper is on arXiv — [Dataflow-Oriented Reinforcement Learning for Agentic LLMs](https://arxiv.org/abs/2605.15565).
+- **[2026/05]** AstraFlow paper is on [arXiv](https://arxiv.org/abs/2605.15565).
 
 ----
 
 ## Getting Started
 
-- [Install AstraFlow](docs/en/get-started/installation.md)
-- [Quick Start](docs/en/get-started/quickstart.md)
+- [Install AstraFlow](https://zhenghaizhong.com/astraflow/docs/get-started/installation.html)
+- [Quick Start](https://zhenghaizhong.com/astraflow/docs/get-started/quickstart.html)
 
 ## Recipes
 AstraFlow currently supports the following recipes. Check the [documentation](https://haizhongzheng.github.io/astraflow/docs/) for more detailed instructions.
