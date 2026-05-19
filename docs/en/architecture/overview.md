@@ -6,16 +6,16 @@ AstraFlow is a fully asynchronous reinforcement learning system where inference,
 
 The system has four cooperating components:
 
-1. **AstraFlow** — Central orchestrator. Manages a global pool of RaaS instances, acquires rollout data, buffers and serves training batches, and coordinates weight synchronization.
+1. **Dataflow** — Central orchestrator. Manages a global pool of RaaS instances, acquires rollout data, buffers and serves training batches, and coordinates weight synchronization.
 2. **RaaS** (Remote Agentic Serving) — Inference service. Launches and manages vLLM/SGLang engines, executes rollout workflows with reward functions, and loads updated weights. Multiple RaaS instances can run in parallel, and instances can join or leave dynamically.
-3. **Trainer** — Distributed training engine (FSDP/Megatron). Fetches batches from AstraFlow, runs RL algorithm updates (GRPO, PPO, M2PO, etc.), and pushes updated weights. Multiple trainers can run in parallel for multi-model training.
+3. **Trainer** — Distributed training engine (FSDP/Megatron). Fetches batches from Dataflow, runs RL algorithm updates (GRPO, PPO, M2PO, etc.), and pushes updated weights. Multiple trainers can run in parallel for multi-model training.
 4. **WeightManager** — Weight transfer subsystem. Copies FSDP weights to shared-memory buffers and transfers them to RaaS via TCP or NCCL.
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                       AstraFlow                         │
+│                       Dataflow                          │
 │                (Orchestration + Buffering)              │
 │                                                         │
 │       ┌──────────────┐          ┌──────────────┐        │
@@ -43,7 +43,7 @@ All HTTP calls between the three components, organized by phase.
 
 ```
 ┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
-│       Trainer        │     │      AstraFlow       │     │        RaaS         │
+│       Trainer        │     │      Dataflow        │     │        RaaS         │
 │  (train_worker/)     │     │    (astraflow/)      │     │      (raas/)        │
 └─────────┬───────────┘     └──────────┬──────────┘     └──────────┬──────────┘
           │                            │                           │
@@ -120,7 +120,7 @@ All HTTP calls between the three components, organized by phase.
           │                            │                           │
 ```
 
-Arrow direction indicates who initiates the HTTP call. During weight sync, RaaS calls Trainer directly (bypassing AstraFlow) for the bulk TCP transfer.
+Arrow direction indicates who initiates the HTTP call. During weight sync, RaaS calls Trainer directly (bypassing Dataflow) for the bulk TCP transfer.
 
 ## Dynamic RaaS Pool
 
@@ -139,7 +139,7 @@ This means you can scale inference throughput by adding more RaaS instances at a
 AstraFlow supports training multiple models simultaneously (e.g., a solver and a verifier in solve-and-verify). Each model has:
 
 - Its own **Trainer** process with dedicated GPUs and a separate weight transfer port.
-- Its own **buffer** inside AstraFlow with independent staleness filtering.
+- Its own **buffer** inside Dataflow with independent staleness filtering.
 - Its own **SGLang engine** inside RaaS (e.g., `sglang[model0]:d2+sglang[model1]:d2`).
 
 Coordination uses a **version barrier**: each trainer independently notifies its version after a training step. Weight sync to RaaS is triggered only after all models reach the same version. The last trainer to arrive becomes the "leader" and initiates the coordinated weight load across all RaaS instances. Other trainers block until the leader completes.
@@ -148,15 +148,15 @@ Coordination uses a **version barrier**: each trainer independently notifies its
 
 Each iteration proceeds as follows:
 
-1. **Data Acquisition** (background, continuous): AstraFlow checks RaaS pool availability, submits prompts to the least-loaded instance, and collects completed rollouts from all instances in parallel. Rollouts are filtered by staleness and reward distribution, then buffered.
+1. **Data Acquisition** (background, continuous): Dataflow checks RaaS pool availability, submits prompts to the least-loaded instance, and collects completed rollouts from all instances in parallel. Rollouts are filtered by staleness and reward distribution, then buffered.
 
-2. **Batch Fetch**: Trainer requests a batch from AstraFlow via `GET /batch`. AstraFlow mixes fresh rollouts and replay data according to `replay_ratio`, applies staleness filtering, and returns a padded batch.
+2. **Batch Fetch**: Trainer requests a batch from Dataflow via `GET /batch`. Dataflow mixes fresh rollouts and replay data according to `replay_ratio`, applies staleness filtering, and returns a padded batch.
 
 3. **Train Step**: Trainer runs forward/backward pass with the RL algorithm (PPO/GRPO/M2PO), computes loss, and updates model weights.
 
 4. **Weight Sync**:
-   - Trainer stages new weights to shared memory (via `WeightManager.offload`) and calls `POST /notify_version` on AstraFlow.
-   - In multi-model setups, AstraFlow's Python-side version barrier waits until every registered `model_id` reports the same version. For non-eval steps, each per-model weight load is fired asynchronously (fire-and-forget) and the staleness filter absorbs briefly-stale rollouts. For eval steps, the weight load is deferred to the barrier leader so every model updates atomically.
+   - Trainer stages new weights to shared memory (via `WeightManager.offload`) and calls `POST /notify_version` on Dataflow.
+   - In multi-model setups, Dataflow's Python-side version barrier waits until every registered `model_id` reports the same version. For non-eval steps, each per-model weight load is fired asynchronously (fire-and-forget) and the staleness filter absorbs briefly-stale rollouts. For eval steps, the weight load is deferred to the barrier leader so every model updates atomically.
    - The leader (or each async firer) fans out one `POST /notify_version` per model to every live RaaS instance via `RaaSPool.notify_version()`. Each RaaS pulls the model's weights over TCP from the sender agent, pauses that model's engine, loads from `/dev/shm`, and resumes.
 
 5. **Repeat** with the next iteration.
@@ -167,11 +167,11 @@ Each component runs as a separate process:
 
 | Component | Execution Model | Typical GPUs |
 |---|---|---|
-| AstraFlow | Threaded (Flask + ThreadPoolExecutor) | CPU-only |
+| Dataflow | Threaded (Flask + ThreadPoolExecutor) | CPU-only |
 | RaaS (×N) | Async (FastAPI + asyncio) | 4+ GPUs each |
 | Trainer (×M) | Synchronous (PyTorch DDP/FSDP) | 2–8 GPUs each |
 
-Data acquisition runs two background threads inside AstraFlow:
+Data acquisition runs two background threads inside Dataflow:
 - **Submit thread**: Checks pool availability, gathers prompts, submits in parallel via ThreadPoolExecutor.
 - **Collect thread**: Polls all RaaS instances for completed rollouts, applies filtering, ingests into buffer.
 

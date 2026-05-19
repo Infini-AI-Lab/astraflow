@@ -42,8 +42,8 @@ wm.offload(model.named_parameters(), version, rank, world_size)
 
 1. Trainer calls `wm.offload()` — GPU weights are copied to the inactive
    half of a shared-memory double buffer, then the buffer index is swapped.
-2. Trainer notifies AstraFlow via `POST /notify_version`.
-3. AstraFlow's Python-side version barrier waits for all model_ids
+2. Trainer notifies Dataflow via `POST /notify_version`.
+3. Dataflow's Python-side version barrier waits for all model_ids
    (multi-model), then fans out one `POST /notify_version` per model per
    RaaS instance. Each call carries `{model_id, version, sender_endpoint}`.
 4. On each RaaS, the manager acquires a per-model lock and calls
@@ -103,7 +103,7 @@ SENDER AGENT (CPU subprocess)
   │                            │    │   │ compare halves (numpy) │    │
   │                            │    │   │ ~1.8s for 1.7B         │    │
 
-ASTRAFLOW SERVICE (CPU)
+DATAFLOW SERVICE (CPU)
   │ · · · · · · · · · · · · · · · · │version│RaaS weight load  │version  │serve
   │                                 │barrier│[================]│updated! │batch
   │                                 │       │notify_version (per model)   │─────►
@@ -124,7 +124,7 @@ RAAS (GPU)
   agent subprocess, overlapped with trainer checkpoint/logging. The
   trainer calls `wait_delta_ready()` before `notify_version` to ensure
   delta is ready when RaaS pulls.
-- **`get_batch` is the real synchronization point.** AstraFlow won't serve
+- **`get_batch` is the real synchronization point.** Dataflow won't serve
   a batch until `service_version >= trainer_version`. The service version
   updates only after the RaaS weight load completes. So the trainer
   blocks on data availability, not on weight transfer directly.
@@ -140,7 +140,7 @@ RAAS (GPU)
 
 With two models (e.g. actor + verifier), each trainer independently
 offloads weights and fires `notify_version_async`. The version barrier
-and weight loading happen on the AstraFlow side. Trainers are only
+and weight loading happen on the Dataflow side. Trainers are only
 blocked when they request the next batch:
 
 ```
@@ -159,7 +159,7 @@ TRAINER model1 (verifier)
   │                                      │    │      │ service catches up│
   │                                      │ free ──► │[=================]│
 
-ASTRAFLOW SERVICE
+DATAFLOW SERVICE
   │ · · · · · · · · · · · · · · · · · · ·│barrier met!│RaaS load  │version │
   │                                      │(both v=N+1)│[=========]│updated!│
   │                                      │            │           │serve   │
@@ -180,7 +180,7 @@ RAAS
   weight transfer synchronization. It ensures all model_ids reach the
   same version before triggering the RaaS weight load.
 - **`get_batch` is the gating point.** Each trainer blocks on its next
-  batch request until AstraFlow's `service_version` catches up (after
+  batch request until Dataflow's `service_version` catches up (after
   the version barrier + RaaS load completes).
 - **Trainer GPU is free** between `offload()` and `get_batch()` — this
   window is used for checkpoint saving, wandb logging, and other I/O.
@@ -269,7 +269,7 @@ these endpoints (used by RaaS to pull weights):
 
 In multi-model training (e.g. actor + verifier), each model has its own
 WeightManager with its own sender agent and shared-memory buffer.
-AstraFlow coordinates them via a version barrier — all models must reach
+Dataflow coordinates them via a version barrier — all models must reach
 the same version before any RaaS loads weights. This prevents serving
 rollouts with mismatched model versions.
 

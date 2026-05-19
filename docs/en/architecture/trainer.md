@@ -7,20 +7,20 @@ supporting FSDP and Megatron backends.
 
 The trainer is a **swappable component**. AstraFlow provides a built-in
 PPO trainer, but the system is designed so that users can replace it with
-their own training framework. The trainer communicates with AstraFlow
+their own training framework. The trainer communicates with Dataflow
 purely over HTTP — there is no shared library or class hierarchy coupling
 the two.
 
 Customizing a trainer is extremely simple — the entire integration surface
-is just **6 HTTP APIs** (3 outbound calls to AstraFlow + 3 inbound
+is just **6 HTTP APIs** (3 outbound calls to Dataflow + 3 inbound
 endpoints for weight transfer). Any training framework (PyTorch, JAX,
-Megatron, custom) can integrate with AstraFlow as long as it speaks this
+Megatron, custom) can integrate with Dataflow as long as it speaks this
 protocol:
 
 ```
 ┌──────────────┐     HTTP (3 calls)     ┌──────────────┐
 │              │ ──────────────────────► │              │
-│   Trainer    │                        │  AstraFlow   │
+│   Trainer    │                        │  Dataflow    │
 │  (swappable) │                        │  (stable)    │
 │              │ ◄────────────────────  │              │
 └──────┬───────┘                        └──────────────┘
@@ -35,12 +35,12 @@ protocol:
 
 The trainer interacts with two components:
 
-- **AstraFlow service** (outbound) — 3 HTTP calls for registration, data
+- **Dataflow service** (outbound) — 3 HTTP calls for registration, data
   pulling, and version notification.
 - **RaaS** (inbound) — 3 HTTP endpoints served by a weight sender agent
   that RaaS connects to for pulling updated weights.
 
-### Trainer → AstraFlow API
+### Trainer → Dataflow API
 
 | Category | Method | Endpoint | Purpose |
 |----------|--------|----------|---------|

@@ -21,7 +21,7 @@ RaaS (Remote Agentic Serving, `astraflow/raas/`) manages inference engines and r
 
 RaaS is the inference side of the loop:
 
-- Receives rollout requests from AstraFlow
+- Receives rollout requests from Dataflow
 - Generates completions using managed inference engines
 - Accepts weight updates from Trainer via pull-based TCP transfer
 
@@ -81,15 +81,15 @@ on failure (HTTP 500). Source: `astraflow/raas/server/routes.py`.
 
 RaaS is not only a server — it also acts as a client to two external services.
 
-### AstraFlow Service
+### Dataflow Service
 
-On startup, RaaS self-registers with the AstraFlow orchestrator:
+On startup, RaaS self-registers with the Dataflow orchestrator:
 
 | Method | Target | Purpose |
 |--------|--------|---------|
-| `POST` | AstraFlow `/register_raas` | Register this RaaS instance into the global pool |
+| `POST` | Dataflow `/register_raas` | Register this RaaS instance into the global pool |
 
-This is triggered at boot when `--astraflow-url` is provided. AstraFlow then knows to route rollout requests to this instance.
+This is triggered at boot when `--astraflow-url` is provided. Dataflow then knows to route rollout requests to this instance.
 
 ### Trainer Sender Agent (Weight Transfer)
 
@@ -107,7 +107,7 @@ The flow inside `manager.notify_version(model_id, version, sender_endpoint)`
 (`astraflow/raas/server/manager.py:1648`):
 
 ```
-AstraFlow ──POST /notify_version──> RaaS (for one model_id)
+Dataflow  ──POST /notify_version──> RaaS (for one model_id)
   {model_id, version, sender_endpoint}          │
                                                 │ acquire per-model asyncio.Lock
                                                 │
@@ -122,7 +122,7 @@ AstraFlow ──POST /notify_version──> RaaS (for one model_id)
                                                 └─ engine.continue_generation()
 ```
 
-For multi-model training, AstraFlow's Python-side barrier sends one such
+For multi-model training, Dataflow's Python-side barrier sends one such
 call per model, in sequence or in parallel depending on whether eval is
 requested — see [Multi-Agent Weight Transfer](multi-agent-weight-transfer.md).
 
@@ -142,23 +142,23 @@ All HTTP calls to and from RaaS, organized by phase.
     ║  STARTUP                                                       ║
     ╚══════════════════════════════════════════════════════════════════╝
                                                │
-      RaaS ──POST /register_raas──────────> AstraFlow     join the pool
+      RaaS ──POST /register_raas──────────> Dataflow      join the pool
                                                │
-      AstraFlow ──POST /register_workflow─> RaaS          register rollout workflows
+      Dataflow ──POST /register_workflow──> RaaS          register rollout workflows
                                                │
     ╔══════════════════════════════════════════════════════════════════╗
     ║  ROLLOUT (continuous, async)                                   ║
     ╚══════════════════════════════════════════════════════════════════╝
                                                │
-      AstraFlow ──GET /availability───────> RaaS          check capacity
-      AstraFlow ──POST /submit────────────> RaaS          submit prompts
-      AstraFlow ──POST /pull──────────────> RaaS          collect results
+      Dataflow ──GET /availability────────> RaaS          check capacity
+      Dataflow ──POST /submit─────────────> RaaS          submit prompts
+      Dataflow ──POST /pull───────────────> RaaS          collect results
                                                │
     ╔══════════════════════════════════════════════════════════════════╗
     ║  WEIGHT SYNC (per training step, one call per model)             ║
     ╚══════════════════════════════════════════════════════════════════╝
                                                │
-      AstraFlow ──POST /notify_version──────> RaaS        trigger weight load
+      Dataflow ──POST /notify_version───────> RaaS        trigger weight load
                   {model_id, version,
                    sender_endpoint}             │
                                                │
@@ -169,23 +169,23 @@ All HTTP calls to and from RaaS, organized by phase.
     ║  EVALUATION (triggered after weight sync)                      ║
     ╚══════════════════════════════════════════════════════════════════╝
                                                │
-      AstraFlow ──POST /eval_start────────> RaaS          begin eval session
-      AstraFlow ──POST /eval_submit───────> RaaS          submit eval samples
-      AstraFlow ──POST /eval_pull─────────> RaaS          collect eval results
-      AstraFlow ──POST /eval_end──────────> RaaS          end eval session
+      Dataflow ──POST /eval_start─────────> RaaS          begin eval session
+      Dataflow ──POST /eval_submit────────> RaaS          submit eval samples
+      Dataflow ──POST /eval_pull──────────> RaaS          collect eval results
+      Dataflow ──POST /eval_end───────────> RaaS          end eval session
                                                │
     ╔══════════════════════════════════════════════════════════════════╗
     ║  LIFECYCLE                                                     ║
     ╚══════════════════════════════════════════════════════════════════╝
                                                │
-      AstraFlow ──GET /status─────────────> RaaS          health check
-      AstraFlow ──POST /shutdown──────────> RaaS          graceful shutdown
+      Dataflow ──GET /status──────────────> RaaS          health check
+      Dataflow ──POST /shutdown───────────> RaaS          graceful shutdown
 ```
 
-**Inbound (RaaS as server):** AstraFlow calls RaaS for rollout, eval, weight sync, and lifecycle management.
-**Outbound (RaaS as client):** RaaS calls AstraFlow once at startup (registration) and calls Trainer directly during weight sync (TCP pull).
+**Inbound (RaaS as server):** Dataflow calls RaaS for rollout, eval, weight sync, and lifecycle management.
+**Outbound (RaaS as client):** RaaS calls Dataflow once at startup (registration) and calls Trainer directly during weight sync (TCP pull).
 
 ### Initial Startup vs Recovery
 
 - **Fresh start (version=0):** Both RaaS and Trainer load the same model checkpoint independently. No weight transfer needed — data acquisition begins immediately.
-- **Recovery (version > 0):** Trainer sends `recovered_version` in `POST /ready`. AstraFlow then fans out `POST /notify_version` to all RaaS instances (once per registered model) before starting data acquisition, ensuring every RaaS loads the recovered weights.
+- **Recovery (version > 0):** Trainer sends `recovered_version` in `POST /ready`. Dataflow then fans out `POST /notify_version` to all RaaS instances (once per registered model) before starting data acquisition, ensuring every RaaS loads the recovered weights.
