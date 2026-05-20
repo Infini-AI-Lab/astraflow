@@ -19,7 +19,7 @@ from astraflow.train_worker.api.io_struct import (
 
 if TYPE_CHECKING:
     from astraflow.train_worker.utils.data import MicroBatchList
-    from astraflow.workflow.api.workflow_api import RolloutWorkflow
+    from astraflow.core.workflow.api.workflow_api import RolloutWorkflow
 
 
 class TrainEngine(abc.ABC):
@@ -518,7 +518,7 @@ class InferenceEngine(abc.ABC):
 
             - An instance of RolloutWorkflow (for sharing resources between rollouts)
             - A RolloutWorkflow class type (will be instantiated with workflow_kwargs)
-            - A string module path like "astraflow.workflow.impl.rlvr.RLVRWorkflow" (will be imported
+            - A string module path like "astraflow.core.workflow.impl.rlvr.RLVRWorkflow" (will be imported
               and instantiated with workflow_kwargs)
         workflow_kwargs : dict[str, Any], optional
             Keyword arguments to pass to the workflow constructor when workflow is a type or string.
@@ -614,7 +614,7 @@ class InferenceEngine(abc.ABC):
 
             - An instance of RolloutWorkflow (for sharing resources between rollouts)
             - A RolloutWorkflow class type (will be instantiated with workflow_kwargs)
-            - A string module path like "astraflow.workflow.impl.rlvr.RLVRWorkflow" (will be imported
+            - A string module path like "astraflow.core.workflow.impl.rlvr.RLVRWorkflow" (will be imported
               and instantiated with workflow_kwargs)
         workflow_kwargs : dict[str, Any], optional
             Keyword arguments to pass to the workflow constructor when workflow is a type or string.
@@ -661,7 +661,7 @@ class InferenceEngine(abc.ABC):
 
             - An instance of RolloutWorkflow (for sharing resources between rollouts)
             - A RolloutWorkflow class type (will be instantiated with workflow_kwargs)
-            - A string module path like "astraflow.workflow.impl.rlvr.RLVRWorkflow" (will be imported
+            - A string module path like "astraflow.core.workflow.impl.rlvr.RLVRWorkflow" (will be imported
               and instantiated with workflow_kwargs)
         workflow_kwargs : dict[str, Any], optional
             Keyword arguments to pass to the workflow constructor when workflow is a type or string.

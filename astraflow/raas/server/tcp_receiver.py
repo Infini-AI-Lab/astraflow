@@ -25,12 +25,12 @@ import requests as http_requests
 import torch
 import zmq
 
-from astraflow.weight_manager.transfer.config import (
+from astraflow.core.weight_manager.transfer.config import (
     TransferEngineConfig,
     TransferStatus,
 )
-from astraflow.weight_manager.transfer.receiver_agent import TransferBuffer
-from astraflow.weight_manager.transfer.transfer_engine import TCPTransferEngine
+from astraflow.core.weight_manager.transfer.receiver_agent import TransferBuffer
+from astraflow.core.weight_manager.transfer.transfer_engine import TCPTransferEngine
 
 
 logger = logging.getLogger(__name__)

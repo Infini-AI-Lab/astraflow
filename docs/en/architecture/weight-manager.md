@@ -1,6 +1,6 @@
 # WeightManager
 
-The WeightManager (`astraflow/weight_manager/`) is an independent component
+The WeightManager (`astraflow/core/weight_manager/`) is an independent component
 that handles all weight transfer between Trainer and RaaS.
 
 ## Design Principle: Independent Transport Layer
@@ -240,7 +240,7 @@ The buffer index swap is a single Python int assignment (atomic under GIL).
 ## Project Structure
 
 ```
-astraflow/weight_manager/
+astraflow/core/weight_manager/
   __init__.py              ← exports WeightManager, WeightManagerConfig
   weight_manager.py        ← main class: buffer mgmt, GPU→CPU copy, sender lifecycle
   config.py                ← WeightManagerConfig

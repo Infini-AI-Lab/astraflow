@@ -12,7 +12,7 @@ from astraflow.dataflow.dataset.livecodebench import (
     SINGLE_TURN_LCB_PROMPT_TEMPLATE,
 )
 from astraflow.dataflow.dataset.utils import attach_query_ids
-from astraflow.workflow.utils import logging
+from astraflow.core.workflow.utils import logging
 
 logger = logging.getLogger(__name__)
 

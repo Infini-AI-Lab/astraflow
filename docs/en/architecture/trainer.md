@@ -57,7 +57,7 @@ The trainer interacts with two components:
 | Weights | `POST` | `/request_transfer` | Every step (pull weights over TCP) |
 
 The weight sender is provided as a reusable library
-(`astraflow.weight_manager.transfer.sender_agent`) so custom trainers
+(`astraflow.core.weight_manager.transfer.sender_agent`) so custom trainers
 don't need to reimplement TCP/ZMQ machinery. See
 [WeightManager](weight-manager.md) for details.
 

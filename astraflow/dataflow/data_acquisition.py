@@ -814,7 +814,7 @@ class AstraDataAcquisition:
                     with self._stats_lock:
                         self._curator_stats["selected"] += 1
                 if _DEBUG_PRODUCER:
-                    from astraflow.workflow.utils.data import resolve_prompt_id as _rpi
+                    from astraflow.core.workflow.utils.data import resolve_prompt_id as _rpi
                     _qid = _rpi(data) or "<noid>"
                     global _DEBUG_SUBMIT_COUNTER
                     with _DEBUG_SUBMIT_LOCK:

@@ -276,7 +276,7 @@ class GRESOCurator:
         # Resolve qid via the shared helper so the streak table built by
         # update() (keyed on the workflow-stamped prompt_id) matches the
         # lookup here. Both sides MUST go through resolve_prompt_id.
-        from astraflow.workflow.utils.data import resolve_prompt_id
+        from astraflow.core.workflow.utils.data import resolve_prompt_id
 
         qid = resolve_prompt_id(data)
         if qid is None:

@@ -324,6 +324,6 @@ trainer_model1:
 | RaaS pool fan-out (one call per model) | `astraflow/dataflow/raas_pool.py` | `RaaSPool.notify_version()` (line 442), `_notify_one_model()` (line 410) |
 | RaaS manager pull + load | `astraflow/raas/server/manager.py` | `notify_version()` (line 1556), `_do_weight_update()` (line 1612), `_pull_weights_to_disk()` |
 | TCP receiver | `astraflow/raas/server/tcp_receiver.py` | `RaaSWeightReceiver` |
-| Sender agent | `astraflow/weight_manager/transfer/sender_agent.py` | `SenderAgent` |
-| WeightManager offload | `astraflow/weight_manager/weight_manager.py` | `offload()` |
+| Sender agent | `astraflow/core/weight_manager/transfer/sender_agent.py` | `SenderAgent` |
+| WeightManager offload | `astraflow/core/weight_manager/weight_manager.py` | `offload()` |
 | Trainer integration | `astraflow/train_worker/trainer/ppo_trainer.py` | `AstraFlowPPOTrainer` |

@@ -190,8 +190,8 @@ class AstraFlowPPOTrainer(PPOTrainerBase):
         """
         import socket
 
-        from astraflow.weight_manager import WeightManager, WeightManagerConfig
-        from astraflow.weight_manager.transfer.config import (
+        from astraflow.core.weight_manager import WeightManager, WeightManagerConfig
+        from astraflow.core.weight_manager.transfer.config import (
             SenderAgentConfig,
             TransferEngineConfig,
         )
