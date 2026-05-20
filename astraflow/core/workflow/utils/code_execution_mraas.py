@@ -31,7 +31,9 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 
 def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[3]
+    # __file__ is astraflow/core/workflow/utils/code_execution_mraas.py;
+    # parents[4] = repo root (parents[3] = package root since the reorg).
+    return Path(__file__).resolve().parents[4]
 
 
 def _verifier_module() -> str:
@@ -42,7 +44,7 @@ def _verifier_script_path() -> str:
     """Absolute path to testing_util_mraas.py for direct invocation via
     ``python -P <path>`` (skips script-dir sys.path injection, avoiding
     the 14 s astraflow package import)."""
-    return str(_repo_root() / "astraflow" / "workflow" / "utils" / "testing_util_mraas.py")
+    return str(_repo_root() / "astraflow" / "core" / "workflow" / "utils" / "testing_util_mraas.py")
 
 
 def _verifier_work_root() -> Path | None:

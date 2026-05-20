@@ -28,7 +28,9 @@ PROGRAM_HARD_DEADLINE = 100
 
 
 def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[3]
+    # __file__ is astraflow/core/workflow/reward/livecodebench_reward.py;
+    # parents[4] = repo root (parents[3] = package root since the reorg).
+    return Path(__file__).resolve().parents[4]
 
 
 def _verifier_module() -> str:
@@ -42,7 +44,7 @@ def _verifier_script_path() -> str:
     automatic script-dir sys.path injection, avoiding the 14 s
     astraflow package import while still loading the standalone script.
     """
-    return str(_repo_root() / "astraflow" / "workflow" / "utils" / "testing_util.py")
+    return str(_repo_root() / "astraflow" / "core" / "workflow" / "utils" / "testing_util.py")
 
 
 def _extract_python_code(text: str, min_length: int = 20) -> str | None:

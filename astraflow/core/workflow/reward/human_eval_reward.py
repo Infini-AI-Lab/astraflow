@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 def _ensure_human_eval_importable() -> None:
-    repo_root = Path(__file__).resolve().parents[3]
+    # __file__ is astraflow/core/workflow/reward/human_eval_reward.py;
+    # parents[4] = repo root (parents[3] = package root since the reorg).
+    repo_root = Path(__file__).resolve().parents[4]
     human_eval_root = repo_root / "astraEnv" / "human-eval"
     human_eval_path = str(human_eval_root)
     if human_eval_path not in sys.path:
