@@ -140,7 +140,7 @@ data-aria-dark="Switch to auto color mode">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="weightmanager">
 <h1>WeightManager<a class="headerlink" href="#weightmanager" title="Link to this heading">¶</a></h1>
-<p>The WeightManager (<code class="docutils literal notranslate"><span class="pre">astraflow/weight_manager/</span></code>) is an independent component
+<p>The WeightManager (<code class="docutils literal notranslate"><span class="pre">astraflow/core/weight_manager/</span></code>) is an independent component
 that handles all weight transfer between Trainer and RaaS.</p>
 <section id="design-principle-independent-transport-layer">
 <h2>Design Principle: Independent Transport Layer<a class="headerlink" href="#design-principle-independent-transport-layer" title="Link to this heading">¶</a></h2>
@@ -392,7 +392,7 @@ over TCP — no locking between them:</p>
 </section>
 <section id="project-structure">
 <h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">astraflow/weight_manager/
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">astraflow/core/weight_manager/
 </span><span data-line="2">  __init__.py              ← exports WeightManager, WeightManagerConfig
 </span><span data-line="3">  weight_manager.py        ← main class: buffer mgmt, GPU→CPU copy, sender lifecycle
 </span><span data-line="4">  config.py                ← WeightManagerConfig

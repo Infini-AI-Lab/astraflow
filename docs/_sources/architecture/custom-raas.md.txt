@@ -611,7 +611,7 @@ streams, and ZMQ completion signaling. Your RaaS just calls
 A workflow is user code that RaaS must execute correctly. Contract:
 
 ```python
-# astraflow/workflow/api/workflow_api.py
+# astraflow/core/workflow/api/workflow_api.py
 class RolloutWorkflow(ABC):
     @abstractmethod
     async def arun_episode(
@@ -631,7 +631,7 @@ class RolloutWorkflow(ABC):
   workflow can look it up.
 
 The `InferenceEngine` protocol your RaaS passes to workflows
-(`astraflow/workflow/api/engine_api.py`):
+(`astraflow/core/workflow/api/engine_api.py`):
 
 ```python
 class InferenceEngine(Protocol):
@@ -850,8 +850,8 @@ If you're starting from scratch, read these in order:
 3. `astraflow/raas/server/__main__.py` — launcher and self-registration.
 4. `astraflow/raas/server/tcp_receiver.py` — `RaaSWeightReceiver`
    (reuse this).
-5. `astraflow/workflow/api/workflow_api.py` and
-   `astraflow/workflow/api/engine_api.py` — the contracts your RaaS
+5. `astraflow/core/workflow/api/workflow_api.py` and
+   `astraflow/core/workflow/api/engine_api.py` — the contracts your RaaS
    must honor for workflows.
 6. `astraflow/dataflow/raas2_engine.py` — the client AstraFlow uses
    to talk to you; matching its method signatures is the
