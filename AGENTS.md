@@ -66,7 +66,7 @@ your response.
     - `server/` — Manager, TCP receiver, FastAPI app.
     - `engine/` — Remote inference engine adapters.
     - `api/cli_args.py` — RaaS-side dataclass configs.
-  - `astraflow/workflow/` — Rollout workflows and reward functions
+  - `astraflow/core/workflow/` — Rollout workflows and reward functions
     (swappable).
     - `api/` — Base interfaces: `RolloutWorkflow`
       (`workflow_api.py`), `AsyncRewardWrapper` (`reward_api.py`).
@@ -82,9 +82,9 @@ your response.
       and rewards (`WORKFLOW_REGISTRY`, `REWARD_REGISTRY`).
     - `__init__.py` — Imports every `impl/` and `reward/` module so
       the registration decorators run at import time.
-  - `astraflow/weight_manager/` — Weight transport (TCP/ZMQ)
+  - `astraflow/core/weight_manager/` — Weight transport (TCP/ZMQ)
     between trainer and RaaS. `transfer/tests/` holds its unit tests.
-  - `astraflow/config/` — Hydra/OmegaConf config loader and merging.
+  - `astraflow/core/config/` — Hydra/OmegaConf config loader and merging.
 - `astraEnv/` — Vendored environment code (not part of the package):
   `AgentBench` (alfworld, webshop), `ASearcher` (retrieval-augmented
   search), `human-eval`. Carries upstream licenses; treat as a
@@ -119,7 +119,7 @@ your response.
    vLLM / SGLang inference servers and exposes `/availability`,
    `/eval_pull`, weight-update, and rollout endpoints. See
    `docs/en/architecture/raas.md` and `custom-raas.md`.
-4. **Workflow** (`astraflow/workflow/`) — Rollout workflows
+4. **Workflow** (`astraflow/core/workflow/`) — Rollout workflows
    (subclasses of `RolloutWorkflow` with `arun_episode`) and reward
    callables. New workflows/rewards plug in via decorator
    registration in `registry.py`.
@@ -129,7 +129,7 @@ your response.
 Conventions for all code under `astraflow/`:
 
 - **Logging**: `astraflow.train_worker.utils.logging.getLogger(__name__)`
-  (workflow code uses `astraflow.workflow.utils.logging`) — never
+  (workflow code uses `astraflow.core.workflow.utils.logging`) — never
   `print`. Emit metrics through `stats_tracker.get("scope")` and
   `StatsLogger`; the latter pushes to W&B / SwanLab.
 - **Async**: Rollout workflows are non-blocking. `await` with
@@ -150,7 +150,7 @@ Conventions for all code under `astraflow/`:
   consistent. Place heavy optional deps inside function bodies to
   avoid import-time side effects (Megatron, flash-attn, etc.).
 - **Rewards**: Wrap blocking reward code with `AsyncRewardWrapper`
-  (`astraflow/workflow/api/reward_api.py`). Standard signature is
+  (`astraflow/core/workflow/api/reward_api.py`). Standard signature is
   `(prompt, completions, prompt_ids, completion_ids, **data)` where
   `**data` carries dataset-specific fields (e.g. `answer`); return a
   `float`.
@@ -164,9 +164,9 @@ Conventions for all code under `astraflow/`:
 
 ### Add a rollout workflow
 
-- Create a new module under `astraflow/workflow/impl/<name>.py`.
+- Create a new module under `astraflow/core/workflow/impl/<name>.py`.
 - Subclass `RolloutWorkflow`
-  (`astraflow/workflow/api/workflow_api.py`) and implement async
+  (`astraflow/core/workflow/api/workflow_api.py`) and implement async
   `arun_episode`.
 - Thread `GenerationHyperparameters`, tokenizer, reward callable,
   stat scope, and optional `dump_dir` through `__init__`. Wrap the
@@ -176,20 +176,20 @@ Conventions for all code under `astraflow/`:
 - Persist transcripts to `{dump_dir}/{engine.get_version()}/` when
   debugging.
 - Decorate the class with `@register_workflow("<name>")` from
-  `astraflow/workflow/registry.py`, then add an
-  `import astraflow.workflow.impl.<name>` line to
-  `astraflow/workflow/__init__.py` so the decorator runs at import
+  `astraflow/core/workflow/registry.py`, then add an
+  `import astraflow.core.workflow.impl.<name>` line to
+  `astraflow/core/workflow/__init__.py` so the decorator runs at import
   time. Reference `"<name>"` from `workflow_spec.workflow_cls` in the
   recipe YAML.
 
 ### Add a reward function
 
-- Create `astraflow/workflow/reward/<name>.py` with a callable
+- Create `astraflow/core/workflow/reward/<name>.py` with a callable
   matching the reward API contract (see "Rewards" above).
 - Decorate it with `@register_reward("<name>")` from
-  `astraflow/workflow/registry.py`, then add an
-  `import astraflow.workflow.reward.<name>` line to
-  `astraflow/workflow/__init__.py`. Reference `"<name>"` from
+  `astraflow/core/workflow/registry.py`, then add an
+  `import astraflow.core.workflow.reward.<name>` line to
+  `astraflow/core/workflow/__init__.py`. Reference `"<name>"` from
   `workflow_spec.reward_fn` in the recipe YAML.
 - Keep slow or external-service logic in the reward module; let the
   calling workflow wrap it with `AsyncRewardWrapper`.

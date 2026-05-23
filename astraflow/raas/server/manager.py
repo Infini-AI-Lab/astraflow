@@ -16,8 +16,8 @@ from astraflow.raas.engine.vllm_remote import VLLMEngine
 from astraflow.raas.platforms import current_platform
 from astraflow.raas.utils import logging
 from astraflow.raas.utils.network import find_free_ports, gethostip
-from astraflow.workflow.api.engine_api import EngineGroup
-from astraflow.workflow.registry import get_reward, get_workflow
+from astraflow.core.workflow.api.engine_api import EngineGroup
+from astraflow.core.workflow.registry import get_reward, get_workflow
 
 _base_logger = logging.getLogger(__name__)
 logger = _base_logger  # replaced with adapter after engine_id is known
@@ -307,7 +307,7 @@ class RaaS3Manager:
             self._gconfig = deepcopy(config.gconfig)
             tokenizer_path = config.tokenizer_path
             if tokenizer_path:
-                from astraflow.workflow.utils.hf_utils import load_hf_tokenizer
+                from astraflow.core.workflow.utils.hf_utils import load_hf_tokenizer
 
                 self._tokenizer = load_hf_tokenizer(tokenizer_path)
                 logger.info(
@@ -391,7 +391,7 @@ class RaaS3Manager:
         in *allocation_mode* and produces its own engine.
         """
         from astraflow.raas.api.cli_args import ModelSpec
-        from astraflow.workflow.utils.hf_utils import load_hf_tokenizer
+        from astraflow.core.workflow.utils.hf_utils import load_hf_tokenizer
 
         self._ensure_async_state()
         if self._status == "ready":

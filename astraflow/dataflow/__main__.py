@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def _parse_config(config_path: str) -> ServiceConfig:
     """Parse an experiment YAML into a ServiceConfig."""
-    from astraflow.config.loader import load_and_merge_configs, load_dataflow_config
+    from astraflow.core.config.loader import load_and_merge_configs, load_dataflow_config
 
     raw = load_and_merge_configs([config_path])
     af = load_dataflow_config(raw)

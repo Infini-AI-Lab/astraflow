@@ -2,7 +2,7 @@
 
 from .version import __version__  # noqa
 
-# Re-export core orchestration symbols for convenience.
+# Re-export dataflow orchestration symbols for convenience.
 # Allows ``from astraflow import AstraFlow`` instead of
 # ``from astraflow.dataflow import AstraFlow``.
 from .dataflow import (  # noqa: F401

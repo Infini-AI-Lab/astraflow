@@ -1642,7 +1642,7 @@ def parse_cli_args(argv: list[str]):
     config_file = Path(args.config).absolute()
     assert config_file.exists(), f"Config file {config_file} does not exist."
 
-    from astraflow.config.loader import load_and_merge_configs, load_trainer_config
+    from astraflow.core.config.loader import load_and_merge_configs, load_trainer_config
 
     raw = load_and_merge_configs([str(config_file)])
     trainer_key = args.trainer or "trainer"

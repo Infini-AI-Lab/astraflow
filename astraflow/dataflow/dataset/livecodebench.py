@@ -9,7 +9,7 @@ from typing import Any
 from datasets import load_dataset
 
 from astraflow.dataflow.dataset.utils import attach_query_ids
-from astraflow.workflow.utils import logging
+from astraflow.core.workflow.utils import logging
 
 logger = logging.getLogger(__name__)
 

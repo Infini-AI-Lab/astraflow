@@ -899,7 +899,7 @@ def parse_cli_args(argv: list[str]):
 
     config_paths = args.config  # list of paths due to action="append"
 
-    from astraflow.config.loader import load_and_merge_configs, load_raas_config
+    from astraflow.core.config.loader import load_and_merge_configs, load_raas_config
 
     raw = load_and_merge_configs(config_paths)
     raas_dict = load_raas_config(raw)
