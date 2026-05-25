@@ -134,4 +134,5 @@ WEIGHT_TRANSFER_HTTP_PORT="${WEIGHT_TRANSFER_HTTP_PORT_MODEL0}" \
     examples/launch_trainer.py \
     --config "${EXPERIMENT_CONFIG}" \
     --trainer trainer_model0 \
+    "$@" \
     2>&1 | tee "${LOG_DIR}/trainer_model0.log"
