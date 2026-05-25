@@ -234,7 +234,14 @@ class AstraFlowService:
         """
         ds_cfg = agent_config.rollout_dataset
         tokenizer = self._load_tokenizer(agent_config)
-        dataset = _create_dataset_from_config(ds_cfg, tokenizer)
+        # For offline_dir derivation, the rollout's logical name is
+        # ``dataset_name`` if specified, else the dataset_fn module name
+        # (e.g. ``deepscaler`` from
+        # ``astraflow.dataflow.dataset.deepscaler:get_deepscaler_rl_dataset``).
+        name = ds_cfg.get("dataset_name") or _module_basename(ds_cfg.get("dataset_fn", ""))
+        dataset = _create_dataset_from_config(
+            ds_cfg, tokenizer, data_root=agent_config.data_root, name=name,
+        )
 
         batch_size = ds_cfg.get("batch_size", 1)
         return _create_dataloader(dataset, batch_size=batch_size)
@@ -294,7 +301,9 @@ class AstraFlowService:
                     f"and no legacy eval_workflow_specs fallback is available"
                 )
 
-            dataset = _create_dataset_from_config(ds_cfg, tokenizer)
+            dataset = _create_dataset_from_config(
+                ds_cfg, tokenizer, data_root=agent_config.data_root, name=name,
+            )
             eval_datasets[name] = (dataset, repeat, wf)
 
         return eval_datasets
@@ -1542,13 +1551,30 @@ def _import_function(import_path: str) -> Any:
     return getattr(module, func_name)
 
 
-def _create_dataset_from_config(ds_cfg: dict[str, Any], tokenizer: Any) -> Any:
+def _module_basename(dataset_fn_path: str) -> str | None:
+    """Return the last module component of a ``module.path:fn`` import path."""
+    module_path, _, _ = dataset_fn_path.rpartition(":")
+    if not module_path:
+        return None
+    return module_path.rsplit(".", 1)[-1]
+
+
+def _create_dataset_from_config(
+    ds_cfg: dict[str, Any],
+    tokenizer: Any,
+    data_root: str | None = None,
+    name: str | None = None,
+) -> Any:
     """Create a dataset from a config dict using ``dataset_fn``.
 
     The ``dataset_fn`` field is a Python import path like
     ``"astraflow.dataflow.dataset.deepscaler:get_deepscaler_rl_dataset"``.
     Extra fields in ``ds_cfg`` are forwarded as kwargs when supported by
     the target dataset function.
+
+    If ``data_root`` is set and ``ds_cfg`` does not specify ``offline_dir``,
+    one is auto-derived as ``f"{data_root}/{name}"`` — making it easy to
+    flip a recipe between online and offline by setting a single env var.
     """
     dataset_fn_path = ds_cfg.get("dataset_fn")
     if dataset_fn_path is None:
@@ -1564,6 +1590,13 @@ def _create_dataset_from_config(ds_cfg: dict[str, Any], tokenizer: Any) -> Any:
     }
     kwargs.setdefault("tokenizer", tokenizer)
 
+    if data_root and name and "offline_dir" not in kwargs:
+        kwargs["offline_dir"] = f"{data_root}/{name}"
+        logger.info(
+            "Auto-derived offline_dir for dataset %r: %s",
+            name, kwargs["offline_dir"],
+        )
+
     sig = inspect.signature(dataset_fn)
     accepts_var_kwargs = any(
         p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
@@ -1572,7 +1605,7 @@ def _create_dataset_from_config(ds_cfg: dict[str, Any], tokenizer: Any) -> Any:
         return dataset_fn(**kwargs)
 
     filtered_kwargs = {
-        name: kwargs[name] for name in sig.parameters if name in kwargs
+        pname: kwargs[pname] for pname in sig.parameters if pname in kwargs
     }
     return dataset_fn(**filtered_kwargs)
 

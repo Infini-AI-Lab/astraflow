@@ -37,6 +37,19 @@ class AgentConfig:
     tokenizer_path: str | None = None
     """Path to tokenizer (HuggingFace model name or local path)."""
 
+    data_root: str | None = None
+    """Root directory for pre-downloaded datasets (offline mode).
+
+    When set, every entry in ``rollout_dataset`` and ``eval_datasets``
+    that does not already specify ``offline_dir`` gets one auto-derived
+    as ``f"{data_root}/{name}"`` — where ``name`` is the dict key for
+    eval datasets, and the value of ``dataset_name`` (falling back to
+    the dataset_fn module name) for the rollout dataset.
+
+    Use ``examples/math/offline/download_math_datasets.py`` to populate
+    this directory.
+    """
+
     rollout_dataset: dict[str, Any] | None = None
     """Dataset config for rollout data acquisition.
 

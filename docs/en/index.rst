@@ -26,6 +26,7 @@ on distributed GPU clusters.
    :caption: Recipes
 
    recipes/math
+   recipes/math-offline
    recipes/code
    recipes/multi-agent
    recipes/agentbench
