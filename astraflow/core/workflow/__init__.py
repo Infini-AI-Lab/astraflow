@@ -24,6 +24,7 @@ import astraflow.core.workflow.impl.solve_and_verify
 import astraflow.core.workflow.impl.actor_and_verify
 import astraflow.core.workflow.impl.rlvr
 import astraflow.core.workflow.impl.sm_lg_router
+import astraflow.core.workflow.impl.spawn
 import astraflow.core.workflow.impl.vision_rlvr
 import astraflow.core.workflow.reward.clevr_count_70k
 import astraflow.core.workflow.reward.geometry3k
