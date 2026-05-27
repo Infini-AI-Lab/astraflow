@@ -231,3 +231,6 @@ evaluation/data/AReaL-boba-2-RL-Code
 tmp*
 torchelastic_*
 torchinductor_*
+
+# Oolong HF dataset cache (auto-downloaded, multi-GB)
+astraflow/core/workflow/impl/oolong/oolong_*.jsonl
