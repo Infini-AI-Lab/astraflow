@@ -32,6 +32,21 @@ from astraflow.core.workflow.impl.oolong.eval_helpers import (
     synth_process_response,
 )
 from astraflow.core.workflow.impl.oolong.tasks import Task
+from astraEnv.judge import extract_json, judge
+
+
+# Rubric sent to the LLM judge when grading a sub-agent's finish_message
+# against its delegated goal. Sub-agents have no rule-based verifier (their
+# goals are free-form strings produced by the parent), so we ask an external
+# LLM to score the answer. Keep this short and unambiguous.
+_SUBAGENT_RUBRIC_SYSTEM = (
+    "You grade a sub-agent's output against its delegated goal.\n"
+    'Return ONLY JSON: {"score": float in [0,1], "reason": "<one short sentence>"}\n'
+    "1.0 = output fully and correctly satisfies the goal. "
+    "0.5 = partially correct. "
+    "0.0 = wrong, empty, or a refusal.\n"
+    "Do not include any other text — JSON only."
+)
 
 
 # Sentinel exception used to terminate the agent's code when finish() is
@@ -70,10 +85,17 @@ class OolongEnv:
         task: Task,
         spawn_callback: SpawnCallback | None = None,
         stdout_truncate: int = DEFAULT_STDOUT_TRUNCATE,
+        use_llm_judge: bool = False,
+        judge_model: str | None = None,
     ):
         self.task = task
         self.stdout_truncate = stdout_truncate
         self._spawn_cb = spawn_callback
+        # When True, sub-agent tasks (task_id without the "oolong." prefix)
+        # are graded by an LLM judge via astraEnv.judge. When False, they
+        # return score=0.0 with a placeholder reason (legacy behavior).
+        self.use_llm_judge = bool(use_llm_judge)
+        self.judge_model = judge_model
 
         self.finished: bool = False
         self.finish_payload: Any | None = None
@@ -161,14 +183,15 @@ class OolongEnv:
 
     # ----------------------------- evaluation ---------------------------------
 
-    def evaluate(self) -> tuple[float, dict[str, Any]]:
+    async def evaluate(self) -> tuple[float, dict[str, Any]]:
         """Reward for THIS agent. Called at the agent's finish() time.
 
         Routes to the right grader based on task_id prefix:
           - oolong.synth.*  -> rule-based synth_process_response
           - oolong.real.*   -> dnd_process_response (placeholder for now)
-          - synthetic sub-agent task ids (no "oolong." prefix) -> 0.0
-            placeholder; will need an LLM judge per the paper (Appendix A.7).
+          - synthetic sub-agent task ids (no "oolong." prefix) ->
+              LLM judge via astraEnv.judge if self.use_llm_judge,
+              else 0.0 placeholder.
         """
         if not self.finished:
             return 0.0, {"reason": "agent never called finish()"}
@@ -180,8 +203,42 @@ class OolongEnv:
             r = synth_process_response(self.task.misc, output)
         elif task_id.startswith("oolong.real."):
             r = dnd_process_response(self.task.misc, output)
+        elif self.use_llm_judge:
+            r = await self._grade_subagent_with_llm(output)
         else:
-            # Sub-agent task — no root verifier available without an LLM judge.
-            r = {"score": 0.0, "reason": "no node-local verifier (LLM judge not yet wired)"}
+            r = {"score": 0.0, "reason": "no node-local verifier (LLM judge disabled)"}
 
         return float(r.get("score", 0.0)), r
+
+    async def _grade_subagent_with_llm(self, output: str) -> dict[str, Any]:
+        """Send (goal, output) to the LLM judge and parse the score.
+
+        On any failure (network, parse, missing field) returns score=0.0
+        with the error in `reason` so a flaky judge never crashes a rollout.
+        """
+        user = f"GOAL: {self.task.goal}\n\nOUTPUT: {output}"
+        judge_kwargs: dict[str, Any] = {}
+        if self.judge_model:
+            judge_kwargs["model"] = self.judge_model
+        try:
+            raw = await judge(
+                system=_SUBAGENT_RUBRIC_SYSTEM, user=user, **judge_kwargs
+            )
+        except Exception as e:
+            return {"score": 0.0, "reason": f"judge call failed: {e}"}
+        try:
+            parsed = extract_json(raw)
+            score = float(parsed["score"])
+        except Exception as e:
+            return {
+                "score": 0.0,
+                "reason": f"judge response unparseable: {e}",
+                "judge_raw": raw,
+            }
+        # Clamp defensively in case the model returns out-of-range.
+        score = max(0.0, min(1.0, score))
+        return {
+            "score": score,
+            "reason": str(parsed.get("reason", "")),
+            "judge_raw": raw,
+        }

@@ -229,6 +229,29 @@ class OolongRecursiveWorkflow(RolloutWorkflow):
         self.rollout_stat_scope = rollout_stat_scope
         self.dump_dir = dump_dir
         self.dump_prob = float(dump_prob)
+        # Reward mode — selects which credit-assignment scheme to use.
+        #
+        #   "team_credit"      All agents in the tree share the root's
+        #                      rule-based reward. No LLM judge calls.
+        #                      Cheap; noisy per-agent credit but every
+        #                      agent gets some signal.
+        #
+        #   "per_agent_judge"  Root keeps its rule-based reward; each
+        #                      sub-agent is scored by an LLM judge
+        #                      (astraEnv.judge) on its own (goal, output).
+        #                      True per-agent credit; costs API $$ per
+        #                      sub-agent rollout.
+        #
+        # `use_llm_judge` for the env is derived from this — never set it
+        # independently.
+        self.reward_mode: str = str(kwargs.pop("reward_mode", "team_credit"))
+        if self.reward_mode not in ("team_credit", "per_agent_judge"):
+            raise ValueError(
+                f"reward_mode must be 'team_credit' or 'per_agent_judge', "
+                f"got {self.reward_mode!r}"
+            )
+        self.use_llm_judge = self.reward_mode == "per_agent_judge"
+        self.judge_model = kwargs.pop("judge_model", None)
 
     # ------------------------------------------------------------------ utils
 
@@ -339,7 +362,7 @@ class OolongRecursiveWorkflow(RolloutWorkflow):
                 # No observation after finish — the episode terminates.
                 traj.finish_payload = env.finish_payload
                 traj.finish_message = "" if env.finish_payload is None else str(env.finish_payload)
-                score, _info = env.evaluate()
+                score, _info = await env.evaluate()
                 traj.reward = float(score)
                 steps_taken += 1
                 break
@@ -383,6 +406,8 @@ class OolongRecursiveWorkflow(RolloutWorkflow):
                     engine, budget, sem, all_trajs, child_task.id, parent_depth + 1
                 ),
                 stdout_truncate=self.stdout_truncate,
+                use_llm_judge=self.use_llm_judge,
+                judge_model=self.judge_model,
             )
             async with sem:
                 child_traj = await self._run_episode(
@@ -471,6 +496,8 @@ class OolongRecursiveWorkflow(RolloutWorkflow):
                 engine, budget, sem, all_trajs, root_id, parent_depth=0
             ),
             stdout_truncate=self.stdout_truncate,
+            use_llm_judge=self.use_llm_judge,
+            judge_model=self.judge_model,
         )
 
         await self._run_episode(
@@ -478,27 +505,24 @@ class OolongRecursiveWorkflow(RolloutWorkflow):
             all_trajs=all_trajs, parent_id=None, depth=0, is_root=True,
         )
 
-        # Apply delegation bonus across the tree.
+        # Apply delegation bonus across the tree (modifies root.reward
+        # in-place; sub-agents keep their own per-agent rewards).
         self._apply_delegation_bonus(all_trajs)
 
-        # Root-only training: emit ONLY the root agent's sequences for
-        # PPO. v2 (team-credit, bs=64) and v3 (team-credit, bs=256) both
-        # showed pre_filter degrading from 0.6-0.8 → 0.2-0.4 in <10 steps.
-        # Root tokens already include `await launch_subagent(...)` calls,
-        # so the model still learns to spawn from the root's gradient.
-        # The sub-agent's own generations don't get a gradient — they need
-        # a per-segment verifier (LLM judge) to train usefully, which we
-        # defer per [[spawn-subagent-credit]].
+        # Emit one (reward, sequences) entry per agent that produced any
+        # turns. Both modes emit all agents — the difference is which
+        # reward each agent's tokens receive (see _reward_for_agent).
         root_traj = all_trajs[0] if all_trajs else None
-        team_reward = float(root_traj.reward) if root_traj else 0.0
+        root_reward = float(root_traj.reward) if root_traj else 0.0
 
         per_agent: list[dict[str, Any]] = []
         for ag in all_trajs:
-            if not ag.turns or not ag.is_root:
+            if not ag.turns:
                 continue
-            seqs = self._build_sequences_for_agent(ag, team_reward)
+            agent_reward = self._reward_for_agent(ag, root_reward)
+            seqs = self._build_sequences_for_agent(ag, agent_reward)
             per_agent.append({
-                "reward": team_reward,
+                "reward": agent_reward,
                 "sequences": seqs,
                 "depth": ag.depth,
                 "is_root": ag.is_root,
@@ -508,11 +532,25 @@ class OolongRecursiveWorkflow(RolloutWorkflow):
             "per_agent": per_agent,
             "all_trajs": all_trajs,
             "task": task,
-            "root_reward": team_reward,
+            "root_reward": root_reward,
             "n_agents": len(all_trajs),
             "subagent_launched": int(env.subagent_launched),
             "subagent_succeeded": float(env.subagent_succeeded),
         }
+
+    def _reward_for_agent(self, ag: AgentTrajectory, root_reward: float) -> float:
+        """Pick the training reward for one agent based on reward_mode.
+
+        - team_credit:     every agent (root + subs) trains on root's reward
+        - per_agent_judge: each agent trains on its own env.evaluate() reward
+                           (root: rule-based; sub: LLM judge)
+        """
+        if self.reward_mode == "team_credit":
+            return root_reward
+        # per_agent_judge — defensive default if a sub's reward never set
+        if ag.reward is None:
+            return 0.0
+        return float(ag.reward)
 
     async def arun_episode(
         self, engine: InferenceEngine, data: dict[str, Any]
