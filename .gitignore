@@ -12,6 +12,7 @@ data-data
 data-log
 tmp-yaml/
 issue-draft/
+claude-doc/
 .pip-tmp/
 *.pid
 *.pdf

@@ -32,3 +32,4 @@ on distributed GPU clusters.
    recipes/multi-agent
    recipes/agentbench
    recipes/search
+   recipes/textcraft-recursive
