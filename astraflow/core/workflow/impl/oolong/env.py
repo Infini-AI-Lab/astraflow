@@ -199,9 +199,13 @@ class OolongEnv:
         task_id = self.task.id or ""
         output = "" if self.finish_payload is None else str(self.finish_payload)
 
-        if task_id.startswith("oolong.synth."):
+        # Sub-agent task IDs inherit the parent's prefix and have a "/sub_"
+        # marker (assigned in workflow._make_spawn_callback). Route them to
+        # the LLM-judge path regardless of the dataset prefix.
+        is_subagent = "/sub_" in task_id
+        if not is_subagent and task_id.startswith("oolong.synth."):
             r = synth_process_response(self.task.misc, output)
-        elif task_id.startswith("oolong.real."):
+        elif not is_subagent and task_id.startswith("oolong.real."):
             r = dnd_process_response(self.task.misc, output)
         elif self.use_llm_judge:
             r = await self._grade_subagent_with_llm(output)
