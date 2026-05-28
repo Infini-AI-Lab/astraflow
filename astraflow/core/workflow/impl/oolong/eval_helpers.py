@@ -114,13 +114,74 @@ def synth_process_response(datapoint: dict[str, Any], output: str) -> dict[str, 
     }
 
 
-# Placeholder for oolong-real (D&D) — would need an LLM judge.
-# We define the function so the workflow can dispatch on dataset name,
-# but it always returns score=0 for now. Wire up GPT-5-mini-style judge
-# in a follow-up when we add `oolong-real` support.
+# --------------------------------------------------------------------------
+# oolong-real (D&D) grader — rule-based, ported faithfully from platoon's
+# `dnd_process_response` (plugins/oolong/platoon/oolong/eval_helpers.py).
+#
+# Contrary to what one might expect, oolong-real does NOT use an LLM judge:
+# the dataset's gold answers are typed (int / str / list[str]) and admit
+# rule-based scoring with partial credit. The model is expected to wrap its
+# final answer in \boxed{...} (math-style); if missing we fall back to the
+# raw output with lower parse_confidence.
+# --------------------------------------------------------------------------
+
+
+def dnd_parse_answer(answer: str) -> int | str | list[str]:
+    """Coerce a string into int / str / list[str] based on content shape."""
+    try:
+        return int(answer)
+    except ValueError:
+        pass
+    if "," in answer:
+        return [item.strip() for item in answer.split(",") if item.strip()]
+    return answer
+
+
+def dnd_parse_response(answer: str) -> tuple[int | str | list[str], str]:
+    """Extract the candidate answer + parse_confidence label.
+
+    Order of preference:
+      1. ``\\boxed{\\text{X}}``  -> high confidence
+      2. ``\\boxed{X}``          -> high confidence
+      3. raw stripped output     -> med confidence
+      4. empty                   -> low confidence
+    """
+    answer = answer.strip()
+    match = re.search(r"\\boxed\{\\text\{([^}]*)\}\}", answer)
+    if not match:
+        match = re.search(r"\\boxed\{([^}]*)\}", answer)
+    if match:
+        return dnd_parse_answer(match.group(1)), "high"
+    if not answer:
+        return answer, "low"
+    return dnd_parse_answer(answer), "med"
+
+
 def dnd_process_response(datapoint: dict[str, Any], output: str) -> dict[str, Any]:
+    """Score a model answer against a D&D gold answer.
+
+    Type-aware scoring:
+      - int  vs int          : ``0.75 ** |gap|`` (partial credit, decay)
+      - str  vs str          : exact match after strip().lower()  -> 0 or 1
+      - list vs list         : Jaccard overlap |gold & pred| / |gold|
+      - type mismatch        : 0.0
+    """
+    gold = dnd_parse_answer(datapoint["answer"])
+    trimmed_output, parse_confidence = dnd_parse_response(output)
+
+    score = 0.0
+    if isinstance(gold, int) and isinstance(trimmed_output, int):
+        score = 0.75 ** abs(gold - trimmed_output)
+    elif isinstance(gold, str) and isinstance(trimmed_output, str):
+        score = float(gold.strip().lower() == trimmed_output.strip().lower())
+    elif isinstance(gold, list) and isinstance(trimmed_output, list):
+        overlap = set(gold) & set(trimmed_output)
+        score = len(overlap) / len(gold) if gold else 0.0
+
     return {
-        "score": 0.0,
-        "parse_confidence": "n/a",
-        "reason": "oolong-real LLM judge not yet implemented; score=0 placeholder.",
+        "score": float(score),
+        "parse_confidence": parse_confidence,
+        "attempted_parse": trimmed_output,
+        "gold": gold,
+        "full_answer": output,
     }
