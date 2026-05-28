@@ -234,3 +234,6 @@ torchinductor_*
 
 # Oolong HF dataset cache (auto-downloaded, multi-GB)
 astraflow/core/workflow/impl/oolong/oolong_*.jsonl
+
+# DeepDive HF dataset cache (auto-downloaded)
+astraflow/core/workflow/impl/deepdive/deepdive_*.jsonl
