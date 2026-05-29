@@ -500,12 +500,28 @@ class WeightManager:
         for _name, tensor in hf_named_params:
             nbytes = tensor.numel() * tensor.element_size()
             if is_writer:
-                t_u8 = tensor.contiguous().view(-1).view(torch.uint8)
-                self._buffer[half_base + offset: half_base + offset + nbytes].copy_(
-                    t_u8
-                )
+                # Direct device->host DMA straight into the inactive half.
+                # self._buffer is cudaHostRegister'd (pinned), so copying a
+                # CUDA tensor into a view of it hits the fast PCIe DMA path
+                # (~tens of GB/s) instead of the pageable .to("cpu") bounce
+                # (~1 GB/s) the generator would otherwise do.
+                #
+                # Copy through a uint8 view of the *source* (the GPU tensor)
+                # into the uint8 destination slice: both sides are uint8 so
+                # there is no dtype-alignment requirement on the buffer offset
+                # (robust to mixed-dtype models), and the bytes are identical
+                # row-major since the source is contiguous.
+                src_u8 = tensor.reshape(-1).view(torch.uint8)
+                self._buffer[
+                    half_base + offset: half_base + offset + nbytes
+                ].copy_(src_u8, non_blocking=True)
                 n_written += 1
             offset += nbytes
+        if is_writer:
+            # Fence the async D2H copies before the barrier so the sender
+            # agent never reads a half-written half. (non_blocking=True above
+            # matches the other copy paths; this synchronize is the fence.)
+            torch.cuda.synchronize()
         t1 = _time.perf_counter()
 
         if dist.is_initialized():

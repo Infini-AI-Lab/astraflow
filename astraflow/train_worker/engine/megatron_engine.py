@@ -369,14 +369,17 @@ class MegatronEngine(TrainEngine):
         )
 
     def export_hf_named_params(self) -> Iterator[tuple[str, torch.Tensor]]:
-        """Stream ``(hf_name, full HF-layout CPU tensor)`` for weight sync.
+        """Stream ``(hf_name, full HF-layout GPU tensor)`` for weight sync.
 
         Reconstructs the global model from Megatron's TP/PP/EP/ETP/VPP layout
         (via mbridge) and yields HF-named tensors one at a time — OOM-safe
         for large / MoE models.  Must be iterated in lockstep on every rank
         (it runs collectives); the WeightManager decides which rank writes.
 
-        See ``astraflow.train_worker.models.mcore.weight_export`` and
+        Tensors are yielded **on GPU** (contiguous): the WeightManager copies
+        them directly into its pinned shared-memory buffer (fast D2H DMA),
+        which is faster than materializing each tensor in pageable host memory
+        first. See ``astraflow.train_worker.models.mcore.weight_export`` and
         ``docs/en/architecture/megatron-weight-sync.md``.
         """
         from astraflow.train_worker.models.mcore.weight_export import (
@@ -384,7 +387,7 @@ class MegatronEngine(TrainEngine):
         )
 
         self._ensure_ready()
-        yield from export_hf_named_params(self.bridge, self.model)
+        yield from export_hf_named_params(self.bridge, self.model, to_cpu=False)
 
     def get_hf_weight_metadata(self) -> list[tuple[str, tuple[list[int], str]]]:
         """Return the ordered HF weight layout ``[(name, (shape, dtype)), ...]``.
