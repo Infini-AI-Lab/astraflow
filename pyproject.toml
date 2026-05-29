@@ -203,6 +203,12 @@ override-dependencies=[
     # (unconditional s_aux.to() crashes non-sink models like Qwen3). 5.6.1 is
     # a patch release that fixes it; override sglang's exact pin to pick it up.
     "transformers==5.6.1",
+    # sglang requires an unbounded "kernels", so uv resolves the latest (0.15+),
+    # but transformers 5.6.1 only supports kernels<0.13 (its hub_kernels module
+    # calls LayerRepository() without a revision/version, which 0.15 rejects ->
+    # `import sglang` crashes with "Either a revision or a version must be
+    # specified."). Pin to the range transformers 5.6.1 was built against.
+    "kernels>=0.12.0,<0.13",
 ]
 
 [tool.uv.extra-build-dependencies]
