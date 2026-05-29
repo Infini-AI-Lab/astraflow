@@ -45,14 +45,37 @@ ipython).
 
 #### Flash Attention
 
+This is FlashAttention-**2** (`import flash_attn`), used by the FSDP trainer. It
+is excluded from uv resolution (see `pyproject.toml` `[tool.uv]`) and built from
+source, so it needs the CUDA 13 toolchain and a roomy build-temp directory:
+
 ```bash
+# nvcc must be on PATH and match torch's CUDA (13.0 for torch 2.11+cu130)
+export CUDA_HOME=/usr/local/cuda-13.0
+export PATH="$CUDA_HOME/bin:$PATH"
+
+# nvcc writes GBs of intermediate files to $TMPDIR. Point it at local scratch
+# with plenty of space — NOT a small/NFS-quota'd home, or the build fails with
+# "nvFatbin error: empty input" or "Disk quota exceeded" from truncated temps.
+export TMPDIR=/tmp/fa-build && mkdir -p "$TMPDIR"
+
 uv pip install "flash-attn==2.8.3" --no-build-isolation
 ```
 
+> On a single-GPU-arch box you can speed up the build and shrink its footprint
+> with `FLASH_ATTN_CUDA_ARCHS=<arch> NVCC_THREADS=1` (e.g. `90` for H100, `80`
+> for A100, `89` for L40/4090). These are optional — the real requirement is a
+> roomy `TMPDIR`.
+
 #### SGLang (inference backend)
 
+Install via the project extra so uv applies the `[tool.uv]` overrides (the
+`transformers==5.6.1` pin and the `flash-attn-4` pre-release allowance). SGLang
+pulls in FlashAttention-**4** (`flash-attn-4`, a pre-release wheel) automatically
+for its own attention backend — you do not install that one yourself.
+
 ```bash
-uv pip install "sglang==0.5.12.post1"
+uv pip install -e ".[sglang]"
 ```
 
 ### Step 5: Verify installation

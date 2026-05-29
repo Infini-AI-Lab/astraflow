@@ -192,6 +192,10 @@ include = ["astraflow*"]
 exclude = ["tests*", "docs*", "examples*"]
 
 [tool.uv]
+# sglang 0.5.12 depends on flash-attn-4>=4.0.0b9 (a pre-release wheel, pulled
+# in automatically as a sglang dependency). Without this, `uv pip install
+# -e ".[sglang]"` fails to resolve with "pre-releases weren't enabled".
+prerelease = "allow"
 exclude-dependencies = ["flash-attn"]
 override-dependencies=[
     "outlines-core==0.1.26",
