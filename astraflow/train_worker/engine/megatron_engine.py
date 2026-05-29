@@ -368,99 +368,37 @@ class MegatronEngine(TrainEngine):
             "Use TCP-based weight transfer instead."
         )
 
-    def get_megatron_shard_metadata(self) -> dict:
-        """Return TP shard metadata for shard-direct weight transfer.
+    def export_hf_named_params(self) -> Iterator[tuple[str, torch.Tensor]]:
+        """Stream ``(hf_name, full HF-layout CPU tensor)`` for weight sync.
 
-        Returns a serializable dict that WeightManager passes to the sender
-        agent.  The sender agent uses it for CPU-side reassembly of TP shards
-        into HF-format params before serving to RaaS.
+        Reconstructs the global model from Megatron's TP/PP/EP/ETP/VPP layout
+        (via mbridge) and yields HF-named tensors one at a time — OOM-safe
+        for large / MoE models.  Must be iterated in lockstep on every rank
+        (it runs collectives); the WeightManager decides which rank writes.
 
-        Currently requires PP=1 and EP=1.
+        See ``astraflow.train_worker.models.mcore.weight_export`` and
+        ``docs/en/architecture/megatron-weight-sync.md``.
         """
-        from astraflow.train_worker.utils.megatron import get_named_parameters
+        from astraflow.train_worker.models.mcore.weight_export import (
+            export_hf_named_params,
+        )
 
-        pp_size = mpu.get_pipeline_model_parallel_world_size()
-        ep_size = mpu.get_expert_model_parallel_world_size()
-        if pp_size > 1:
-            raise NotImplementedError(
-                f"Megatron weight transfer does not support PP>1 yet (pp_size={pp_size})."
-            )
-        if ep_size > 1:
-            raise NotImplementedError(
-                f"Megatron weight transfer does not support EP>1 yet (ep_size={ep_size})."
-            )
+        self._ensure_ready()
+        yield from export_hf_named_params(self.bridge, self.model)
 
-        tp_size = mpu.get_tensor_model_parallel_world_size()
-        vocab_size = self.hf_config.vocab_size
-        model_type = getattr(self.hf_config, "model_type", "")
+    def get_hf_weight_metadata(self) -> list[tuple[str, tuple[list[int], str]]]:
+        """Return the ordered HF weight layout ``[(name, (shape, dtype)), ...]``.
 
-        # Collect per-param shard specs
-        shard_specs = []
-        num_experts = getattr(self.tf_config, "num_moe_experts", None)
-        for mcore_name, param in get_named_parameters(self.model, num_experts):
-            is_tp = getattr(param, "tensor_model_parallel", False)
-            is_duplicated = getattr(param, "parallel_mode", None) == "duplicated"
-            is_sharded = is_tp and not is_duplicated
-            partition_dim = getattr(param, "partition_dim", 0) if is_sharded else 0
+        Used by WeightManager to size the transfer buffer and by RaaS to
+        pre-allocate.  Runs the same collectives as ``export_hf_named_params``
+        (call in lockstep on every rank).
+        """
+        from astraflow.train_worker.models.mcore.weight_export import (
+            hf_weight_metadata,
+        )
 
-            shard_shape = list(param.data.shape)
-            if is_sharded:
-                full_shape = list(param.data.shape)
-                full_shape[partition_dim] *= tp_size
-            else:
-                full_shape = list(param.data.shape)
-
-            # Detect special param types for reassembly
-            is_glu = "linear_fc1.weight" in mcore_name
-            is_fc2_bug = (
-                "linear_fc2.weight" in mcore_name
-                and is_sharded
-                and partition_dim == 0
-            )
-
-            # Check if this is an embedding/output_layer that needs vocab unpadding
-            needs_vocab_unpad = (
-                mcore_name in (
-                    "module.module.embedding.word_embeddings.weight",
-                    "module.module.output_layer.weight",
-                )
-                and full_shape[0] > vocab_size
-            )
-
-            shard_specs.append({
-                "mcore_name": mcore_name,
-                "is_sharded": is_sharded,
-                "partition_dim": partition_dim,
-                "shard_shape": shard_shape,
-                "full_shape": full_shape,
-                "dtype": str(param.dtype).split(".")[-1],
-                "is_glu": is_glu,
-                "is_fc2_bug": is_fc2_bug,
-                "needs_vocab_unpad": needs_vocab_unpad,
-            })
-
-        # Conversion config for sender agent (subset of TransformerConfig fields)
-        try:
-            kv_channels = self.tf_config.kv_channels
-        except AttributeError:
-            kv_channels = None
-
-        conversion_config = {
-            "model_type": model_type,
-            "hidden_size": self.tf_config.hidden_size,
-            "num_attention_heads": self.tf_config.num_attention_heads,
-            "num_query_groups": self.tf_config.num_query_groups,
-            "kv_channels": kv_channels,
-            "vocab_size": vocab_size,
-        }
-
-        return {
-            "tp_size": tp_size,
-            "tp_rank": mpu.get_tensor_model_parallel_rank(),
-            "dp_rank": mpu.get_data_parallel_rank(),
-            "shard_specs": shard_specs,
-            "conversion_config": conversion_config,
-        }
+        self._ensure_ready()
+        return hf_weight_metadata(self.bridge, self.model)
 
     def set_version(self, version: int):
         self._version = version

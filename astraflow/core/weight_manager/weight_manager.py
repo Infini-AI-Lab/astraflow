@@ -34,6 +34,17 @@ from astraflow.core.weight_manager.transfer.sender_agent import (
 
 logger = logging.getLogger(__name__)
 
+_DTYPE_SIZES = {
+    "float32": 4, "float16": 2, "bfloat16": 2,
+    "int64": 8, "int32": 4, "int16": 2, "int8": 1, "uint8": 1,
+}
+
+
+def _nbytes(shape: List[int], dtype: str) -> int:
+    from math import prod
+
+    return int(prod(shape)) * _DTYPE_SIZES.get(dtype, 2)
+
 
 class WeightManager:
     """Single owner of all weight transfer state and logic.
@@ -85,6 +96,7 @@ class WeightManager:
         global_rank: int,
         lora_config: dict | None = None,
         megatron_metadata: Optional[dict] = None,
+        megatron_hf_meta: Optional[list] = None,
         dp_replicate_rank: int = 0,
     ) -> None:
         """Initialize buffers and start sender agent.
@@ -103,11 +115,19 @@ class WeightManager:
             ``target_modules``).  Forwarded to the sender agent so the
             RaaS receiver can save weights in PEFT adapter format.
         megatron_metadata : dict, optional
-            If provided, enables Megatron shard-direct mode.  Contains
-            ``tp_size``, ``tp_rank``, ``dp_rank``, ``shard_specs`` (per-param
-            TP metadata), and ``conversion_config`` (for CPU-side HF conversion
-            in the sender agent).  Buffer layout is computed from full
-            (gathered) param sizes; each TP rank writes only its shard.
+            (Legacy TP-only shard-direct mode — superseded by
+            ``megatron_hf_meta``.) If provided, the sender reassembles raw
+            TP shards into HF format on CPU.  Only correct for PP=1/EP=1 and
+            cannot compute deltas in HF space; kept for backward compat.
+        megatron_hf_meta : list, optional
+            Megatron **HF-export** mode (preferred).  The ordered HF weight
+            layout ``[(hf_name, (shape, dtype_str)), ...]`` from
+            ``hf_weight_metadata``.  The buffer is sized for the full HF
+            model and ``offload`` writes already-converted HF tensors (from
+            ``export_hf_named_params``) on the DP-head rank.  Because the
+            buffer holds HF bytes, the sender's standard full/delta path is
+            correct under any TP/PP/EP/VPP combination — see
+            ``docs/en/architecture/megatron-weight-sync.md``.
         dp_replicate_rank : int
             HSDP replica group index. 0 = primary replica (owns the shm
             buffer and offloads weights). >0 = secondary replica (skips
@@ -117,8 +137,18 @@ class WeightManager:
         self._global_rank = global_rank
         self._hsdp_replica_rank = dp_replicate_rank
         self._megatron_metadata = megatron_metadata
+        self._megatron_hf_meta = megatron_hf_meta
 
-        if megatron_metadata is not None:
+        if megatron_hf_meta is not None:
+            # HF-export mode: buffer holds the full HF model in HF layout.
+            # The sender treats it exactly like FSDP (no reassembly, delta
+            # in HF space), so megatron_metadata stays None for the sender.
+            meta_size = [
+                (name, _nbytes(shape, dtype))
+                for name, (shape, dtype) in megatron_hf_meta
+            ]
+            tensors_meta = list(megatron_hf_meta)
+        elif megatron_metadata is not None:
             meta_size, tensors_meta = self._compute_megatron_buffer_layout(
                 megatron_metadata["shard_specs"]
             )
@@ -128,11 +158,15 @@ class WeightManager:
 
         # Only the primary HSDP replica (replica_rank=0) runs the sender
         # agent and owns the shm buffer. Secondary replicas skip entirely.
+        # In HF-export mode the buffer already holds HF bytes, so the sender
+        # runs the plain (FSDP) path — pass megatron_metadata=None.
         if local_rank == 0 and dp_replicate_rank == 0:
             self._start_sender_agent(
                 meta_size, tensors_meta,
                 lora_config=lora_config,
-                megatron_metadata=megatron_metadata,
+                megatron_metadata=(
+                    None if megatron_hf_meta is not None else megatron_metadata
+                ),
             )
 
         self._broadcast_shm_buffer()
@@ -346,6 +380,13 @@ class WeightManager:
         dict
             Weight transfer metrics for wandb logging. Empty on non-rank-0.
         """
+        # Megatron HF-export mode: ``named_params`` is a fresh generator that
+        # yields gathered HF tensors. It must be streamed (not list()-ed) and
+        # iterated in lockstep on every rank (it runs TP/PP/EP collectives),
+        # but only the writer rank copies into the buffer.
+        if self._megatron_hf_meta is not None:
+            return self._offload_megatron_hf(named_params, version, rank, world_size)
+
         params_list = list(named_params)
 
         # Guard: wait if previous delta is still reading the inactive half.
@@ -427,6 +468,73 @@ class WeightManager:
                 flush=True,
             )
 
+        return metrics
+
+    def _offload_megatron_hf(
+        self,
+        hf_named_params: Iterator[Tuple[str, torch.Tensor]],
+        version: int,
+        rank: int,
+        world_size: int,
+    ) -> dict:
+        """Stream gathered HF tensors into the buffer (Megatron HF-export mode).
+
+        Every rank iterates ``hf_named_params`` in lockstep — it drives the
+        TP/PP/EP collectives inside ``export_hf_named_params`` — but only the
+        writer rank (global rank 0, which owns the shm buffer) copies the
+        yielded tensors into the inactive half, in the fixed order that
+        matches ``megatron_hf_meta``.  Because the bytes are HF-layout, the
+        sender's standard full/delta path is correct (delta in HF space).
+        """
+        t_guard_start = _time.perf_counter()
+        self._wait_previous_delta()
+        if dist.is_initialized():
+            dist.barrier()
+        t0 = _time.perf_counter()
+        guard_time = t0 - t_guard_start
+
+        is_writer = self._buffer is not None and self._local_rank == 0
+        half_base = self._inactive_buf_idx * self._single_buffer_length
+        offset = 0
+        n_written = 0
+        for _name, tensor in hf_named_params:
+            nbytes = tensor.numel() * tensor.element_size()
+            if is_writer:
+                t_u8 = tensor.contiguous().view(-1).view(torch.uint8)
+                self._buffer[half_base + offset: half_base + offset + nbytes].copy_(
+                    t_u8
+                )
+                n_written += 1
+            offset += nbytes
+        t1 = _time.perf_counter()
+
+        if dist.is_initialized():
+            dist.barrier()
+        t2 = _time.perf_counter()
+
+        ack = self._notify_buffer_ready(version)
+        t3 = _time.perf_counter()
+
+        metrics: dict = {}
+        if rank == 0:
+            metrics = {
+                "weight_transfer/offload_guard_time": guard_time,
+                "weight_transfer/offload_copy_time": t1 - t0,
+                "weight_transfer/offload_barrier_time": t2 - t1,
+                "weight_transfer/offload_notify_time": t3 - t2,
+                "weight_transfer/offload_total_time": t3 - t_guard_start,
+            }
+            if self._last_delta_metrics:
+                metrics.update(self._last_delta_metrics)
+                self._last_delta_metrics = None
+            print(
+                f"[WeightManager] offload mode=megatron_hf_export, "
+                f"wrote={n_written} tensors, total_bytes={offset}, "
+                f"guard={guard_time:.3f}s, copy={t1 - t0:.3f}s, "
+                f"barrier={t2 - t1:.3f}s, notify={t3 - t2:.3f}s, "
+                f"total={t3 - t_guard_start:.3f}s",
+                flush=True,
+            )
         return metrics
 
     # ------------------------------------------------------------------
