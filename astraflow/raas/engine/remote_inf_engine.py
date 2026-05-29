@@ -748,8 +748,9 @@ class RemoteInfEngine:
         For LoRA adapters (``use_lora=True``): unloads the old adapter,
         loads the new one, then flushes the KV cache via ``/flush_cache``
         to discard stale entries computed with the old LoRA weights.
-        Requires ``LoRAAbortReleasePatch`` so that aborted requests
-        properly release their ``lora_registry`` counter.
+        Relies on sglang releasing the ``lora_registry`` counter for
+        aborted requests (fixed upstream in
+        ``TokenizerManager._handle_abort_finish_reason`` as of 0.5.12).
         """
         import time as _time
 

@@ -39,6 +39,7 @@ def default_get_input_ids_fn(
         tokenize=True,
         add_generation_prompt=True,
         enable_thinking=enable_thinking,
+        return_dict=False,
     )
     return list(input_ids)
 

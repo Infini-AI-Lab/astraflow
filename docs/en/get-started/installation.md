@@ -19,8 +19,17 @@ conda activate astraflow
 ### Step 2: Install uv (fast pip replacement)
 
 ```bash
-pip install uv
+pip install -U "uv>=0.10"
 ```
+
+> **uv ≥ 0.10 is required.** `pyproject.toml` uses `[tool.uv]` settings
+> (`extra-build-dependencies`, `override-dependencies`) that older uv
+> releases don't recognize. When uv hits an unknown `[tool.uv]` key it
+> silently ignores the *entire* `[tool.uv]` table, so the
+> `transformers==5.6.1` override (which must beat sglang's `==5.6.0` pin)
+> is dropped and the install fails with an unsolvable
+> `transformers` conflict. The Docker images install the latest uv via the
+> official installer and are unaffected.
 
 ### Step 3: Install AstraFlow (core + dev tools)
 
@@ -28,8 +37,8 @@ pip install uv
 uv pip install -e ".[dev]"
 ```
 
-This installs all core dependencies (~260 packages) including PyTorch 2.8.0,
-Transformers 4.57.1, Megatron-Core 0.13.1, Ray, W&B, and dev tools (pytest, ruff,
+This installs all core dependencies (~260 packages) including PyTorch 2.11.0,
+Transformers 5.6.1, Megatron-Core 0.13.1, Ray, W&B, and dev tools (pytest, ruff,
 ipython).
 
 ### Step 4: Install Flash Attention and SGLang
@@ -43,7 +52,7 @@ uv pip install "flash-attn==2.8.3" --no-build-isolation
 #### SGLang (inference backend)
 
 ```bash
-uv pip install "sglang==0.5.5.post1"
+uv pip install "sglang==0.5.12.post1"
 ```
 
 ### Step 5: Verify installation

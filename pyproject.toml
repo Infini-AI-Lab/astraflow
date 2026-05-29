@@ -26,7 +26,7 @@ classifiers = [
     #   4 - Beta
     #   5 - Production/Stable
     "Development Status :: 3 - Alpha",
-    "Environment :: GPU :: NVIDIA CUDA :: 12 :: 12.9",
+    "Environment :: GPU :: NVIDIA CUDA :: 13",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
@@ -41,17 +41,17 @@ classifiers = [
 
 dependencies = [
     # Core ML/AI libraries
-    "torch==2.8.0",
+    "torch==2.11.0",
     "torchaudio",
     "torchvision",
     "torchdata",
     "huggingface_hub",
     "datasets>=3.0.0",
-    "transformers==4.57.1",
+    "transformers==5.6.1",
     "megatron-core==0.13.1",
     "mbridge==0.13.0",
-    "torch_memory_saver==0.0.9",
-    "peft",
+    "torch_memory_saver==0.0.9.post1",
+    "peft>=0.18.0",
     "qwen_agent",
     "openai-agents",
 
@@ -140,7 +140,7 @@ te = [
 ]
 
 sglang = [
-    "sglang==0.5.5.post1",
+    "sglang==0.5.12.post1",
 ]
 
 vllm = [
@@ -195,10 +195,14 @@ exclude = ["tests*", "docs*", "examples*"]
 exclude-dependencies = ["flash-attn"]
 override-dependencies=[
     "outlines-core==0.1.26",
+    # sglang 0.5.12 pins transformers==5.6.0, which has a flash-attention bug
+    # (unconditional s_aux.to() crashes non-sink models like Qwen3). 5.6.1 is
+    # a patch release that fixes it; override sglang's exact pin to pick it up.
+    "transformers==5.6.1",
 ]
 
 [tool.uv.extra-build-dependencies]
-flash-attn = ["torch==2.8.0"]
+flash-attn = ["torch==2.11.0"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
