@@ -1293,7 +1293,17 @@ class RaaS3Manager:
     # ------------------------------------------------------------------
 
     _HEALTH_MONITOR_INTERVAL = 10.0  # seconds between checks
-    _HEALTH_MONITOR_MAX_FAILURES = 3  # consecutive failures before exit
+    # sglang 0.5.12's /health round-trips through the scheduler, which is
+    # saturated for ~30-40s during the initial unchunked prefill of ~2048
+    # reqs/engine, so the old 3-strike (30s) watchdog false-positive-killed a
+    # busy-but-alive engine before the first rollout batch. A crashed engine
+    # refuses connections instantly, so dead-engine detection time is
+    # INTERVAL * MAX_FAILURES = ~50s here; the 20s probe timeout only extends
+    # cycles for an alive-but-slow engine (which we want to tolerate, up to
+    # ~100s worst case). 5 strikes covers the ~35-40s prefill ramp (a slow but
+    # eventually-200 /health resets the counter) while catching a real death
+    # in ~50s.
+    _HEALTH_MONITOR_MAX_FAILURES = 5  # consecutive failures before exit
     # Maximum time a weight update is allowed to legitimately stall the
     # engine before the monitor force-probes anyway. A normal full pull +
     # apply + load runs ~60-70s end-to-end, deltas ~30-40s; 90s is a

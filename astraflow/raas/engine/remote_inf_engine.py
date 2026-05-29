@@ -380,7 +380,7 @@ class RemoteInfEngine:
             health_req = self.backend.get_health_check_request()
             url = f"{base_url}{health_req.endpoint}"
             response = requests.request(
-                health_req.method, url, json=health_req.payload, timeout=5
+                health_req.method, url, json=health_req.payload, timeout=20
             )
             return response.status_code == 200
         except requests.exceptions.RequestException:
