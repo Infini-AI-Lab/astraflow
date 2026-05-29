@@ -20,6 +20,7 @@ on distributed GPU clusters.
    architecture/raas
    architecture/trainer
    architecture/weight-manager
+   architecture/megatron-weight-sync
 
 .. toctree::
    :maxdepth: 1
