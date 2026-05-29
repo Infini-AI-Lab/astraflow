@@ -158,30 +158,62 @@ data-aria-dark="Switch to auto color mode">
 </section>
 <section id="step-2-install-uv-fast-pip-replacement">
 <h3>Step 2: Install uv (fast pip replacement)<a class="headerlink" href="#step-2-install-uv-fast-pip-replacement" title="Link to this heading">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>uv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span><span class="s2">&quot;uv&gt;=0.10&quot;</span>
 </span></pre></div>
 </div>
+<blockquote>
+<div><p><strong>uv ≥ 0.10 is required.</strong> <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> uses <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code> settings
+(<code class="docutils literal notranslate"><span class="pre">extra-build-dependencies</span></code>, <code class="docutils literal notranslate"><span class="pre">override-dependencies</span></code>) that older uv
+releases don’t recognize. When uv hits an unknown <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code> key it
+silently ignores the <em>entire</em> <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code> table, so the
+<code class="docutils literal notranslate"><span class="pre">transformers==5.6.1</span></code> override (which must beat sglang’s <code class="docutils literal notranslate"><span class="pre">==5.6.0</span></code> pin)
+is dropped and the install fails with an unsolvable
+<code class="docutils literal notranslate"><span class="pre">transformers</span></code> conflict. The Docker images install the latest uv via the
+official installer and are unaffected.</p>
+</div></blockquote>
 </section>
 <section id="step-3-install-astraflow-core-dev-tools">
 <h3>Step 3: Install AstraFlow (core + dev tools)<a class="headerlink" href="#step-3-install-astraflow-core-dev-tools" title="Link to this heading">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
 </span></pre></div>
 </div>
-<p>This installs all core dependencies (~260 packages) including PyTorch 2.8.0,
-Transformers 4.57.1, Megatron-Core 0.13.1, Ray, W&amp;B, and dev tools (pytest, ruff,
+<p>This installs all core dependencies (~260 packages) including PyTorch 2.11.0,
+Transformers 5.6.1, Megatron-Core 0.13.1, Ray, W&amp;B, and dev tools (pytest, ruff,
 ipython).</p>
 </section>
 <section id="step-4-install-flash-attention-and-sglang">
 <h3>Step 4: Install Flash Attention and SGLang<a class="headerlink" href="#step-4-install-flash-attention-and-sglang" title="Link to this heading">¶</a></h3>
 <section id="flash-attention">
 <h4>Flash Attention<a class="headerlink" href="#flash-attention" title="Link to this heading">¶</a></h4>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;flash-attn==2.8.3&quot;</span><span class="w"> </span>--no-build-isolation
+<p>This is FlashAttention-<strong>2</strong> (<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">flash_attn</span></code>), used by the FSDP trainer. It
+is excluded from uv resolution (see <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code>) and built from
+source, so it needs the CUDA 13 toolchain and a roomy build-temp directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># nvcc must be on PATH and match torch&#39;s CUDA (13.0 for torch 2.11+cu130)</span>
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">CUDA_HOME</span><span class="o">=</span>/usr/local/cuda-13.0
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUDA_HOME</span><span class="s2">/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># nvcc writes GBs of intermediate files to $TMPDIR. Point it at local scratch</span>
+</span><span data-line="6"><span class="c1"># with plenty of space — NOT a small/NFS-quota&#39;d home, or the build fails with</span>
+</span><span data-line="7"><span class="c1"># &quot;nvFatbin error: empty input&quot; or &quot;Disk quota exceeded&quot; from truncated temps.</span>
+</span><span data-line="8"><span class="nb">export</span><span class="w"> </span><span class="nv">TMPDIR</span><span class="o">=</span>/tmp/fa-build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMPDIR</span><span class="s2">&quot;</span>
+</span><span data-line="9">
+</span><span data-line="10">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;flash-attn==2.8.3&quot;</span><span class="w"> </span>--no-build-isolation
 </span></pre></div>
 </div>
+<blockquote>
+<div><p>On a single-GPU-arch box you can speed up the build and shrink its footprint
+with <code class="docutils literal notranslate"><span class="pre">FLASH_ATTN_CUDA_ARCHS=&lt;arch&gt;</span> <span class="pre">NVCC_THREADS=1</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">90</span></code> for H100, <code class="docutils literal notranslate"><span class="pre">80</span></code>
+for A100, <code class="docutils literal notranslate"><span class="pre">89</span></code> for L40/4090). These are optional — the real requirement is a
+roomy <code class="docutils literal notranslate"><span class="pre">TMPDIR</span></code>.</p>
+</div></blockquote>
 </section>
 <section id="sglang-inference-backend">
 <h4>SGLang (inference backend)<a class="headerlink" href="#sglang-inference-backend" title="Link to this heading">¶</a></h4>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;sglang==0.5.5.post1&quot;</span>
+<p>Install via the project extra so uv applies the <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code> overrides (the
+<code class="docutils literal notranslate"><span class="pre">transformers==5.6.1</span></code> pin and the <code class="docutils literal notranslate"><span class="pre">flash-attn-4</span></code> pre-release allowance). SGLang
+pulls in FlashAttention-<strong>4</strong> (<code class="docutils literal notranslate"><span class="pre">flash-attn-4</span></code>, a pre-release wheel) automatically
+for its own attention backend — you do not install that one yourself.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[sglang]&quot;</span>
 </span></pre></div>
 </div>
 </section>
