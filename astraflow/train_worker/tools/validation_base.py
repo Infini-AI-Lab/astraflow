@@ -60,7 +60,7 @@ class BaseInstallationValidator:
     # Subclasses can override or extend this
     CUDA_SUBMODULES = {
         "torch": ["torch.cuda"],
-        "sglang": ["sgl_kernel", "sgl_kernel.flash_attn"],
+        "sglang": ["sglang_kernel", "sglang_kernel.flash_attn"],
         "vllm": ["vllm._C"],
         "flash-attn": ["flash_attn_2_cuda"],
         "megatron-core": [

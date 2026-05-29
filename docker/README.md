@@ -13,7 +13,7 @@
 | ------------------- | ------------------------------- | ---------------- |
 | `Dockerfile.sglang` | astraflow + SGLang + flash-attn | `-e ".[sglang]"` |
 
-The image is based on `nvidia/cuda:12.9.1-cudnn-devel-ubuntu24.04` with Python 3.12
+The image is based on `nvidia/cuda:13.0.0-cudnn-devel-ubuntu24.04` with Python 3.12
 managed by [uv](https://docs.astral.sh/uv/).
 
 ## Pull pre-built image
