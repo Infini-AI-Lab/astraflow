@@ -355,7 +355,10 @@ class SGLangConfig:
     num_continuous_decode_steps: int = 1
     enable_memory_saver: bool = False
     allow_auto_truncate: bool = False
-    attention_backend: str | None = "fa3"
+    # None -> omit --attention-backend so sglang auto-selects per GPU arch
+    # (fa3 on Hopper; an Ada/Ampere-compatible backend below sm_90). Hardcoding
+    # "fa3" breaks on non-Hopper GPUs (FlashAttention-3 is Hopper-only).
+    attention_backend: str | None = None
     enable_multimodal: bool = False
     sampling_backend: str | None = None
     context_length: int | None = 32768
