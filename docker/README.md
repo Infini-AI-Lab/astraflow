@@ -41,10 +41,10 @@ docker build -f docker/Dockerfile.sglang -t astraflow:sglang .
 
 ```bash
 # Run the pre-built image with host network and all GPUs
-docker run --gpus all --net=host --shm-size=16g -it astraflowai/astraflow:v0.1.0
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.0
 
 # ...or run a locally built image
-docker run --gpus all --net=host --shm-size=16g -it astraflow:sglang
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflow:sglang
 ```
 
 ## Notes
@@ -56,3 +56,14 @@ docker run --gpus all --net=host --shm-size=16g -it astraflow:sglang
 - **Package versions**: Inference backend versions (SGLang, flash-attn) are defined in
   `pyproject.toml` extras — the Dockerfile references the `.[sglang]` extra rather than
   hardcoding versions.
+- **Shared memory (`--shm-size`)**: A recipe run co-locates the trainer, RaaS, and
+  SGLang in one container sharing a single `/dev/shm` (RaaS stages received weights
+  under `/dev/shm/astraflow_weights`). The container default (64 MB) and small values
+  like `16g` cause `OSError: [Errno 28] No space left on device` during training. Size
+  it generously (`512g`); it is a tmpfs cap, not a reservation, so it only uses host
+  RAM as actually consumed.
+- **Open files (`--ulimit nofile`)**: Training launches many concurrent rollouts whose
+  reward workers open a large number of file descriptors. The container's default
+  `nofile` soft limit (1024) is too low and the reward pool fails with `[Errno 24] Too
+  many open files`. Raise it with `--ulimit nofile=65536:65536` (already in the Quick
+  Start commands above).
