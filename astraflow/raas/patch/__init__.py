@@ -83,12 +83,14 @@ def _validate_patch_results(results: Dict[str, bool], strict: bool) -> None:
 def _run_sglang_patches(strict: bool) -> bool:
     from astraflow.raas.patch.sglang import (
         HttpServerPatch,
+        OpenAIReturnTokenIdsPatch,
         ServerArgsPatch,
     )
 
     manager = PatchManager()
     manager.register(ServerArgsPatch())
     manager.register(HttpServerPatch())
+    manager.register(OpenAIReturnTokenIdsPatch())
 
     results = manager.apply_all()
     _log_patch_results(results)
