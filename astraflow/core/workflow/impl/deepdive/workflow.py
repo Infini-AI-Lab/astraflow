@@ -663,11 +663,14 @@ class DeepDiveRecursiveWorkflow(RolloutWorkflow):
         out_dir = f"{self.dump_dir}/{sub}"
         await aiofiles.os.makedirs(out_dir, exist_ok=True)
         out_path = f"{out_dir}/deepdive-{abs(hash(task.id)) % 100_000_000:08d}.txt"
+        ground_truth = str(task.misc.get("ground_truth", "")).strip()
         async with aiofiles.open(out_path, "w") as f:
             await f.write(
                 f"=== Episode reward={rollout['root_reward']:.3f} "
                 f"n_agents={rollout['n_agents']} "
-                f"searches={rollout['search_calls']} ===\n\n"
+                f"searches={rollout['search_calls']} ===\n"
+                f"question: {task.goal}\n"
+                f"ground_truth: {ground_truth}\n\n"
             )
             for ag in rollout["all_trajs"]:
                 tag = "ROOT" if ag.is_root else f"SUB depth={ag.depth}"
