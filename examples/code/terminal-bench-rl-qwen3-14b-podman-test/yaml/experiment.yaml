@@ -1,0 +1,149 @@
+# ============================================================================
+# Experiment config — AstraFlow service + Trainer + Harbor RL
+# Experiment: astraflow-code / terminal-bench-rl-qwen3-14b-podman-test
+#
+# Training dataset: SkyRL Harbor dataset layout, defaulting to the prepared
+# open-thoughts/CodeContests tasks under ./data-data/harbor/CodeContests.
+# Training workflow: terminal_bench_harbor_rl through Harbor + Terminus-2.
+# Eval dataset: LiveCodeBench v6 only.
+# ============================================================================
+
+experiment:
+  experiment_name: astraflow-code
+  trial_name: terminal-bench-rl-qwen3-14b-podman-test
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen3-14B"
+  tokenizer_path: "Qwen/Qwen3-14B"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: delta
+
+cluster:
+  name_resolve:
+    type: nfs
+    nfs_record_root: ./data-experiments/astraflow-code/terminal-bench-rl-qwen3-14b-podman-test/name_resolve
+
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        max_new_tokens: 8192
+        min_new_tokens: 0
+  delta_full_sync_interval: 10
+
+dataflow:
+  host: "0.0.0.0"
+  port: 8005
+  dump_dir: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}/rollout_dumps
+
+  buffer:
+    size: 10000
+    replay_size: 10000
+    replay_ratio: 0
+    max_staleness: 8
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.terminal_bench:get_harbor_task_path_dataset"
+    path: "$HARBOR_TRAIN_DATA"
+    split: "train"
+    dataset_name: "skyrl_codecontests"
+
+  workflow_spec:
+    workflow_cls: "terminal_bench_harbor_rl"
+    harbor_command:
+      - conda
+      - run
+      - "--no-capture-output"
+      - "-n"
+      - harbor-tb2
+      - harbor
+    extra_args:
+      - "--environment-import-path"
+      - "examples.code.harbor_podman_env:PodmanEnvironment"
+    agent_name: "terminus-2"
+    model_name: "openai/Qwen/Qwen3-14B"
+    jobs_dir: ./data-experiments/astraflow-code/terminal-bench-rl-qwen3-14b-podman-test/harbor_jobs
+    timeout: 7200.0
+    max_parallel_jobs: 16
+    rollout_detail_index: 0
+    agent_kwargs:
+      temperature: 1.0
+      max_turns: 1
+      suppress_max_turns_warning: true
+      enable_summarize: false
+      collect_rollout_details: true
+
+  eval_workflows:
+    code_eval:
+      workflow_cls: "livecodebench_single_turn"
+      reward_fn: "livecodebench_reward"
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+
+  eval_datasets:
+    lcb_v6:
+      dataset_fn: "astraflow.dataflow.dataset.livecodebench:get_livecodebench_single_turn_test_dataset"
+      path: "./data-data/lcb_v6/test.jsonl"
+      split: "test"
+      max_length: 6000
+      repeat: 1
+      eval_workflow: code_eval
+
+trainer_base:
+  total_train_steps: 1200
+  train_batch_size: 32
+  n_samples: 8
+  engine:
+    backend: fsdp
+    data_parallel_size: 2
+
+  actor:
+    gradient_checkpointing: true
+    mb_spec:
+      max_tokens_per_mb: 22000
+    optimizer:
+      type: adam
+      lr: 3e-6
+      weight_decay: 0.01
+      beta1: 0.9
+      beta2: 0.999
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    m2_threshold: 0.01
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.00
+    kl_penalty_coef: 0.001
+    ppo_n_minibatches: 2
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    mb_spec:
+      max_tokens_per_mb: 22000
+
+  recover:
+    mode: auto
+    freq_steps: 25
+
+  evaluator:
+    freq_steps: 25
+
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+      tags: ["m2po", "code", "harbor-rl", "skyrl-codecontests", "terminus-2", "lcb-v6-eval", "qwen3-14b", "tcp", "delta", "b200", "podman"]
+
+trainer_model0:
+  model_id: model0
