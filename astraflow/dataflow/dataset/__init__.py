@@ -22,6 +22,10 @@ from .livecodebench import (
 from .math500 import get_math500_test_dataset
 from .minervamath import get_minerva_math_test_dataset
 from .olympiadbench import get_olympiad_bench_test_dataset
+from .terminal_bench import (
+    get_harbor_task_path_dataset,
+    get_terminal_bench_2_test_dataset,
+)
 
 __all__ = [
     "get_aime_2024x4_test_dataset",
@@ -38,4 +42,6 @@ __all__ = [
     "get_math500_test_dataset",
     "get_minerva_math_test_dataset",
     "get_olympiad_bench_test_dataset",
+    "get_harbor_task_path_dataset",
+    "get_terminal_bench_2_test_dataset",
 ]
