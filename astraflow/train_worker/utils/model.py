@@ -5,6 +5,7 @@ VALID_VISION_MODELS = [
     "qwen2_vl",
     "qwen2_5_vl",
     "qwen3_vl",
+    "qwen3_5",
     "gemma3",
 ]
 # Registry of vision models verified to work with this framework.
@@ -23,6 +24,10 @@ def is_qwen2_vl_model(model_type: str) -> bool:
 
 def is_qwen3_vl_model(model_type: str) -> bool:
     return model_type in ["qwen3_vl"]
+
+
+def is_qwen3_5_model(model_type: str) -> bool:
+    return model_type in ["qwen3_5"]
 
 
 def is_qwen_vl_model(model_type: str) -> bool:
