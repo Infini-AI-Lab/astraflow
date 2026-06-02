@@ -21,6 +21,7 @@ import astraflow.core.workflow.impl.plan_and_solve
 import astraflow.core.workflow.impl.solve_and_check
 import astraflow.core.workflow.impl.sep_solve_and_check
 import astraflow.core.workflow.impl.solve_and_verify
+import astraflow.core.workflow.impl.terminal_bench_harbor
 import astraflow.core.workflow.impl.actor_and_verify
 import astraflow.core.workflow.impl.rlvr
 import astraflow.core.workflow.impl.sm_lg_router
