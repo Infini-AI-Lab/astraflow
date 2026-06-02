@@ -25,7 +25,7 @@
 
 experiment:
   experiment_name: astraflow-deepdive
-  trial_name: qwen3-4b-deepdive-recursive
+  trial_name: qwen3-4b-deepdive-recursive-v7
   fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
 
   model_path: "Qwen/Qwen3-4B-Instruct-2507"
