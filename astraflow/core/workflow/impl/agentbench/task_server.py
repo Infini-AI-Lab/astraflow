@@ -164,15 +164,16 @@ class TaskServerWorkflow(RolloutWorkflow):
         return results_to_structured(results, prompt_id=resolve_prompt_id(data))
 
     def _compute_user_message_delta_tokens(self, user_content: str) -> List[int]:
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
         ref_messages = [{"role": "assistant", "content": "X"}]
-        ref_tokens = list(self.tokenizer.apply_chat_template(
-            ref_messages, tokenize=True, enable_thinking=False
-        ))
+        ref_tokens = apply_chat_template_to_ids(
+            self.tokenizer, ref_messages, tokenize=True, enable_thinking=False
+        )
 
         full_messages = ref_messages + [{"role": "user", "content": user_content}]
-        full_tokens = list(self.tokenizer.apply_chat_template(
-            full_messages, tokenize=True, add_generation_prompt=True, enable_thinking=False
-        ))
+        full_tokens = apply_chat_template_to_ids(
+            self.tokenizer, full_messages, tokenize=True, add_generation_prompt=True, enable_thinking=False
+        )
 
         eos_idx = ref_tokens.index(self.tokenizer.eos_token_id)
         return full_tokens[eos_idx + 1:]
@@ -208,12 +209,14 @@ class TaskServerWorkflow(RolloutWorkflow):
 
             messages = self.format_observation_to_messages(observation, messages)
 
-            input_ids: List[int] = list(self.tokenizer.apply_chat_template(
+            from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+            input_ids: List[int] = apply_chat_template_to_ids(
+                self.tokenizer,
                 messages,
                 add_generation_prompt=True,
                 tokenize=True,
                 enable_thinking=False,
-            ))
+            )
 
             num_turns = 0
             for turn in range(self.max_turns):

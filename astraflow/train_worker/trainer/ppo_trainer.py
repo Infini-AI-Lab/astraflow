@@ -171,12 +171,16 @@ class AstraFlowPPOTrainer(PPOTrainerBase):
         return isinstance(self.actor, MegatronEngine)
 
     def _get_named_params_for_offload(self):
-        """Return raw named parameters for WeightManager.offload().
+        """Return the (name, tensor) stream for WeightManager.offload().
 
-        For both Megatron and FSDP: yields raw model.named_parameters().
-        Megatron params are TP-sharded; WeightManager._copy_megatron_shards
-        handles the shard-direct copy using tp_rank offsets.
+        - Megatron: a fresh ``export_hf_named_params`` generator that yields
+          gathered HF-layout tensors (handles TP/PP/EP/VPP). WeightManager
+          streams it into the HF buffer on the writer rank.
+        - FSDP: raw ``model.named_parameters()`` (DTensor shards handled by
+          WeightManager's shard-copy / all-gather paths).
         """
+        if self._is_megatron:
+            return self.actor.export_hf_named_params()
         try:
             return self.actor.model.named_parameters(remove_duplicate=False)
         except TypeError:
@@ -255,9 +259,13 @@ class AstraFlowPPOTrainer(PPOTrainerBase):
                 "target_modules": list(peft_cfg.target_modules),
             }
 
-        megatron_metadata = None
+        # Megatron HF-export mode: the buffer is sized from the full HF
+        # weight layout, and offload streams gathered HF tensors into it.
+        # This keeps the sender/RaaS path identical to FSDP (delta in HF
+        # space) and works under any TP/PP/EP/VPP combination.
+        megatron_hf_meta = None
         if self._is_megatron:
-            megatron_metadata = self.actor.get_megatron_shard_metadata()
+            megatron_hf_meta = self.actor.get_hf_weight_metadata()
 
         # Determine HSDP replica rank (0 = primary, >0 = secondary).
         dp_replicate_rank = 0
@@ -279,10 +287,15 @@ class AstraFlowPPOTrainer(PPOTrainerBase):
                 dp_replicate_rank=dp_replicate_rank,
             )
         else:
-            named_params = self._get_named_params_for_offload()
+            # In Megatron HF-export mode the layout comes from
+            # megatron_hf_meta, so named_params is unused at init time.
+            named_params = (
+                iter(()) if self._is_megatron
+                else self._get_named_params_for_offload()
+            )
             self.weight_manager.initialize(
                 named_params, local_rank, global_rank,
-                megatron_metadata=megatron_metadata,
+                megatron_hf_meta=megatron_hf_meta,
                 dp_replicate_rank=dp_replicate_rank,
             )
         logger.info(

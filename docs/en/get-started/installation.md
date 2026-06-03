@@ -78,7 +78,57 @@ for its own attention backend — you do not install that one yourself.
 uv pip install -e ".[sglang]"
 ```
 
-### Step 5: Verify installation
+### Step 5 (optional): Install the Megatron training backend
+
+Only needed if you want to train with the **Megatron-LM backend** (tensor /
+pipeline / expert parallelism, MoE models). The default **FSDP** backend and
+all inference need nothing here — skip to Step 6.
+
+`megatron-core` and `mbridge` are already installed by Step 3. The Megatron
+backend additionally uses **Transformer Engine** (fused LayerNorm + sequence
+parallelism) and benefits from **apex** (fused LayerNorm / Adam). Both are
+compiled from source against the installed PyTorch:
+
+```bash
+# nvcc must be on PATH (same CUDA toolchain as the flash-attn build above)
+export CUDA_HOME=/usr/local/cuda-13.0
+export PATH="$CUDA_HOME/bin:$PATH"
+export NVTE_FRAMEWORK=pytorch
+
+# Transformer Engine (required for the Megatron backend with TP/SP)
+uv pip install --no-build-isolation "transformer-engine[pytorch]>=2.13.0,<2.14"
+
+# apex (optional — Megatron falls back to Torch Norm / torch Adam if absent).
+# APEX_CPP_EXT/APEX_CUDA_EXT select the fused kernels; FORCE_CUDA=1 builds them
+# without a visible GPU.
+git clone --depth 1 https://github.com/NVIDIA/apex.git /tmp/apex
+cd /tmp/apex
+FORCE_CUDA=1 APEX_CPP_EXT=1 APEX_CUDA_EXT=1 \
+  uv pip install -v --no-build-isolation .
+cd - && rm -rf /tmp/apex
+```
+
+> If apex's build complains about a CUDA toolkit vs. PyTorch CUDA minor-version
+> mismatch, the difference is safe to ignore — comment out the
+> `check_cuda_torch_binary_vs_bare_metal` guard in apex's `setup.py`, or just
+> skip apex (Transformer Engine is the only hard requirement). The
+> `docker/Dockerfile.sglang.megatron` image automates all of this.
+
+Verify the Megatron extras:
+
+```bash
+python -c "
+import transformer_engine.pytorch  # noqa: F401
+print('transformer-engine: OK')
+try:
+    from apex.normalization import FusedLayerNorm  # noqa: F401
+    print('apex: OK')
+except ImportError:
+    print('apex: not installed (Torch Norm fallback)')
+"
+```
+
+### Step 6: Verify installation
 
 ```bash
 python -c "
@@ -105,7 +155,7 @@ A pre-built image is published on Docker Hub — it skips the from-source steps 
 entirely. Requires the NVIDIA Container Toolkit so `--gpus all` works.
 
 ```bash
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.0
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
 ```
 
 > **Note on `--shm-size`:** this sets the size of the container's `/dev/shm`. A
@@ -123,6 +173,6 @@ docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it
 > `nofile` soft limit (1024) is far too low and the reward pool fails with
 > `[Errno 24] Too many open files`. Raise it with `--ulimit nofile=65536:65536`.
 
-The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (`v0.1.0`) for
+The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (`v0.1.1`) for
 reproducibility; `:latest` tracks the most recent release. See `docker/README.md` for
 build details and the NVIDIA Container Toolkit install guide.

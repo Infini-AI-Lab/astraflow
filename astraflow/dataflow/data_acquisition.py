@@ -480,6 +480,15 @@ class AstraDataAcquisition:
             # group is split across DP ranks (multi-turn / variable-size
             # workflows such as actor_and_verify and asearcher).
             #
+            # Workflows may stamp these fields themselves before emission to
+            # opt out of the producer's default GRPO statistic. Typical
+            # reasons: avoid the per-sequence weighting bias when agents emit
+            # variable numbers of sequences (e.g. recursive agents — a sample
+            # spawning more sub-agents would otherwise pull the baseline
+            # toward itself), or apply a different baseline (leave-one-out,
+            # root-only, etc). The producer's default values are computed
+            # below but only applied when a seq has not already been stamped.
+            #
             # Use unbiased (N-1) std to match Normalization defaults
             # (NormConfig.std_unbiased=True). For singleton groups,
             # fall back to std=1.0 to match Normalization's special case.
@@ -497,8 +506,12 @@ class AstraDataAcquisition:
             # Publish each sequence to the buffer.
             model_accepted = 0
             for seq in seqs:
-                seq["group_reward_mean"] = torch.tensor([g_mean])
-                seq["group_reward_std"] = torch.tensor([g_std])
+                # Honor workflow-stamped stats; only fill in defaults
+                # when the workflow did not provide them.
+                if "group_reward_mean" not in seq:
+                    seq["group_reward_mean"] = torch.tensor([g_mean])
+                if "group_reward_std" not in seq:
+                    seq["group_reward_std"] = torch.tensor([g_std])
                 seq_metadata = dict(metadata)
                 version_meta = self.build_metadata(seq)
                 for k in ("min_version", "max_version"):

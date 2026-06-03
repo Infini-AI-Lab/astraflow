@@ -9,23 +9,28 @@
 
 ## Available Images
 
-| Dockerfile          | Description                     | Extras           |
-| ------------------- | ------------------------------- | ---------------- |
-| `Dockerfile.sglang` | astraflow + SGLang + flash-attn | `-e ".[sglang]"` |
+| Dockerfile                   | Description                                      | Extras           |
+| ---------------------------- | ------------------------------------------------ | ---------------- |
+| `Dockerfile.sglang`          | astraflow + SGLang + flash-attn                  | `-e ".[sglang]"` |
+| `Dockerfile.sglang.megatron` | `Dockerfile.sglang` + Megatron extras (TE, apex) | builds on `astraflow:sglang` |
 
 The image is based on `nvidia/cuda:13.0.0-cudnn-devel-ubuntu24.04` with Python 3.12
 managed by [uv](https://docs.astral.sh/uv/).
+
+`Dockerfile.sglang.megatron` is only needed for the **Megatron training backend**
+(it layers Transformer Engine and apex on top of the SGLang image). The FSDP
+backend and inference do not require it.
 
 ## Pull pre-built image
 
 A pre-built image is published on Docker Hub — use it to skip the build entirely:
 
 ```bash
-docker pull astraflowai/astraflow:v0.1.0
+docker pull astraflowai/astraflow:v0.1.1
 ```
 
 This image is built from `Dockerfile.sglang` (astraflow + SGLang + flash-attn). Pin a
-version tag (`v0.1.0`) for reproducibility; `:latest` tracks the most recent release.
+version tag (`v0.1.1`) for reproducibility; `:latest` tracks the most recent release.
 
 ## Build from source
 
@@ -35,13 +40,16 @@ version tag (`v0.1.0`) for reproducibility; `:latest` tracks the most recent rel
 cd /path/to/astraflow
 
 docker build -f docker/Dockerfile.sglang -t astraflow:sglang .
+
+# Optional: add the Megatron training backend (Transformer Engine + apex) on top.
+docker build -f docker/Dockerfile.sglang.megatron -t astraflow:sglang-megatron .
 ```
 
 ## Quick Start
 
 ```bash
 # Run the pre-built image with host network and all GPUs
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.0
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
 
 # ...or run a locally built image
 docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflow:sglang

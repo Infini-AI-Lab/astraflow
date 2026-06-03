@@ -43,6 +43,7 @@ AstraFlow **natively** supports the following for LLM RL training **without any 
 <!-- <p align="center"><i>AstraFlow training a multi-policy workflow on an elastic, heterogeneous, cross-region rollout pool — all at once, with no feature-specific code.</i></p> -->
 
 ## News
+- **[2026/05]** AstraFlow **v0.1.1** released — CUDA 13 image, SGLang 0.5.12, Megatron weight-sync training backend, and transformers 5 support. See the [project website](https://Infini-AI-Lab.github.io/astraflow/).
 - **[2026/05]** AstraFlow **v0.1.0** released — first public release of the full system. See the [project website](https://Infini-AI-Lab.github.io/astraflow/).
 - **[2026/05]** AstraFlow paper is on [arXiv](https://arxiv.org/abs/2605.15565).
 

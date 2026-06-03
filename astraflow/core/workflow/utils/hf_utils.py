@@ -27,6 +27,40 @@ def load_hf_tokenizer(
     return tokenizer
 
 
+def apply_chat_template_to_ids(
+    tokenizer,
+    messages,
+    *,
+    enable_thinking: bool | None = None,
+    **kwargs,
+) -> list[int]:
+    """Apply a chat template and return a flat ``list[int]`` of token ids.
+
+    Normalizes across transformers versions. transformers>=5 makes
+    ``apply_chat_template(tokenize=True)`` return a ``BatchEncoding`` (a
+    Mapping) instead of a flat ``list[int]``; calling ``list(...)`` on that
+    yields the dict keys (``["input_ids", "attention_mask"]``) rather than
+    tokens, which then get sent to the inference engine and rejected. We
+    extract ``input_ids`` whenever a mapping is returned.
+
+    ``enable_thinking`` is forwarded only when the tokenizer's chat template
+    accepts it (older templates raise ``TypeError``), matching the prior
+    per-workflow ``_apply_chat_template`` behavior.
+    """
+    kwargs.setdefault("tokenize", True)
+    try:
+        out = tokenizer.apply_chat_template(
+            messages,
+            **({"enable_thinking": enable_thinking} if enable_thinking is not None else {}),
+            **kwargs,
+        )
+    except TypeError:
+        out = tokenizer.apply_chat_template(messages, **kwargs)
+    if hasattr(out, "keys"):  # BatchEncoding (transformers>=5) -> token-id list
+        out = out["input_ids"]
+    return list(out)
+
+
 @lru_cache(maxsize=8)
 def load_hf_processor_and_tokenizer(
     model_name_or_path: str,

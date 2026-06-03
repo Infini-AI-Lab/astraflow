@@ -1,0 +1,37 @@
+# ============================================================================
+# RaaS config — Inference serving instance (hardware/resources)
+# Experiment: textcraft / qwen3-4b-recursive
+#
+# Hardware: 4x GPU, TP=1
+#   model0:  DP=4, TP=1
+#
+# Merged with experiment.yaml at launch (--config experiment.yaml --config raas.yaml)
+# experiment.yaml provides: model_path, tokenizer_path, seed, dtype, models/gconfig
+# ============================================================================
+
+rollout:
+  # Recursive fan-out multiplies this by the agent-tree size: at 2048 the live
+  # agent count hit ~16k concurrent requests, starving a 4-GPU SGLang so no
+  # episode ever completed (trainer stuck at step 0). 512 -> ~2.4k concurrent
+  # agents, validated to complete steps on sglang 0.5.12 + train_batch_size=512.
+  max_concurrent_rollouts: 512
+  max_concurrent_evals: 64
+  pause_grace_period: 3
+  enable_adaptive_availability: true
+  target_waiting_queue_per_dp: 4
+  adaptive_step_size: 4
+  load_cache_ttl_ms: 100
+
+engine:
+  model0:
+    backend: sglang
+    data_parallel_size: 4
+
+sglang:
+  # 32k context: recursion + per-turn observation history accumulate.
+  # Each turn appends action + observation to chat history, which can
+  # reach a few thousand tokens per agent over a 50-step episode.
+  context_length: 32768
+  mem_fraction_static: 0.8
+  max_running_requests: null
+  skip_tokenizer_init: true
