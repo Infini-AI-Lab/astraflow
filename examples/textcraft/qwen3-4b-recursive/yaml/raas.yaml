@@ -10,9 +10,11 @@
 # ============================================================================
 
 rollout:
-  # n_samples=8 × train_batch_size=32 × MAX_BREADTH=4 worst-case branching
-  # could exceed the math recipe's 1024 cap during deep spawns.
-  max_concurrent_rollouts: 2048
+  # Recursive fan-out multiplies this by the agent-tree size: at 2048 the live
+  # agent count hit ~16k concurrent requests, starving a 4-GPU SGLang so no
+  # episode ever completed (trainer stuck at step 0). 512 -> ~2.4k concurrent
+  # agents, validated to complete steps on sglang 0.5.12 + train_batch_size=512.
+  max_concurrent_rollouts: 512
   max_concurrent_evals: 64
   pause_grace_period: 3
   enable_adaptive_availability: true
