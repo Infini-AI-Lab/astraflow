@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "AstraFlow"
 author = "AstraFlow Team"
 copyright = f"2025-{datetime.now().year}, {author}"
-version = "0.1.0"
+version = "0.1.1"
 release = version
 
 extensions = [

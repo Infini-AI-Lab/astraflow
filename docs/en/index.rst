@@ -1,4 +1,4 @@
-AstraFlow v0.1.0 Documentation
+AstraFlow v0.1.1 Documentation
 ==============================
 
 AstraFlow is an asynchronous RL training system for large reasoning and agentic models
@@ -28,7 +28,9 @@ on distributed GPU clusters.
 
    recipes/math
    recipes/math-offline
+   recipes/math-spawn
    recipes/code
    recipes/multi-agent
    recipes/agentbench
    recipes/search
+   recipes/textcraft-recursive

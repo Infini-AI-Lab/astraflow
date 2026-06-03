@@ -1,0 +1,198 @@
+# ============================================================================
+# Experiment config — AstraFlow service + Trainer (SPAWN sub-agents workflow)
+# Experiment: math / qwen3-8b-spawn
+#
+# Built on the offline math recipe.  The only differences from
+# qwen3-8b-m2po-full-offline are:
+#   - workflow_cls: spawn_rlvr   (rollout + eval)
+#   - reduced max_new_tokens so phase-1 + aggregated sub-results + phase-2
+#     fit inside the 16k SGLang context: main 3000, sub-agents 1500 each
+#     (so max aggregated injection is 4 * 1500 = 6000 tokens).
+#
+# Sub-agent training scheme: each spawn-using trajectory emits 1 main + N
+# sub-agent sequences sharing the team math_verify reward.  See
+# astraflow/core/workflow/impl/spawn.py for the contract.
+#
+# Pre-download datasets with:
+#   python examples/math/offline/download_math_datasets.py --root data-data/math
+#
+# GPU layout (default, 8 GPUs):
+#   SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3 -> RaaS (model0 dp=4)
+#   TRAINER_MODEL0_GPUS=4,5,6,7          -> Trainer model0 (FSDP, 4 GPUs)
+# ============================================================================
+
+# ── Experiment: identity, model, shared settings ──
+experiment:
+  experiment_name: astraflow-math
+  trial_name: qwen3-8b-spawn
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen3-8B"
+  tokenizer_path: "Qwen/Qwen3-8B"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: full
+
+# ── RaaS: what to generate (inference-level config) ──
+# model keys here also determine expected_model_ids for AstraFlow service
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        # 3000 keeps phase-1 + agg block (up to 4*1500) + phase-2 under 16k.
+        max_new_tokens: 3000
+        min_new_tokens: 0
+
+# ── AstraFlow: data pipeline ──
+# auto-derives: expected_model_ids from raas.models keys
+# auto-derives: dump_dir from experiment.fileroot
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+
+  # Offline mode: every rollout/eval dataset that omits ``offline_dir`` will
+  # auto-derive one as ``{data_root}/{name}`` — e.g. data-data/math/deepscaler,
+  # data-data/math/aime24, etc.  Populate with
+  # ``python examples/math/offline/download_math_datasets.py --root data-data/math``.
+  # Resolved relative to the process CWD (repo root, set by the launch scripts).
+  data_root: data-data/math
+
+  # Rollout dump dir for spawn-workflow sanity checking.  The dataflow
+  # loader substitutes ${experiment.*} placeholders and propagates this
+  # into workflow_spec.dump_dir.  Combined with workflow_spec.dump_prob
+  # below, every K-th rollout is dumped as decoded text under
+  # ``{dump_dir}/{version}/{qid}.txt`` (phase-1 + per-sub-agent + phase-2).
+  dump_dir: "./data-experiments/${experiment.experiment_name}/${experiment.trial_name}/rollout_dumps"
+
+  buffer:
+    size: 10000
+    replay_size: 10000
+    replay_ratio: 0
+    max_staleness: 8
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.deepscaler:get_deepscaler_rl_dataset"
+    max_length: 2000
+
+  workflow_spec:
+    workflow_cls: "spawn_rlvr"
+    reward_fn: "math_verify"
+    enable_thinking: false
+    max_sub_agents: 4
+    sub_agent_max_new_tokens: 1500
+    # Sampling rate for rollout dumps (full trajectories with phase-1,
+    # per-sub-agent tasks/outputs, and phase-2 decoded text).  Bump to
+    # 1.0 when bring-up debugging; lower for multi-hundred-step runs to
+    # avoid disk churn.
+    dump_prob: 0.05
+
+  eval_workflows:
+    math_eval:
+      workflow_cls: "spawn_rlvr"
+      reward_fn: "math_verify"
+      enable_thinking: false
+      max_sub_agents: 4
+      sub_agent_max_new_tokens: 1500
+      # Eval rollouts dumped at 1% so a handful of eval trajectories
+      # land per epoch without flooding the eval phase.
+      dump_prob: 0.01
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+
+  eval_datasets:
+    aime24:
+      dataset_fn: "astraflow.dataflow.dataset.aime24x4:get_aime_2024x4_test_dataset"
+      max_length: 2000
+      repeat: 4
+      eval_workflow: math_eval
+    aime25:
+      dataset_fn: "astraflow.dataflow.dataset.aime25x4:get_aime_2025x4_test_dataset"
+      max_length: 2000
+      repeat: 4
+      eval_workflow: math_eval
+    amc:
+      dataset_fn: "astraflow.dataflow.dataset.amc24:get_amc_2024x4_test_dataset"
+      max_length: 2000
+      repeat: 4
+      eval_workflow: math_eval
+    minerva:
+      dataset_fn: "astraflow.dataflow.dataset.minervamath:get_minerva_math_test_dataset"
+      max_length: 2000
+      repeat: 4
+      eval_workflow: math_eval
+    math500:
+      dataset_fn: "astraflow.dataflow.dataset.math500:get_math500_test_dataset"
+      max_length: 2000
+      repeat: 4
+      eval_workflow: math_eval
+
+# ── Trainer base: shared config ──
+# auto-derives from experiment: experiment_name, trial_name, fileroot,
+#   tokenizer_path, seed, dtype, weight_transfer_mode
+# auto-derives from raas.models.<model_id>: actor.path, actor.max_new_tokens,
+#   ref.path
+# auto-derives: saver, recover, stats_logger fields from experiment section
+# auto-derives: cluster.name_resolve from experiment.fileroot
+# auto-derives: trial_name suffix from model_id (e.g. trial_name-model0)
+trainer_base:
+  total_train_steps: 800
+  train_batch_size: 256
+  n_samples: 8
+  engine:
+    backend: fsdp
+    data_parallel_size: 4
+
+  actor:
+    gradient_checkpointing: true
+    mb_spec:
+      max_tokens_per_mb: 17408
+    optimizer:
+      type: adam
+      lr: 5e-6
+      weight_decay: 0.01
+      beta1: 0.9
+      beta2: 0.999
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    # PPO / M2PO algorithm
+    m2_threshold: 0.01
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.00
+    kl_penalty_coef: 0.001
+    ppo_n_minibatches: 4
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    mb_spec:
+      max_tokens_per_mb: 17408
+
+  recover:
+    mode: auto
+    freq_steps: 25
+
+  evaluator:
+    eval_at_start: false
+    freq_steps: 25
+
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+
+# ── Trainer for model0 — only overrides ──
+trainer_model0:
+  model_id: model0
+  stats_logger:
+    wandb:
+      tags: ["m2po", "math", "astraflow-v2", "qwen3-8b", "tcp", "ctx16k", "offline-data", "spawn"]

@@ -26,11 +26,11 @@ backend and inference do not require it.
 A pre-built image is published on Docker Hub — use it to skip the build entirely:
 
 ```bash
-docker pull astraflowai/astraflow:v0.1.0
+docker pull astraflowai/astraflow:v0.1.1
 ```
 
 This image is built from `Dockerfile.sglang` (astraflow + SGLang + flash-attn). Pin a
-version tag (`v0.1.0`) for reproducibility; `:latest` tracks the most recent release.
+version tag (`v0.1.1`) for reproducibility; `:latest` tracks the most recent release.
 
 ## Build from source
 
@@ -49,7 +49,7 @@ docker build -f docker/Dockerfile.sglang.megatron -t astraflow:sglang-megatron .
 
 ```bash
 # Run the pre-built image with host network and all GPUs
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.0
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
 
 # ...or run a locally built image
 docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflow:sglang

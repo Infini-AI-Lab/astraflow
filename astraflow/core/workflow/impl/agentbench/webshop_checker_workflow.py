@@ -341,12 +341,14 @@ class WebShopCheckerWorkflow(WebshopTaskServerWorkflow):
 
             messages = self.format_observation_to_messages(observation, messages)
 
-            input_ids: List[int] = list(self.tokenizer.apply_chat_template(
+            from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+            input_ids: List[int] = apply_chat_template_to_ids(
+                self.tokenizer,
                 messages,
                 add_generation_prompt=True,
                 tokenize=True,
                 enable_thinking=False,
-            ))
+            )
 
             # Extract goal instruction for the checker.
             goal_instruction = self._extract_goal(messages)
@@ -608,12 +610,14 @@ class WebShopCheckerWorkflow(WebshopTaskServerWorkflow):
             {"role": "user", "content": prompt},
         ]
 
-        checker_input_ids = list(checker_tokenizer.apply_chat_template(
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+        checker_input_ids = apply_chat_template_to_ids(
+            checker_tokenizer,
             checker_messages,
             add_generation_prompt=True,
             tokenize=True,
             enable_thinking=False,
-        ))
+        )
 
         req = ModelRequest(
             rid=uuid.uuid4().hex,
