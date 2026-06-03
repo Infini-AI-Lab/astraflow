@@ -1,0 +1,63 @@
+import torch
+
+import astraflow.train_worker.utils.logging as logging
+
+from .platform import Platform
+
+logger = logging.getLogger("ROCm Platform")
+
+
+class RocmPlatform(Platform):
+    device_name: str = "AMD"
+    device_type: str = "cuda"  # ROCm HIP presents as CUDA API to PyTorch
+    dispatch_key: str = "CUDA"  # ROCm HIP uses CUDA dispatch
+    ray_device_key: str = "GPU"
+    device_control_env_var: str = "HIP_VISIBLE_DEVICES"
+    ray_experimental_noset: str = "RAY_EXPERIMENTAL_NOSET_HIP_VISIBLE_DEVICES"
+    communication_backend: str = "nccl"  # RCCL is a drop-in NCCL replacement
+
+    @classmethod
+    def clear_cublas_workspaces(cls) -> None:
+        # ROCm HIP implements this CUDA API
+        torch._C._cuda_clearCublasWorkspaces()
+
+    @classmethod
+    def get_vllm_worker_class(clas):
+        try:
+            from vllm import envs
+
+            if envs.VLLM_USE_V1:
+                from vllm.v1.worker.gpu_worker import Worker
+
+                logger.info("Successfully imported vLLM V1 Worker.")
+                return Worker
+            else:
+                from vllm.worker.worker import Worker
+
+                logger.info("Successfully imported vLLM V0 Worker.")
+                return Worker
+        except ImportError as e:
+            logger.error(
+                "Failed to import vLLM Worker. "
+                "Make sure vLLM is installed correctly: %s",
+                e,
+            )
+            raise RuntimeError(
+                "vLLM is not installed or not properly configured."
+            ) from e
+
+    @classmethod
+    def set_allocator_settings(cls) -> None:
+        torch.cuda.memory._set_allocator_settings("expandable_segments:False")
+
+    @classmethod
+    def get_custom_env_vars(cls) -> dict:
+        env_vars = {
+            "TORCHINDUCTOR_COMPILE_THREADS": "2",
+            "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
+        }
+        return env_vars
+
+    @classmethod
+    def synchronize(cls) -> None:
+        torch.cuda.synchronize()

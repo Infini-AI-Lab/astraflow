@@ -1,0 +1,81 @@
+# AstraFlow SGLang on AMD ROCm — supports gfx1100, gfx942, gfx950
+#
+# Build:
+#   docker build -t astraflow:sglang-rocm -f docker/Dockerfile.sglang-rocm .                        # gfx1100 (default)
+#   docker build --build-arg GPU_ARCH=gfx942 -t astraflow:sglang-rocm-gfx942 -f docker/Dockerfile.sglang-rocm .
+#   docker build --build-arg GPU_ARCH=gfx950 -t astraflow:sglang-rocm-gfx950 -f docker/Dockerfile.sglang-rocm .
+#
+# Run (example):
+#   docker run -it --rm \
+#       --device=/dev/kfd --device=/dev/dri --group-add=video \
+#       --net=host --shm-size=16g \
+#       --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+#       -v ~/.cache/huggingface:/root/.cache/huggingface \
+#       astraflow:sglang-rocm bash
+
+ARG GPU_ARCH=gfx1100
+
+# ROCm 7.2.4 + PyTorch 2.10.0 + Python 3.12.
+FROM rocm/pytorch:rocm7.2.4_ubuntu24.04_py3.12_pytorch_release_2.10.0
+
+ARG GPU_ARCH
+
+SHELL ["/bin/bash", "-lc"]
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:${PATH}" \
+    PYTORCH_ROCM_ARCH=${GPU_ARCH} \
+    HIP_FORCE_DEV_KERNARG=1 \
+    HSA_NO_SCRATCH_RECLAIM=1 \
+    FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE
+
+WORKDIR /workspace/astraflow
+COPY . .
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential curl git ninja-build numactl \
+    libjpeg-dev libpng-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+RUN sh /uv-installer.sh && rm /uv-installer.sh && \
+    mv /root/.local/bin/uv /usr/local/bin/uv
+
+RUN uv pip install cmake ninja
+
+# --- SGLang (per-architecture source selection) ---
+# gfx1100 → fork (7900 XTX patches)   |  gfx942/gfx950 → upstream
+RUN case "${GPU_ARCH}" in \
+      gfx1100) \
+        SGL_REPO="https://github.com/mjc0608/sglang.git"; \
+        SGL_BRANCH="gfx1100"; \
+        export HSA_OVERRIDE_GFX_VERSION=11.0.0; \
+        export SETUPTOOLS_SCM_PRETEND_VERSION=0.5.12.post1; \
+        ;; \
+      gfx942|gfx950) \
+        SGL_REPO="https://github.com/sgl-project/sglang.git"; \
+        SGL_BRANCH="v0.5.12.post1"; \
+        ;; \
+      *) echo "ERROR: unknown GPU_ARCH=${GPU_ARCH}"; exit 1;; \
+    esac && \
+    git clone ${SGL_REPO} /opt/sglang && \
+    cd /opt/sglang && \
+    git checkout ${SGL_BRANCH} && \
+    cd sgl-kernel && \
+    rm -f pyproject.toml && \
+    mv pyproject_rocm.toml pyproject.toml && \
+    AMDGPU_TARGET=${GPU_ARCH} python setup_rocm.py install && \
+    cd .. && \
+    rm -rf python/pyproject.toml && \
+    mv python/pyproject_other.toml python/pyproject.toml && \
+    uv pip install -e "python[all_hip]"
+
+# --- AstraFlow core dependencies ---
+RUN uv pip install -e "."
+
+# --- Flash-Attention (Triton AMD backend) ---
+RUN uv pip install flash-attn --no-build-isolation
+
+CMD ["/bin/bash"]

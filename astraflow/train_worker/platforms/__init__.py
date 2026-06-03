@@ -9,6 +9,7 @@ from .cpu import CpuPlatform
 from .cuda import CudaPlatform
 from .npu import NPUPlatform
 from .platform import Platform
+from .rocm import RocmPlatform
 from .unknown import UnknownPlatform
 
 logger = logging.getLogger("Platform init")
@@ -22,17 +23,31 @@ def _init_platform() -> Platform:
     Detect and initialize the appropriate platform based on available devices.
     Priority:
     1. CUDA (NVIDIA)
-    2. TODO: NPU (if torch_npu is installed)
-    3. CPU (fallback)
+    2. ROCm / HIP (AMD)
+    3. TODO: NPU (if torch_npu is installed)
+    4. CPU (fallback)
     Returns:
         An instance of a subclass of Platform corresponding to the detected hardware.
     """
     if torch.cuda.is_available():
         device_name = torch.cuda.get_device_name().upper()
         logger.info(f"Detected CUDA device: {device_name}")
+
+        # ROCm / HIP: AMD GPUs present as CUDA but torch.version.hip is set
+        is_rocm = (
+            hasattr(torch.version, "hip") and torch.version.hip is not None
+        )
+        if is_rocm:
+            logger.info(
+                f"Detected ROCm HIP {torch.version.hip}. "
+                "Initializing ROCm platform (AMD)."
+            )
+            return RocmPlatform()
+
         if "NVIDIA" in device_name:
             logger.info("Initializing CUDA platform (NVIDIA).")
             return CudaPlatform()
+
         logger.warning("Unrecognized CUDA device. Falling back to UnknownPlatform.")
         return UnknownPlatform()
     elif is_npu_available:

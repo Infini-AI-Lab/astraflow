@@ -167,7 +167,10 @@ class AstraFlowPPOTrainer(PPOTrainerBase):
 
     @property
     def _is_megatron(self) -> bool:
-        from astraflow.train_worker.engine.megatron_engine import MegatronEngine
+        try:
+            from astraflow.train_worker.engine.megatron_engine import MegatronEngine
+        except ImportError:
+            return False
         return isinstance(self.actor, MegatronEngine)
 
     def _get_named_params_for_offload(self):

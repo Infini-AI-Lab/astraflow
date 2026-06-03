@@ -1,0 +1,123 @@
+# ============================================================================
+# Experiment config — AstraFlow service + Trainer
+# Experiment: math / qwen3-0.6b-sglang-rocm-single-gpu
+#
+# Minimal SGLang AMD ROCm recipe with Qwen3-0.6B on a single GPU (24 GB VRAM).
+# Both SGLang inference and FSDP trainer run on GPU 0 (7900 XTX / gfx1100).
+#
+# Docker: docker/Dockerfile.sglang-rocm
+# Base:   rocm/pytorch:rocm7.2.4_ubuntu24.04_py3.12_pytorch_release_2.10.0
+#
+# Memory budget (24 GB):
+#   SGLang (~0.8 * 24 GB):               ~19.2 GB
+#   FSDP trainer (model + optim + grads):  ~6 GB
+#   Overlap safe (co-location):         sufficient
+#
+# SGLang attention backend: triton (flashinfer not available on gfx1100).
+# ============================================================================
+
+# ── Experiment: identity, model, shared settings ──
+experiment:
+  experiment_name: astraflow-math
+  trial_name: qwen3-0.6b-sglang-rocm-single-gpu
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen3-0.6B"
+  tokenizer_path: "Qwen/Qwen3-0.6B"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: full
+
+# ── RaaS: what to generate (inference-level config) ──
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 4
+        temperature: 1.0
+        max_new_tokens: 2048
+        min_new_tokens: 0
+  delta_full_sync_interval: 10
+
+# ── AstraFlow: data pipeline ──
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+
+  buffer:
+    size: 1000
+    replay_size: 1000
+    replay_ratio: 0
+    max_staleness: 8
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.deepscaler:get_deepscaler_rl_dataset"
+    max_length: 2048
+
+  workflow_spec:
+    workflow_cls: "rlvr"
+    reward_fn: "math_verify"
+    enable_thinking: false
+
+# ── Trainer base: shared config ──
+trainer_base:
+  total_train_steps: 20
+  train_batch_size: 16
+  n_samples: 4
+  engine:
+    backend: fsdp
+    data_parallel_size: 1
+
+  actor:
+    gradient_checkpointing: true
+    attn_impl: flash_attention_2
+    mb_spec:
+      max_tokens_per_mb: 4096
+    optimizer:
+      type: adam
+      lr: 5e-6
+      weight_decay: 0.01
+      beta1: 0.9
+      beta2: 0.999
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    # PPO / M2PO algorithm
+    m2_threshold: 0.01
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.00
+    kl_penalty_coef: 0.001
+    ppo_n_minibatches: 4
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    attn_impl: flash_attention_2
+    mb_spec:
+      max_tokens_per_mb: 4096
+
+  recover:
+    mode: auto
+    freq_steps: 25
+
+  evaluator:
+    eval_at_start: false
+    freq_steps: 25
+
+  stats_logger:
+    wandb:
+      mode: offline
+      id_suffix: "uid"
+
+# ── Trainer for model0 — only overrides ──
+trainer_model0:
+  model_id: model0
+  stats_logger:
+    wandb:
+      tags: ["sglang", "rocm", "math", "astraflow-v2", "qwen3-0.6b", "single-gpu", "gfx1100"]

@@ -1,0 +1,34 @@
+# ============================================================================
+# RaaS config — Inference serving instance (hardware/resources)
+# Experiment: math / qwen3-0.6b-sglang-rocm-single-gpu
+#
+# Hardware: 1x AMD GPU (7900 XTX / gfx1100, 24 GB), TP=1
+#   model0:  DP=1, TP=1
+#
+# SGLang tuned for co-location with FSDP trainer on the same GPU:
+#   - mem_fraction_static=0.5   → ~12 GB for SGLang (model + KV cache)
+#   - context_length=4096       → small KV cache footprint
+#   - attention_backend=triton  → required for gfx1100 (no flashinfer)
+# ============================================================================
+
+rollout:
+  max_concurrent_rollouts: 8
+  max_concurrent_evals: 2
+  pause_grace_period: 3
+  enable_adaptive_availability: true
+  target_waiting_queue_per_dp: 2
+  adaptive_step_size: 2
+  load_cache_ttl_ms: 100
+
+engine:
+  model0:
+    backend: sglang
+    data_parallel_size: 1
+
+sglang:
+  context_length: 4096
+  mem_fraction_static: 0.3
+  max_running_requests: null
+  skip_tokenizer_init: true
+  dtype: bfloat16
+  attention_backend: triton

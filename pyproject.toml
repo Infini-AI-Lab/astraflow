@@ -41,14 +41,13 @@ classifiers = [
 
 dependencies = [
     # Core ML/AI libraries
-    "torch==2.11.0",
+    "torch>=2.10",
     "torchaudio",
     "torchvision",
     "torchdata",
     "huggingface_hub",
     "datasets>=3.0.0",
     "transformers==5.6.1",
-    "megatron-core==0.13.1",
     "mbridge==0.13.0",
     "torch_memory_saver==0.0.9.post1",
     "peft>=0.18.0",
@@ -131,6 +130,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+megatron = [
+    "megatron-core==0.13.1",
+]
+
 fa = [
     "flash-attn==2.8.3",
 ]
@@ -144,7 +147,7 @@ sglang = [
 ]
 
 vllm = [
-    "vllm==0.11.0",
+    "vllm>=0.22.0",
 ]
 
 dev = [
@@ -168,7 +171,15 @@ docs = [
     "jupyter-book",
 ]
 
+all_rocm = [
+    "astraflow[sglang]",
+    "astraflow[fa]",
+    "astraflow[dev]",
+    "astraflow[docs]",
+]
+
 all = [
+    "astraflow[megatron]",
     "astraflow[fa]",
     "astraflow[te]",
     "astraflow[vllm]",

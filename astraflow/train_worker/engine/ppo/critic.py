@@ -6,7 +6,18 @@ import torch
 from astraflow.train_worker.api.cli_args import MicroBatchSpec, PPOCriticConfig
 from astraflow.train_worker.api.engine_api import TrainEngine
 from astraflow.train_worker.engine.fsdp_engine import FSDPEngine
-from astraflow.train_worker.engine.megatron_engine import MegatronEngine
+try:
+    from astraflow.train_worker.engine.megatron_engine import MegatronEngine
+except ImportError:
+    # megatron-core not installed — MegatronPPOCritic will raise
+    # ImportError if instantiated (FSDP backend does not need it).
+    class _MissingMegatronEngine:
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            raise ImportError(
+                "MegatronPPOCritic requires megatron-core to be installed. "
+                "Install with: pip install 'astraflow[megatron]'"
+            )
+    MegatronEngine = _MissingMegatronEngine  # type: ignore[assignment]
 from astraflow.train_worker.utils import stats_tracker
 from astraflow.train_worker.utils.data import split_padded_tensor_dict_into_mb_list
 from astraflow.train_worker.utils.functional import ppo_critic_loss_fn
