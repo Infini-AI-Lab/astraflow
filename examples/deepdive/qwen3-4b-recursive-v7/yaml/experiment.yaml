@@ -12,7 +12,7 @@
 #     -- DeepDive has no rule-based grader, judge is always required
 #   - delegation_lambda = 0.0 (matches platoon's _DEEPDIVE_DELEGATION_REWARD_CAP)
 #
-# Model: Qwen3-4B-Instruct-2507 (same as Oolong/TextCraft; platoon uses same)
+# Model: Qwen3-4B-Instruct-2507 (same as TextCraft; platoon uses same)
 #
 # GPU layout (8 GPUs):
 #   SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3 -> RaaS (model0 dp=4)

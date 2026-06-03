@@ -26,7 +26,6 @@ import astraflow.core.workflow.impl.rlvr
 import astraflow.core.workflow.impl.sm_lg_router
 import astraflow.core.workflow.impl.spawn
 import astraflow.core.workflow.impl.textcraft.workflow  # registers recursive_agent
-import astraflow.core.workflow.impl.oolong.workflow  # registers oolong_recursive
 import astraflow.core.workflow.impl.deepdive.workflow  # registers deepdive_recursive
 import astraflow.core.workflow.impl.vision_rlvr
 import astraflow.core.workflow.reward.clevr_count_70k
@@ -35,5 +34,4 @@ import astraflow.core.workflow.reward.math_verify
 import astraflow.core.workflow.reward.human_eval_reward
 import astraflow.core.workflow.reward.livecodebench_reward
 import astraflow.core.workflow.reward.textcraft_success  # noqa: F401
-import astraflow.core.workflow.reward.oolong_success  # noqa: F401
 import astraflow.core.workflow.reward.deepdive_success  # noqa: F401
