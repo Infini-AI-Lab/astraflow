@@ -1,4 +1,4 @@
-AstraFlow v0.1.0 Documentation
+AstraFlow v0.1.1 Documentation
 ==============================
 
 AstraFlow is an asynchronous RL training system for large reasoning and agentic models

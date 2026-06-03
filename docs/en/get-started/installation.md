@@ -155,7 +155,7 @@ A pre-built image is published on Docker Hub — it skips the from-source steps 
 entirely. Requires the NVIDIA Container Toolkit so `--gpus all` works.
 
 ```bash
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.0
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
 ```
 
 > **Note on `--shm-size`:** this sets the size of the container's `/dev/shm`. A
@@ -173,6 +173,6 @@ docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it
 > `nofile` soft limit (1024) is far too low and the reward pool fails with
 > `[Errno 24] Too many open files`. Raise it with `--ulimit nofile=65536:65536`.
 
-The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (`v0.1.0`) for
+The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (`v0.1.1`) for
 reproducibility; `:latest` tracks the most recent release. See `docker/README.md` for
 build details and the NVIDIA Container Toolkit install guide.
