@@ -3,7 +3,7 @@ set -euo pipefail
 # [2/3] Launch RaaS inference server (SGLang + TCP receiver)
 #
 # Usage (terminal 2, after AstraFlow is ready):
-#   bash examples/textcraft/qwen3-4b-recursive/scripts/2_raas.sh
+#   bash examples/textcraft-recursive-agent/qwen3-4b-recursive/scripts/2_raas.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"

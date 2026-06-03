@@ -20,7 +20,7 @@ set -euo pipefail
 #   3. Trainer model0         (FSDP, TRAINER_MODEL0_GPUS)
 #
 # Usage:
-#   bash examples/textcraft/qwen3-4b-recursive/scripts/run_qwen3-4b-recursive.sh
+#   bash examples/textcraft-recursive-agent/qwen3-4b-recursive/scripts/run_qwen3-4b-recursive.sh
 
 # =============================================================================
 # Part 1: Load env and settings

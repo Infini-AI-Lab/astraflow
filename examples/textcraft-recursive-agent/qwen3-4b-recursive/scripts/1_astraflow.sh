@@ -3,7 +3,7 @@ set -euo pipefail
 # [1/3] Launch AstraFlow HTTP service
 #
 # Usage (terminal 1):
-#   bash examples/textcraft/qwen3-4b-recursive/scripts/1_astraflow.sh
+#   bash examples/textcraft-recursive-agent/qwen3-4b-recursive/scripts/1_astraflow.sh
 
 export CUDA_VISIBLE_DEVICES=""
 

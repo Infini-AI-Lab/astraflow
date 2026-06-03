@@ -7,7 +7,7 @@ inventory) and can recursively spawn up to 4 sub-agents in parallel per
 turn — each shares the parent's inventory by reference, so their work
 mutates the same state.
 
-**Recipe**: [`examples/textcraft/qwen3-4b-recursive/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/textcraft/qwen3-4b-recursive)
+**Recipe**: [`examples/textcraft-recursive-agent/qwen3-4b-recursive/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/textcraft-recursive-agent/qwen3-4b-recursive)
 
 **Workflow class**: [`astraflow/core/workflow/impl/textcraft/workflow.py`](https://github.com/Infini-AI-Lab/astraflow/tree/main/astraflow/core/workflow/impl/textcraft/workflow.py) — registered as `recursive_agent`.
 
@@ -102,13 +102,13 @@ huggingface-cli download Qwen/Qwen3-4B-Instruct-2507
 Run:
 
 ```bash
-bash examples/textcraft/qwen3-4b-recursive/scripts/run_qwen3-4b-recursive.sh
+bash examples/textcraft-recursive-agent/qwen3-4b-recursive/scripts/run_qwen3-4b-recursive.sh
 ```
 
 Smoke run (3 train steps, eval-at-start):
 
 ```bash
-bash examples/textcraft/qwen3-4b-recursive/scripts/run_qwen3-4b-recursive.sh \
+bash examples/textcraft-recursive-agent/qwen3-4b-recursive/scripts/run_qwen3-4b-recursive.sh \
   total_train_steps=3 evaluator.eval_at_start=true evaluator.freq_steps=100
 ```
 

@@ -3,7 +3,7 @@ set -euo pipefail
 # [3/3] Launch Trainer for model0 (TCP, sender_agent on local_rank 0)
 #
 # Usage (terminal 3, after AstraFlow and RaaS are ready):
-#   bash examples/textcraft/qwen3-4b-recursive/scripts/3_trainer_model0.sh
+#   bash examples/textcraft-recursive-agent/qwen3-4b-recursive/scripts/3_trainer_model0.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
