@@ -179,19 +179,13 @@ class SpawnWorkflow(RolloutWorkflow):
     # ------------------------------------------------------------------ helpers
 
     def _apply_chat_template(self, messages, add_generation_prompt: bool = True):
-        try:
-            return list(self.tokenizer.apply_chat_template(
-                messages,
-                tokenize=True,
-                add_generation_prompt=add_generation_prompt,
-                enable_thinking=self.enable_thinking,
-            ))
-        except TypeError:
-            return list(self.tokenizer.apply_chat_template(
-                messages,
-                tokenize=True,
-                add_generation_prompt=add_generation_prompt,
-            ))
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+        return apply_chat_template_to_ids(
+            self.tokenizer,
+            messages,
+            add_generation_prompt=add_generation_prompt,
+            enable_thinking=self.enable_thinking,
+        )
 
     def _build_main_input_ids(self, data: dict[str, Any]) -> list[int]:
         """Main agent sees the spawn-tool system prompt + the original messages."""

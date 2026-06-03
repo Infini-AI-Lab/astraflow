@@ -316,16 +316,21 @@ class RecursiveAgentWorkflow(RolloutWorkflow):
 
     def _apply_chat_template(self, messages: list[dict], add_generation_prompt: bool) -> list[int]:
         try:
-            return list(self.tokenizer.apply_chat_template(
+            out = self.tokenizer.apply_chat_template(
                 messages,
                 tokenize=True,
                 add_generation_prompt=add_generation_prompt,
                 enable_thinking=self.enable_thinking,
-            ))
+            )
         except TypeError:
-            return list(self.tokenizer.apply_chat_template(
+            out = self.tokenizer.apply_chat_template(
                 messages, tokenize=True, add_generation_prompt=add_generation_prompt,
-            ))
+            )
+        # transformers>=5 returns a BatchEncoding (a Mapping, not a list) when
+        # tokenize=True; older versions return a flat list[int].
+        if hasattr(out, "keys"):
+            out = out["input_ids"]
+        return list(out)
 
     def _build_initial_messages(
         self, task: Task, env: TextCraftEnv, is_root: bool

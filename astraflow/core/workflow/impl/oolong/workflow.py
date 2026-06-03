@@ -264,14 +264,19 @@ class OolongRecursiveWorkflow(RolloutWorkflow):
         )
         # Qwen3-Instruct supports a thinking-mode toggle; default off for parity.
         try:
-            return self.tokenizer.apply_chat_template(
+            out = self.tokenizer.apply_chat_template(
                 messages,
                 tokenize=True,
                 enable_thinking=self.enable_thinking,
                 **kwargs,
             )
         except TypeError:
-            return self.tokenizer.apply_chat_template(messages, tokenize=True, **kwargs)
+            out = self.tokenizer.apply_chat_template(messages, tokenize=True, **kwargs)
+        # transformers>=5 returns a BatchEncoding (a Mapping, not a list) when
+        # tokenize=True; older versions return a flat list[int].
+        if hasattr(out, "keys"):
+            out = out["input_ids"]
+        return list(out)
 
     def _build_initial_messages(self, task: Task, is_root: bool) -> list[dict]:
         system = MAIN_SYSTEM_PROMPT if is_root else SUB_SYSTEM_PROMPT

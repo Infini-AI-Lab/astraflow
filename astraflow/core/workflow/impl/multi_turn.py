@@ -53,8 +53,9 @@ class MultiTurnWorkflow(RolloutWorkflow):
             os.makedirs(self.dump_dir, exist_ok=True)
 
         # Create tokens that should be amended if the answer is incorrect.
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
         messages = [{"role": "assistant", "content": "some random message."}]
-        s1 = list(self.tokenizer.apply_chat_template(messages, tokenize=True))
+        s1 = apply_chat_template_to_ids(self.tokenizer, messages, tokenize=True)
         messages += [
             {
                 "role": "user",
@@ -62,10 +63,8 @@ class MultiTurnWorkflow(RolloutWorkflow):
                 "Please carefully read the original question, check the previous errors, and try to answer it again.",
             }
         ]
-        s2 = list(
-            self.tokenizer.apply_chat_template(
-                messages, tokenize=True, add_generation_prompt=True
-            )
+        s2 = apply_chat_template_to_ids(
+            self.tokenizer, messages, tokenize=True, add_generation_prompt=True
         )
         self.multi_turn_prompt_ids = s2[len(s1) :]
 
@@ -74,12 +73,12 @@ class MultiTurnWorkflow(RolloutWorkflow):
     ) -> tuple[dict[str, torch.Tensor], str, str, float, int]:
         seq, logprobs, loss_mask, versions = [], [], [], []
         messages = data["messages"]
-        input_ids: list[int] = list(
-            self.tokenizer.apply_chat_template(
-                messages,
-                tokenize=True,
-                add_generation_prompt=True,
-            )
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+        input_ids: list[int] = apply_chat_template_to_ids(
+            self.tokenizer,
+            messages,
+            tokenize=True,
+            add_generation_prompt=True,
         )
         t = 0
         reward = 0.0
