@@ -65,7 +65,7 @@ dataflow:
       - harbor
     extra_args:
       - "--environment-import-path"
-      - "examples.code.harbor_podman_env:PodmanEnvironment"
+      - "examples.terminal-bench.harbor_podman_env:PodmanEnvironment"
     agent_name: "terminus-2"
     model_name: "openai/Qwen/Qwen3-14B"
     jobs_dir: ./data-experiments/astraflow-code/terminal-bench-rl-qwen3-14b-podman-test/harbor_jobs

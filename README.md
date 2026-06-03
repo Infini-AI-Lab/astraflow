@@ -63,6 +63,7 @@ AstraFlow currently supports the following recipes. Check the [documentation](ht
 | [`math-efficient-data/`](examples/math-efficient-data/) | Composable data algorithms — GRESO, dynamic sampling, buffer replay |
 | [`code/`](examples/code/) | Code-generation RL — Qwen3-8B, M2PO |
 | [`code-multi-agent/`](examples/code-multi-agent/) | Codegen + verifier competitive coding |
+| [`terminal-bench/`](examples/terminal-bench/) | Harbor-backed Terminal-Bench eval and RL recipes |
 | [`search/`](examples/search/) | Search-augmented agent training with local retrieval |
 | [`alfworld/`](examples/alfworld/) | ALFWorld embodied household agent |
 | [`webshop/`](examples/webshop/) | WebShop web-navigation shopping agent |

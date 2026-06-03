@@ -91,7 +91,8 @@ your response.
   read-only dependency unless coordinating with maintainers.
 - `examples/` — Runnable training recipes grouped by task type
   (`math/`, `code/`, `math-multi-agent/`, `code-multi-agent/`,
-  `alfworld/`, `webshop/`, `search/`, `math-efficient-data/`), plus
+  `terminal-bench/`, `alfworld/`, `webshop/`, `search/`,
+  `math-efficient-data/`), plus
   shared helpers in `_common/` and `launch_trainer.py`. Each recipe
   ships a `yaml/` directory of configs and a `scripts/` directory of
   numbered launch scripts.

@@ -5,7 +5,7 @@ set -euo pipefail
 #   ./data-data/harbor/CodeContests
 #
 # Usage:
-#   bash examples/code/terminal-bench-rl-qwen3-14b-podman-test/scripts/run_terminal-bench-rl-qwen3-14b-podman-test.sh
+#   bash examples/terminal-bench/terminal-bench-rl-qwen3-14b-podman-test/scripts/run_terminal-bench-rl-qwen3-14b-podman-test.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
@@ -26,8 +26,8 @@ if [[ ! -d "${HARBOR_TRAIN_DATA}" ]]; then
 fi
 
 # GPU assignments (default: 2 B200 GPUs for inference, 2 B200 GPUs for training)
-export SERVICE_CUDA_VISIBLE_DEVICES="${SERVICE_CUDA_VISIBLE_DEVICES:-1,2}"
-export TRAINER_GPUS="${TRAINER_GPUS:-3,4}"
+export SERVICE_CUDA_VISIBLE_DEVICES="${SERVICE_CUDA_VISIBLE_DEVICES:-5,7}"
+export TRAINER_GPUS="${TRAINER_GPUS:-0,4}"
 TRAINER_NPROC="$(echo "${TRAINER_GPUS}" | awk -F',' '{print NF}')"
 
 RAAS_HOST="${RAAS_HOST:-0.0.0.0}"

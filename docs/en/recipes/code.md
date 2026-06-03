@@ -2,7 +2,7 @@
 
 Reinforcement learning for code-generation reasoning with RLVR, rewarded by test-case execution.
 
-**Code recipes**: [`examples/code/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code) and [`examples/code-multi-agent/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent)
+**Code recipes**: [`examples/code/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code), [`examples/code-multi-agent/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent), and [`examples/terminal-bench/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/terminal-bench)
 
 Each recipe ships an all-in-one launch script under `scripts/` and its config under `yaml/`.
 
@@ -57,7 +57,7 @@ AstraFlow has two Harbor-backed Terminal-Bench workflows:
 - `terminal_bench_harbor` runs `terminal-bench@2.0` eval tasks through Harbor and reports eval rewards.
 - `terminal_bench_harbor_rl` runs local Harbor task directories and converts Harbor rollout details into RL tensors.
 
-The recipes invoke Harbor from a separate conda env so the main AstraFlow training env does not need to import Harbor directly.
+The Terminal-Bench recipes live under `examples/terminal-bench/`. They invoke Harbor from a separate conda env so the main AstraFlow training env does not need to import Harbor directly.
 
 ### Create the Harbor Env
 
@@ -100,7 +100,7 @@ harbor_command:
 The eval recipe trains on DeepCoder Preview and periodically evaluates with Harbor + Terminus-2 on Terminal-Bench 2:
 
 ```bash
-bash examples/code/terminal-bench-2-qwen3-8b/scripts/run_terminal-bench-2-qwen3-8b.sh
+bash examples/terminal-bench/terminal-bench-2-qwen3-8b/scripts/run_terminal-bench-2-qwen3-8b.sh
 ```
 
 Important config pieces:
@@ -174,7 +174,7 @@ Override it when launching if your tasks live elsewhere:
 
 ```bash
 HARBOR_TRAIN_DATA=/path/to/harbor/tasks \
-  bash examples/code/terminal-bench-rl-qwen3-14b-podman-test/scripts/run_terminal-bench-rl-qwen3-14b-podman-test.sh
+  bash examples/terminal-bench/terminal-bench-rl-qwen3-14b-podman-test/scripts/run_terminal-bench-rl-qwen3-14b-podman-test.sh
 ```
 
 ### Harbor RL Recipe
@@ -182,7 +182,7 @@ HARBOR_TRAIN_DATA=/path/to/harbor/tasks \
 The Harbor RL recipe trains Qwen3-14B on local Harbor tasks, uses the Podman custom environment, and evaluates on LiveCodeBench v6:
 
 ```bash
-bash examples/code/terminal-bench-rl-qwen3-14b-podman-test/scripts/run_terminal-bench-rl-qwen3-14b-podman-test.sh
+bash examples/terminal-bench/terminal-bench-rl-qwen3-14b-podman-test/scripts/run_terminal-bench-rl-qwen3-14b-podman-test.sh
 ```
 
 Key workflow block:
@@ -199,7 +199,7 @@ dataflow:
     workflow_cls: "terminal_bench_harbor_rl"
     extra_args:
       - "--environment-import-path"
-      - "examples.code.harbor_podman_env:PodmanEnvironment"
+      - "examples.terminal-bench.harbor_podman_env:PodmanEnvironment"
     agent_name: "terminus-2"
     model_name: "openai/Qwen/Qwen3-14B"
     max_parallel_jobs: 16

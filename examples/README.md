@@ -19,6 +19,7 @@ Browse task-specific recipes in their own subfolders:
 - `examples/math-efficient-data/`: composable data-algorithm math recipes (GRESO, dynamic sampling, buffer replay).
 - `examples/code/`: code generation training recipes.
 - `examples/code-multi-agent/`: codegen/verifier and multi-agent code workflows.
+- `examples/terminal-bench/`: Harbor-backed Terminal-Bench eval and RL recipes.
 - `examples/search/`: search-augmented agent training with local retrieval.
 - `examples/alfworld/`: AgentBench ALFWorld interactive task recipes.
 - `examples/webshop/`: AgentBench WebShop interactive task recipes.

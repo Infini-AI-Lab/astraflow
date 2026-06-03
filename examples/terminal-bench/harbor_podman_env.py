@@ -3,7 +3,7 @@
 This backend is intentionally small and targets the Harbor CodeContests layout
 used by the AstraFlow t-bench RL recipe: one Linux Dockerfile per task and no
 Docker Compose overlays. It is loaded by Harbor via
-``--environment-import-path examples.code.harbor_podman_env:PodmanEnvironment``.
+``--environment-import-path examples.terminal-bench.harbor_podman_env:PodmanEnvironment``.
 """
 
 from __future__ import annotations

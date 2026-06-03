@@ -8,7 +8,7 @@ set -euo pipefail
 #   Trainer : 4,5,6,7
 #
 # Usage:
-#   bash examples/code/terminal-bench-2-qwen3-8b/scripts/run_terminal-bench-2-qwen3-8b.sh
+#   bash examples/terminal-bench/terminal-bench-2-qwen3-8b/scripts/run_terminal-bench-2-qwen3-8b.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
