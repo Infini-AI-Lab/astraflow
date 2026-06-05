@@ -22,6 +22,7 @@ Browse task-specific recipes in their own subfolders:
 - `examples/search/`: search-augmented agent training with local retrieval.
 - `examples/alfworld/`: AgentBench ALFWorld interactive task recipes.
 - `examples/webshop/`: AgentBench WebShop interactive task recipes.
+- `examples/textcraft-recursive-agent/`: recursive multi-agent crafting (TextCraft) with spawn + shared-inventory sub-agents.
 
 ---
 **GPU Resources**

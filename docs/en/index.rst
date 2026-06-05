@@ -28,7 +28,6 @@ on distributed GPU clusters.
 
    recipes/math
    recipes/math-offline
-   recipes/math-spawn
    recipes/code
    recipes/multi-agent
    recipes/agentbench
