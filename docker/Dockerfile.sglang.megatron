@@ -1,0 +1,45 @@
+# Cache chain: basic → sglang → sglang.megatron
+# This image extends Dockerfile.sglang with the Megatron training backend's
+# heavy compiled dependencies (Transformer Engine + apex). megatron-core and
+# mbridge are already pulled in by the base install; only TE and apex need to
+# be compiled here.
+#
+# Build (from the repo root, after building astraflow:sglang — or change the
+# FROM to the published base):
+#   docker build -f docker/Dockerfile.sglang -t astraflow:sglang .
+#   docker build -f docker/Dockerfile.sglang.megatron -t astraflow:sglang-megatron .
+ARG BASE_IMAGE=astraflow:sglang
+FROM ${BASE_IMAGE}
+
+SHELL ["/bin/bash", "-lc"]
+
+# Transformer Engine (fused LayerNorm + sequence parallelism) and apex
+# (optional fused LayerNorm / Adam) complete the Megatron backend stack.
+ENV CUDA_HOME=/usr/local/cuda \
+    NVTE_FRAMEWORK=pytorch \
+    TORCH_CUDA_ARCH_LIST="8.0;8.9;9.0"
+
+# Transformer Engine. The prebuilt `transformer-engine[pytorch]` wheels link
+# libcublas.so.12 and fail to load on a CUDA 13 base (ImportError:
+# libcublas.so.12), so build TE from source against the image's CUDA 13
+# toolkit. nvidia-mathdx supplies the cuBLASDx / cuDNN frontend headers the
+# source build needs (mirrors slime's CUDA-13 recipe). On a CUDA 12 base the
+# prebuilt wheel would work, but the source build is correct for both.
+RUN uv pip install nvidia-mathdx==25.6.0 && \
+    uv pip install -v --no-build-isolation \
+      "git+https://github.com/NVIDIA/TransformerEngine.git@release_v2.13"
+
+# apex (optional perf; Megatron falls back to Torch Norm / torch Adam if absent).
+#  - apex reads APEX_CPP_EXT / APEX_CUDA_EXT env flags to select extensions.
+#  - The base image's CUDA toolkit minor version may differ from torch's CUDA;
+#    neutralize apex's strict version guard (a safe minor mismatch).
+#  - FORCE_CUDA=1 lets the CUDA extensions build without a visible GPU.
+#  - `|| echo` keeps a apex failure non-fatal (TE is the must-have).
+RUN git clone --depth 1 https://github.com/NVIDIA/apex.git /tmp/apex && \
+    cd /tmp/apex && \
+    sed -i 's/^def check_cuda_torch_binary_vs_bare_metal(cuda_dir):/def check_cuda_torch_binary_vs_bare_metal(cuda_dir):\n    return/' setup.py && \
+    FORCE_CUDA=1 APEX_CPP_EXT=1 APEX_CUDA_EXT=1 \
+      uv pip install -v --no-build-isolation . && \
+    rm -rf /tmp/apex || echo "[apex] build failed — continuing without apex (Torch Norm fallback)"
+
+CMD ["/bin/bash"]

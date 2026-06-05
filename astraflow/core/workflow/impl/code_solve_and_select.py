@@ -312,12 +312,10 @@ class CodeSolveAndSelectWorkflow(RolloutWorkflow):
     def _apply_chat_template(self, messages, *, enable_thinking=None, **kwargs):
         if enable_thinking is None:
             enable_thinking = self.enable_thinking
-        try:
-            return list(self.tokenizer.apply_chat_template(
-                messages, **kwargs, enable_thinking=enable_thinking,
-            ))
-        except TypeError:
-            return list(self.tokenizer.apply_chat_template(messages, **kwargs))
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+        return apply_chat_template_to_ids(
+            self.tokenizer, messages, enable_thinking=enable_thinking, **kwargs
+        )
 
     async def _agenerate(
         self,

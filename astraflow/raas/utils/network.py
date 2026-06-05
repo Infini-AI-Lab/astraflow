@@ -9,9 +9,12 @@ def gethostname():
 def gethostip():
     return socket.gethostbyname(socket.gethostname())
 
+_MAX_FREE_PORT = 55535
 
 def find_free_ports(
-    count: int, port_range: tuple = (1024, 65535), exclude_ports: set[int] | None = None
+    count: int,
+    port_range: tuple = (1024, _MAX_FREE_PORT),
+    exclude_ports: set[int] | None = None,
 ) -> list[int]:
     """
     Find multiple free ports within a specified range.

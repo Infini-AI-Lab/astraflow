@@ -147,12 +147,10 @@ class PlanAndSolveWorkflow(RolloutWorkflow):
     def _apply_chat_template(self, messages, tokenizer=None, **kwargs):
         """Apply chat template with optional enable_thinking support."""
         tok = tokenizer or self.tokenizer
-        try:
-            return list(tok.apply_chat_template(
-                messages, **kwargs, enable_thinking=self.enable_thinking,
-            ))
-        except TypeError:
-            return list(tok.apply_chat_template(messages, **kwargs))
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+        return apply_chat_template_to_ids(
+            tok, messages, enable_thinking=self.enable_thinking, **kwargs
+        )
 
     def _compute_transition_ids(self) -> list[int]:
         """Compute the transition tokens between planner output and solver input.

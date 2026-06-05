@@ -1,0 +1,166 @@
+# ============================================================================
+# Experiment config — AstraFlow service + Trainer (RECURSIVE AGENT on TextCraft)
+# Experiment: textcraft / qwen3-4b-recursive
+#
+# Recursive agent reproduction of platoon's design (see
+# claude-doc/recursive-agent-textcraft-plan.md):
+#   - workflow_cls: recursive_agent
+#   - TextCraft stateful env (in-process inventory dict + recipe DB)
+#   - Up to 4 sub-agents per spawn, depth <= 3
+#   - Team reward (env.evaluate()) broadcast across the trajectory tree
+#
+# Model + dataset + hyperparams match platoon where compatible:
+#   - Qwen3-4B-Instruct-2507 (no thinking)
+#   - TextCraft 1000 train / 100 val tasks (synthesized locally from
+#     bundled Minecraft recipes; no HF download needed)
+#   - LR 3e-5, β (0.9, 0.95), batch 32, group_size 8, max_steps 50
+#
+# Trainer is M2PO + full-FT + SGLang+AstraFlow (substrate differences
+# from platoon: CISPO + LoRA + Tinker).  See docs page for details.
+#
+# GPU layout (default, 8 GPUs):
+#   SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3 -> RaaS (model0 dp=4)
+#   TRAINER_MODEL0_GPUS=4,5,6,7          -> Trainer model0 (FSDP, 4 GPUs)
+# ============================================================================
+
+experiment:
+  experiment_name: astraflow-textcraft
+  trial_name: qwen3-4b-recursive
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen3-4B-Instruct-2507"      # = platoon
+  tokenizer_path: "Qwen/Qwen3-4B-Instruct-2507"  # = platoon
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  weight_transfer_strategies: full
+
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 8                # = platoon group_size (train)
+        temperature: 1.0
+        max_new_tokens: 1024        # per-turn budget for the recursive agent
+        min_new_tokens: 0
+
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+
+  # Rollout dump dir for recursive-agent sanity checking. The dataflow
+  # loader substitutes ${experiment.*} placeholders and propagates this
+  # into workflow_spec.dump_dir.
+  dump_dir: "./data-experiments/${experiment.experiment_name}/${experiment.trial_name}/rollout_dumps"
+
+  buffer:
+    size: 10000
+    replay_size: 10000
+    replay_ratio: 0
+    max_staleness: 8                # = platoon max_staleness
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.textcraft:get_textcraft_rl_dataset"
+    num_tasks: 1000                 # = platoon
+    num_val: 100
+    seed: 42
+
+  workflow_spec:
+    workflow_cls: "recursive_agent"
+    reward_fn: "textcraft_success"  # stub; recursive_agent uses env.evaluate()
+    enable_thinking: false          # = platoon
+    max_depth: 3                    # AstraFlow safety cap (platoon: unbounded)
+    max_breadth: 4                  # AstraFlow safety cap (platoon: unbounded)
+    max_steps_per_episode: 50       # = platoon max_steps
+    max_concurrent_subagents: 8     # bounds K^N RaaS queue blowup
+    delegation_reward_cap: 0.0      # = platoon _TEXTCRAFT_DELEGATION_REWARD_CAP
+    depth_level_weighting: false    # disabled: was applying 1/(depth+1) to raw reward, which gives sub-agents backwards credit. Platoon applies a different (mass-preserving inverse-traj-count) formula on advantages, not raw rewards — porting that properly is a separate change.
+    # Sampling rate for rollout dumps. 1.0 for v1 validation; for
+    # multi-hundred-step runs we lower to keep disk usage bounded.
+    dump_prob: 0.02
+
+  eval_workflows:
+    textcraft_eval:
+      workflow_cls: "recursive_agent"
+      reward_fn: "textcraft_success"
+      enable_thinking: false
+      max_depth: 3
+      max_breadth: 4
+      max_steps_per_episode: 50
+      delegation_reward_cap: 0.0
+      depth_level_weighting: false  # eval doesn't need weighting
+      dump_prob: 0.05
+      gconfig_overrides:
+        n_samples: 1                # = platoon eval group_size
+        # Stochastic eval with moderate temperature, like our math
+        # recipes. Adds some per-task noise (≈2% floor on a 100-task
+        # set) but gives a softer view of capability than greedy.
+        temperature: 0.6
+
+  eval_datasets:
+    textcraft_val:
+      dataset_fn: "astraflow.dataflow.dataset.textcraft:get_textcraft_eval_dataset"
+      num_val: 100                  # = platoon
+      num_train: 1000
+      seed: 42
+      repeat: 1
+      eval_workflow: textcraft_eval
+
+trainer_base:
+  total_train_steps: 1000            # extended from 100 to continue v20
+  train_batch_size: 512               # = platoon batch_size
+  n_samples: 8
+  engine:
+    backend: fsdp
+    data_parallel_size: 4
+
+  actor:
+    gradient_checkpointing: true
+    mb_spec:
+      max_tokens_per_mb: 32768    # match raas.context_length=32768; recursive agent rollouts can be ~20k+ tokens
+    optimizer:
+      type: adam
+      lr: 3e-6                       # = platoon
+      weight_decay: 0.0
+      beta1: 0.9                     # = platoon
+      beta2: 0.95                    # = platoon
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0         # standard PPO grad clip. v16 saw grad_norm spikes up to 18.6 destabilizing policy. (DO NOT SET TO 0 — that clips ALL grads to ZERO so the optimizer step never moves the weights.)
+    # M2PO (ours; platoon uses CISPO)
+    m2_threshold: 0.01
+    eps_clip: 100.0
+    eps_clip_higher: 100.0
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.00
+    kl_penalty_coef: 0.001          # platoon default
+    ppo_n_minibatches: 4             # = platoon num_minibatches
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: { mean_level: batch, std_level: batch }
+
+  ref:
+    path: "Qwen/Qwen3-4B-Instruct-2507"   # explicit so KL(actor||ref) is computed against frozen base
+    mb_spec:
+      max_tokens_per_mb: 32768    # match raas.context_length=32768; recursive agent rollouts can be ~20k+ tokens
+
+  recover:
+    mode: auto
+    freq_steps: 25                    # = platoon checkpoint every: 5
+
+  evaluator:
+    eval_at_start: true              # baseline at v0
+    freq_steps: 20                   # = platoon eval every: 20
+
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+
+trainer_model0:
+  model_id: model0
+  stats_logger:
+    wandb:
+      tags: ["textcraft", "recursive-agent", "qwen3-4b", "m2po", "platoon-port"]

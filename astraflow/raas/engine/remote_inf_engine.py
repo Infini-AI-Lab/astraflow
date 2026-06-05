@@ -380,7 +380,7 @@ class RemoteInfEngine:
             health_req = self.backend.get_health_check_request()
             url = f"{base_url}{health_req.endpoint}"
             response = requests.request(
-                health_req.method, url, json=health_req.payload, timeout=5
+                health_req.method, url, json=health_req.payload, timeout=20
             )
             return response.status_code == 200
         except requests.exceptions.RequestException:
@@ -748,8 +748,9 @@ class RemoteInfEngine:
         For LoRA adapters (``use_lora=True``): unloads the old adapter,
         loads the new one, then flushes the KV cache via ``/flush_cache``
         to discard stale entries computed with the old LoRA weights.
-        Requires ``LoRAAbortReleasePatch`` so that aborted requests
-        properly release their ``lora_registry`` counter.
+        Relies on sglang releasing the ``lora_registry`` counter for
+        aborted requests (fixed upstream in
+        ``TokenizerManager._handle_abort_finish_reason`` as of 0.5.12).
         """
         import time as _time
 

@@ -343,7 +343,6 @@ class SGLangConfig:
     disable_overlap_schedule: bool = False
     enable_mixed_chunk: bool = False
     enable_dp_attention: bool = False
-    enable_ep_moe: bool = False
     enable_torch_compile: bool = False
     torch_compile_max_bs: int = 32
     cuda_graph_max_bs: int | None = None
@@ -356,7 +355,10 @@ class SGLangConfig:
     num_continuous_decode_steps: int = 1
     enable_memory_saver: bool = False
     allow_auto_truncate: bool = False
-    attention_backend: str | None = "fa3"
+    # None -> omit --attention-backend so sglang auto-selects per GPU arch
+    # (fa3 on Hopper; an Ada/Ampere-compatible backend below sm_90). Hardcoding
+    # "fa3" breaks on non-Hopper GPUs (FlashAttention-3 is Hopper-only).
+    attention_backend: str | None = None
     enable_multimodal: bool = False
     sampling_backend: str | None = None
     context_length: int | None = 32768

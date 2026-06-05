@@ -234,12 +234,10 @@ class SmLgRouterWorkflow(RolloutWorkflow):
 
     def _apply_chat_template(self, messages, **kwargs):
         """Apply chat template with optional enable_thinking support."""
-        try:
-            return list(self.tokenizer.apply_chat_template(
-                messages, **kwargs, enable_thinking=self.enable_thinking,
-            ))
-        except TypeError:
-            return list(self.tokenizer.apply_chat_template(messages, **kwargs))
+        from astraflow.core.workflow.utils.hf_utils import apply_chat_template_to_ids
+        return apply_chat_template_to_ids(
+            self.tokenizer, messages, enable_thinking=self.enable_thinking, **kwargs
+        )
 
     async def _generate(
         self,
