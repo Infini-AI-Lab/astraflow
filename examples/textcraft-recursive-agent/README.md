@@ -20,7 +20,7 @@ Validation accuracy climbs from **~41%** to **~80%** over training:
 </p>
 
 For more detailed info (design, how it works, and full settings), see the
-[docs page](https://Infini-AI-Lab.github.io/astraflow/docs/en/recipes/textcraft-recursive.html).
+[docs page](https://Infini-AI-Lab.github.io/astraflow/docs/recipes/textcraft-recursive.html).
 
 ## Run
 
