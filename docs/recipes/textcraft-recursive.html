@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>TextCraft (Recursive Agent) - AstraFlow 0.1.1 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="Search" href="search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="TextCraft (Recursive Agent)"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>AstraFlow</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/overview.html">System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/dataflow.html">Dataflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/raas.html">RaaS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/megatron-weight-sync.html">Megatron Weight Synchronization</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="math-offline.html">Math (Offline)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi-agent.html">Multi-Agent (Math)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agentbench.html">AgentBench</a></li>
+<li class="toctree-l1"><a class="reference internal" href="search.html">Search</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TextCraft (Recursive Agent)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#results">Results</a></li>
+<li><a class="reference internal" href="#run">Run</a></li>
+<li><a class="reference internal" href="#how-it-works">How it works</a><ul>
+<li><a class="reference internal" href="#tool-call-protocol">Tool-call protocol</a></li>
+<li><a class="reference internal" href="#stateful-environment">Stateful environment</a></li>
+<li><a class="reference internal" href="#spawning">Spawning</a></li>
+<li><a class="reference internal" href="#aggregation-finish-message-only">Aggregation &#8212; finish-message only</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#settings">Settings</a></li>
+<li><a class="reference internal" href="#reference">Reference</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">AstraFlow</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">TextCraft (Recursive Agent)</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="textcraft-recursive-agent">
+<h1>TextCraft (Recursive Agent)<a class="headerlink" href="#textcraft-recursive-agent" title="Link to this heading">¶</a></h1>
+<p>A multi-turn recursive-agent recipe on TextCraft, reproducing the design
+from <a class="reference external" href="https://arxiv.org/abs/2605.06639"><em>Recursive Agent Optimization</em></a>
+(Gandhi et al., 2026). The agent
+acts in a stateful crafting environment (Minecraft-style recipes +
+inventory) and can recursively spawn up to 4 sub-agents in parallel per
+turn — each shares the parent’s inventory by reference, so their work
+mutates the same state.</p>
+<a class="reference internal image-reference" href="../_images/textcraft-spawn-dynamic.gif"><img alt="A root TextCraft agent recursively spawning sub-agents that share inventory and report back via finish messages" class="align-center" src="../_images/textcraft-spawn-dynamic.gif" style="width: 90%;" />
+</a>
+<p><strong>Recipe</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/textcraft-recursive-agent/qwen3-4b-recursive"><code class="docutils literal notranslate"><span class="pre">examples/textcraft-recursive-agent/qwen3-4b-recursive/</span></code></a></p>
+<p><strong>Workflow class</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/astraflow/core/workflow/impl/textcraft/workflow.py"><code class="docutils literal notranslate"><span class="pre">astraflow/core/workflow/impl/textcraft/workflow.py</span></code></a> — registered as <code class="docutils literal notranslate"><span class="pre">recursive_agent</span></code>.</p>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">¶</a></h2>
+<p>Validation accuracy (<code class="docutils literal notranslate"><span class="pre">eval-avg/textcraft_val/avg&#64;1</span></code>) over a 500-step run.
+Starting from the base Qwen3-4B-Instruct-2507, the recursive agent climbs
+from <strong>~41%</strong> at the first eval (step 20) to <strong>~80%</strong> by step 500, peaking
+at <strong>85%</strong> around step 440 — the team-reward broadcast and shared-inventory
+spawning are enough to learn the multi-turn crafting policy with no SFT
+bootstrap.</p>
+<a class="reference internal image-reference" href="../_images/textcraft-val-accuracy.png"><img alt="TextCraft validation accuracy (avg&#64;1) rising from 41% to ~80% over 500 training steps" class="align-center" src="../_images/textcraft-val-accuracy.png" style="width: 80%;" />
+</a>
+</section>
+<section id="run">
+<h2>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h2>
+<p>One-time prep (synthesizes 1000 train + 100 val tasks locally from the
+bundled recipe DB; no network required):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Generated automatically on first launch; or force-regenerate:</span>
+</span><span data-line="2">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from astraflow.dataflow.dataset.textcraft import download_dataset; download_dataset()&quot;</span>
+</span></pre></div>
+</div>
+<p>Pre-fetch the model (one-time, ~8 GB):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">huggingface-cli<span class="w"> </span>download<span class="w"> </span>Qwen/Qwen3-4B-Instruct-2507
+</span></pre></div>
+</div>
+<p>Run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">bash<span class="w"> </span>examples/textcraft-recursive-agent/qwen3-4b-recursive/scripts/run_qwen3-4b-recursive.sh
+</span></pre></div>
+</div>
+</section>
+<section id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
+<section id="tool-call-protocol">
+<h3>Tool-call protocol<a class="headerlink" href="#tool-call-protocol" title="Link to this heading">¶</a></h3>
+<p>Each turn the model emits <strong>exactly one</strong> action block:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">&lt;</span><span class="n">action</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;get_info&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;stick&quot;</span><span class="p">,</span> <span class="s2">&quot;oak_planks&quot;</span><span class="p">]}</span><span class="o">&lt;/</span><span class="n">action</span><span class="o">&gt;</span>
+</span><span data-line="2"><span class="o">&lt;</span><span class="n">action</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;view_inventory&quot;</span><span class="o">&gt;</span><span class="p">{}</span><span class="o">&lt;/</span><span class="n">action</span><span class="o">&gt;</span>
+</span><span data-line="3"><span class="o">&lt;</span><span class="n">action</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;craft&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="s2">&quot;ingredients&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;oak_log&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;oak_planks&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">]}</span><span class="o">&lt;/</span><span class="n">action</span><span class="o">&gt;</span>
+</span><span data-line="4"><span class="o">&lt;</span><span class="n">action</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;spawn&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="s2">&quot;subtasks&quot;</span><span class="p">:</span> <span class="p">[</span>
+</span><span data-line="5">  <span class="p">{</span><span class="s2">&quot;targets&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;oak_planks&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">},</span> <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+</span><span data-line="6">  <span class="p">{</span><span class="s2">&quot;targets&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;stick&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span> <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+</span><span data-line="7"><span class="p">]}</span><span class="o">&lt;/</span><span class="n">action</span><span class="o">&gt;</span>
+</span><span data-line="8"><span class="o">&lt;</span><span class="n">action</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;finish&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;crafted 4 wooden_pickaxe&quot;</span><span class="p">}</span><span class="o">&lt;/</span><span class="n">action</span><span class="o">&gt;</span>
+</span></pre></div>
+</div>
+<p>We use an XML/JSON action surface (rather than executable code) because
+SGLang runs with <code class="docutils literal notranslate"><span class="pre">--skip-tokenizer-init</span></code> (can’t do string-stop) and we
+want zero sandbox infrastructure. Base Qwen3 reads the format from the
+system prompt with no SFT bootstrap needed.</p>
+</section>
+<section id="stateful-environment">
+<h3>Stateful environment<a class="headerlink" href="#stateful-environment" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/astraflow/core/workflow/impl/textcraft/env.py"><code class="docutils literal notranslate"><span class="pre">TextCraftEnv</span></code></a>
+holds a mutable <code class="docutils literal notranslate"><span class="pre">inventory:</span> <span class="pre">dict[str,</span> <span class="pre">int]</span></code> and a shared read-only
+recipe database (~860 Minecraft recipes bundled in
+<code class="docutils literal notranslate"><span class="pre">astraflow/core/workflow/impl/textcraft/recipes/</span></code>).</p>
+<p><code class="docutils literal notranslate"><span class="pre">env.fork(child_task)</span></code> returns a child env whose <code class="docutils literal notranslate"><span class="pre">inventory</span></code> is <strong>the
+same dict object</strong> as the parent’s. When a sub-agent calls <code class="docutils literal notranslate"><span class="pre">craft</span></code>, the
+mutation is visible to the parent. Single asyncio loop → no race.</p>
+</section>
+<section id="spawning">
+<h3>Spawning<a class="headerlink" href="#spawning" title="Link to this heading">¶</a></h3>
+<p>A <code class="docutils literal notranslate"><span class="pre">&lt;action</span> <span class="pre">type=&quot;spawn&quot;&gt;</span></code> block runs all subtasks in parallel via
+<code class="docutils literal notranslate"><span class="pre">asyncio.gather</span></code>, each as a full sub-episode with its own forked env
+and trajectory. Up to 4 children per spawn, up to depth 3 (root + 2
+levels of nesting). Sub-agents share the root’s step budget.</p>
+</section>
+<section id="aggregation-finish-message-only">
+<h3>Aggregation — finish-message only<a class="headerlink" href="#aggregation-finish-message-only" title="Link to this heading">¶</a></h3>
+<p>The parent’s view of a spawn is bounded — only each child’s
+<code class="docutils literal notranslate"><span class="pre">finish_message</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">&lt;</span><span class="n">spawn_result</span><span class="o">&gt;</span>
+</span><span data-line="2"><span class="o">&lt;</span><span class="n">sub_agent_0</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;craft 16 oak_planks&quot;</span><span class="o">&gt;</span><span class="n">crafted</span> <span class="mi">16</span> <span class="n">oak_planks</span><span class="o">&lt;/</span><span class="n">sub_agent_0</span><span class="o">&gt;</span>
+</span><span data-line="3"><span class="o">&lt;</span><span class="n">sub_agent_1</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;craft 8 stick&quot;</span><span class="o">&gt;</span><span class="n">crafted</span> <span class="mi">8</span> <span class="n">stick</span><span class="o">&lt;/</span><span class="n">sub_agent_1</span><span class="o">&gt;</span>
+</span><span data-line="4"><span class="o">&lt;/</span><span class="n">spawn_result</span><span class="o">&gt;</span>
+</span></pre></div>
+</div>
+<p>The sub-agent’s intermediate turns (other <code class="docutils literal notranslate"><span class="pre">craft</span></code> / <code class="docutils literal notranslate"><span class="pre">get_info</span></code> calls)
+are NOT shown to the parent. This forces sub-agents to summarize their
+work in <code class="docutils literal notranslate"><span class="pre">finish</span></code> messages and bounds context growth across recursion.</p>
+</section>
+</section>
+<section id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Model</p></td>
+<td><p>Qwen/Qwen3-4B-Instruct-2507</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">enable_thinking</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Algorithm</p></td>
+<td><p>M2PO</p></td>
+</tr>
+<tr class="row-odd"><td><p>Fine-tuning</p></td>
+<td><p>Full-FT</p></td>
+</tr>
+<tr class="row-even"><td><p>Inference backend</p></td>
+<td><p>SGLang + RaaS + AstraFlow</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tool-call protocol</p></td>
+<td><p>XML / JSON</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">group_size</span></code> (n_samples)</p></td>
+<td><p>8 train / 1 eval</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">train_batch_size</span></code></p></td>
+<td><p>512</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_steps_per_episode</span></code></p></td>
+<td><p>50</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lr</span></code></p></td>
+<td><p>3e-6</p></td>
+</tr>
+<tr class="row-even"><td><p>Adam (β₁, β₂)</p></td>
+<td><p>(0.9, 0.95)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">grad_clip</span></code></p></td>
+<td><p>0 (off)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_staleness</span></code></p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">total_train_steps</span></code></p></td>
+<td><p>1000</p></td>
+</tr>
+<tr class="row-even"><td><p>Eval cadence</p></td>
+<td><p>every 20 steps</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_depth</span></code></p></td>
+<td><p>3 (safety cap)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">max_breadth</span></code></p></td>
+<td><p>4 (safety cap)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_concurrent_subagents</span></code></p></td>
+<td><p>8 (bounds K^N RaaS queue blowup)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">delegation_reward_cap</span></code></p></td>
+<td><p>0.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">depth_level_weighting</span></code></p></td>
+<td><p>false</p></td>
+</tr>
+<tr class="row-even"><td><p>Dataset</p></td>
+<td><p>TextCraft 1000 train / 100 val (original Minecraft recipes)</p></td>
+</tr>
+<tr class="row-odd"><td><p>SGLang context_length</p></td>
+<td><p>32768 (bumped from math recipe’s 16k for recursion overhead)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">¶</a></h2>
+<p>Gandhi, Chakraborty, Wang, Kumar, Neubig. <em>Recursive Agent Optimization.</em>
+arXiv:2605.06639, 2026. <a class="reference external" href="https://arxiv.org/abs/2605.06639">https://arxiv.org/abs/2605.06639</a></p>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="search.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Search</div></div>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025-2026, AstraFlow Team</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

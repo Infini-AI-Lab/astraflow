@@ -2,14 +2,14 @@
 <html lang="en" data-accent-color="violet" data-content_root="./">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="get-started/installation.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>AstraFlow 0.1.1 documentation</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="get-started/installation.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=9454f7d5" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=338524fc" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=7f3e9ba4" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
 }
 </style>
     
-  <meta property="og:type" content="website"/><meta property="og:title" content="AstraFlow v0.1.0 Documentation"/>
+  <meta property="og:type" content="website"/><meta property="og:title" content="AstraFlow v0.1.1 Documentation"/>
     <meta name="twitter:card" content="summary"/>
   </head>
 <body><div class="sy-head">
@@ -72,6 +72,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1"><a class="reference internal" href="architecture/raas.html">RaaS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture/trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture/weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture/megatron-weight-sync.html">Megatron Weight Synchronization</a></li>
 </ul>
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
 <ul>
@@ -81,6 +82,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1"><a class="reference internal" href="recipes/multi-agent.html">Multi-Agent (Math)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recipes/agentbench.html">AgentBench</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recipes/search.html">Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes/textcraft-recursive.html">TextCraft (Recursive Agent)</a></li>
 </ul>
 
         </div>
@@ -108,7 +110,7 @@ data-aria-dark="Switch to auto color mode">
         <span>/</span>
         <meta itemprop="position" content="1" />
       </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-        <strong itemprop="name">AstraFlow v0.1.0 Documentation</strong>
+        <strong itemprop="name">AstraFlow v0.1.1 Documentation</strong>
         <meta itemprop="position" content="2" />
       </li></ol>
     <div class="xl:hidden ml-1">
@@ -121,8 +123,8 @@ data-aria-dark="Switch to auto color mode">
 </div><div class="flex flex-col break-words justify-between">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
-          <section id="astraflow-v0-1-0-documentation">
-<h1>AstraFlow v0.1.0 Documentation<a class="headerlink" href="#astraflow-v0-1-0-documentation" title="Link to this heading">¶</a></h1>
+          <section id="astraflow-v0-1-1-documentation">
+<h1>AstraFlow v0.1.1 Documentation<a class="headerlink" href="#astraflow-v0-1-1-documentation" title="Link to this heading">¶</a></h1>
 <p>AstraFlow is an asynchronous RL training system for large reasoning and agentic models
 on distributed GPU clusters.</p>
 <div class="toctree-wrapper compound">
@@ -140,6 +142,7 @@ on distributed GPU clusters.</p>
 <li class="toctree-l1"><a class="reference internal" href="architecture/raas.html">RaaS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture/trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture/weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture/megatron-weight-sync.html">Megatron Weight Synchronization</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -151,6 +154,7 @@ on distributed GPU clusters.</p>
 <li class="toctree-l1"><a class="reference internal" href="recipes/multi-agent.html">Multi-Agent (Math)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recipes/agentbench.html">AgentBench</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recipes/search.html">Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="recipes/textcraft-recursive.html">TextCraft (Recursive Agent)</a></li>
 </ul>
 </div>
 </section>
@@ -192,7 +196,7 @@ on distributed GPU clusters.</p>
     </div>
   </div>
 </footer>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/documentation_options.js?v=a58bc63e"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>

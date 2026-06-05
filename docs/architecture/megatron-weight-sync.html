@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Megatron Weight Synchronization - AstraFlow 0.1.1 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Math" href="../recipes/math.html" /><link rel="prev" title="WeightManager" href="weight-manager.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Megatron Weight Synchronization"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>AstraFlow</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get-started/quickstart.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dataflow.html">Dataflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="raas.html">RaaS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Megatron Weight Synchronization</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/math-offline.html">Math (Offline)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent (Math)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/textcraft-recursive.html">TextCraft (Recursive Agent)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#the-problem">The problem</a></li>
+<li><a class="reference internal" href="#design-invariant">Design invariant</a></li>
+<li><a class="reference internal" href="#the-per-tensor-generator">The per-tensor generator</a></li>
+<li><a class="reference internal" href="#how-it-plugs-into-weightmanager">How it plugs into WeightManager</a></li>
+<li><a class="reference internal" href="#rank-participation">Rank participation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#invariants-checklist-for-reviewers">Invariants checklist (for reviewers)</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">AstraFlow</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Megatron Weight Synchronization</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="megatron-weight-synchronization">
+<h1>Megatron Weight Synchronization<a class="headerlink" href="#megatron-weight-synchronization" title="Link to this heading">¶</a></h1>
+<p>This page describes how the Megatron-LM training backend exports its
+weights to RaaS, and the invariants that keep the <strong>sparse / delta</strong>
+weight-update path correct under tensor (TP), pipeline (PP), expert
+(EP), expert-tensor (ETP), virtual-pipeline (VPP), and context (CP)
+parallelism.</p>
+<p>It complements <a class="reference internal" href="weight-manager.html"><span class="std std-doc">WeightManager</span></a> and
+<a class="reference internal" href="delta-weight-transfer.html"><span class="std std-doc">Delta Weight Transfer</span></a>, which describe the
+backend-agnostic transport. <strong>Read those first.</strong></p>
+<section id="the-problem">
+<h2>The problem<a class="headerlink" href="#the-problem" title="Link to this heading">¶</a></h2>
+<p>Megatron stores each parameter sharded across TP/PP/EP ranks, fused
+(QKV in one <code class="docutils literal notranslate"><span class="pre">linear_qkv</span></code>, gate+up in one <code class="docutils literal notranslate"><span class="pre">linear_fc1</span></code>), and vocab-padded
+— a layout that bears no resemblance to the HuggingFace checkpoint names
+and byte layout that SGLang / vLLM expect (<code class="docutils literal notranslate"><span class="pre">model.layers.N.self_attn.q_proj.weight</span></code>,
+…). RaaS only understands HF layout.</p>
+<p>The transport layer (<code class="docutils literal notranslate"><span class="pre">WeightManager</span></code> + sender agent + RaaS receiver) is
+deliberately <strong>backend-agnostic</strong>: it moves an opaque, fixed-order CPU
+byte buffer and, in delta mode, ships only the bytes that changed
+between two versions of that buffer. For this to be correct, the bytes
+in the buffer <strong>must be in the same layout that RaaS applies them in</strong>.</p>
+<p>For FSDP this is automatic — the buffer already holds HF-layout tensors.
+For Megatron it is the central design constraint.</p>
+</section>
+<section id="design-invariant">
+<h2>Design invariant<a class="headerlink" href="#design-invariant" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><p><strong>The trainer always writes HF-named, HF-layout, full-model tensors into
+the transfer buffer. Sparsity / delta is always computed in HF byte
+space, over a double buffer. The RaaS receive path never sees a
+backend-specific layout.</strong></p>
+</div></blockquote>
+<p>Concretely, the Megatron backend reconstructs the global model from its
+sharded layout and converts it to HF on the GPU, <strong>before</strong> anything
+reaches the transfer buffer. The sender agent and RaaS receiver then
+treat Megatron exactly like FSDP.</p>
+<p>This makes the delta correct <strong>by construction</strong>: both the old and new
+buffer halves hold HF bytes, so a bytewise diff produces indices that
+the receiver can scatter directly into its HF buffer.</p>
+<blockquote>
+<div><p>⚠️ <strong>Historical bug (fixed by this design).</strong> An earlier Megatron path
+wrote <em>raw mcore-layout shards</em> into the buffer and reassembled to HF in
+a separate, single-buffered region in the sender — but computed the
+delta over the <em>mcore-layout</em> buffer. mcore byte offsets ≠ HF byte
+offsets (fused QKV vs split, fused gate/up vs split, vocab padding), so
+applying an mcore-space delta to RaaS’s HF-space base silently corrupted
+weights. Always diff in HF space.</p>
+</div></blockquote>
+</section>
+<section id="the-per-tensor-generator">
+<h2>The per-tensor generator<a class="headerlink" href="#the-per-tensor-generator" title="Link to this heading">¶</a></h2>
+<p>The reconstruction is a <strong>streaming generator</strong> that yields
+<code class="docutils literal notranslate"><span class="pre">(hf_name,</span> <span class="pre">full_unsharded_cpu_tensor)</span></code> one bucket at a time. Only one
+bucket of fully-gathered tensors is alive at any moment, so a 100B / MoE
+model never materializes in full (no OOM).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># astraflow/train_worker/models/mcore/weight_export.py</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">export_hf_named_params</span><span class="p">(</span>
+</span><span data-line="3">    <span class="n">models</span><span class="p">,</span>            <span class="c1"># _MegatronModelList: VPP chunks, DDP-wrapped</span>
+</span><span data-line="4">    <span class="n">tf_config</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">hf_config</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">bucket_bytes</span><span class="p">,</span>
+</span><span data-line="7"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
+</span><span data-line="8"><span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield (hf_name, full HF-layout CPU tensor) bucket by bucket.&quot;&quot;&quot;</span>
+</span></pre></div>
+</div>
+<p>Per parameter, in order, it performs the minimal collectives:</p>
+<ol class="arabic simple">
+<li><p><strong>Naming + PP/EP offsets</strong> — <code class="docutils literal notranslate"><span class="pre">utils.megatron.get_named_parameters</span></code>
+already maps local mcore names to <em>global</em> names (adds the PP layer
+offset and EP expert offset), iterating VPP chunks.</p></li>
+<li><p><strong>PP gather</strong> — <code class="docutils literal notranslate"><span class="pre">all_gather_object</span></code> of metadata across the pipeline
+group, then broadcast each owner stage’s tensor so the DP-head rank
+set collectively holds every global parameter. Embeddings live on the
+first stage, <code class="docutils literal notranslate"><span class="pre">output_layer</span></code> / final norm on the last.</p></li>
+<li><p><strong>TP / ETP gather</strong> — <code class="docutils literal notranslate"><span class="pre">utils.megatron.all_gather_param</span></code> all-gathers
+the shards along <code class="docutils literal notranslate"><span class="pre">partition_dim</span></code> and concatenates, handling the GLU
+<code class="docutils literal notranslate"><span class="pre">linear_fc1</span></code> stride-2 rechunk and the grouped-MoE <code class="docutils literal notranslate"><span class="pre">linear_fc2</span></code>
+<code class="docutils literal notranslate"><span class="pre">partition_dim</span></code> 0→1 quirk.</p></li>
+<li><p><strong>EP gather</strong> — for <code class="docutils literal notranslate"><span class="pre">.experts.</span></code> params, all-gather across the expert
+group and rewrite local→global expert id.</p></li>
+<li><p><strong>mcore → HF convert</strong> — <code class="docutils literal notranslate"><span class="pre">utils.megatron.convert_to_hf</span></code> splits QKV
+(GQA-aware), splits gate/up, renames, and drops vocab padding.</p></li>
+<li><p><strong>Bucket + stream</strong> — group converted tensors until <code class="docutils literal notranslate"><span class="pre">bucket_bytes</span></code>
+(measured post-gather), <code class="docutils literal notranslate"><span class="pre">yield</span></code>, then free before the next bucket.</p></li>
+</ol>
+<p>This is the same abstraction verl (<code class="docutils literal notranslate"><span class="pre">per_tensor_generator</span></code>) and slime
+(<code class="docutils literal notranslate"><span class="pre">HfWeightIteratorDirect</span></code>) converged on; the difference is the consumer.</p>
+</section>
+<section id="how-it-plugs-into-weightmanager">
+<h2>How it plugs into WeightManager<a class="headerlink" href="#how-it-plugs-into-weightmanager" title="Link to this heading">¶</a></h2>
+<p>verl / slime push the generator’s tensors GPU→GPU (NCCL / CUDA-IPC) into
+the inference engine. AstraFlow instead <strong>writes them into the CPU
+double buffer</strong> that the sender agent TCP-pulls:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">optimizer.step()
+</span><span data-line="2">   │
+</span><span data-line="3">   ▼
+</span><span data-line="4">WeightManager.offload(export_hf_named_params(...), version, ...)
+</span><span data-line="5">   │   DP-head ranks write each (hf_name, tensor) into the INACTIVE
+</span><span data-line="6">   │   half of the HF double buffer, in fixed order; non-heads barrier.
+</span><span data-line="7">   ▼
+</span><span data-line="8">notify_buffer_ready  ──►  sender swaps active/inactive
+</span><span data-line="9">   │
+</span><span data-line="10">   ▼                       sender._compute_delta() diffs HF-inactive vs
+</span><span data-line="11">   │                       HF-active  → indices in HF space  ✓
+</span><span data-line="12">   ▼
+</span><span data-line="13">RaaS pulls full or delta (unchanged from FSDP)
+</span></pre></div>
+</div>
+<p>Buffer sizing comes from <code class="docutils literal notranslate"><span class="pre">MegatronEngine.get_hf_weight_metadata()</span></code> — a
+metadata-only dry run of the generator that returns the ordered
+<code class="docutils literal notranslate"><span class="pre">[(hf_name,</span> <span class="pre">shape,</span> <span class="pre">dtype),</span> <span class="pre">…]</span></code> list. This is the same <code class="docutils literal notranslate"><span class="pre">tensors_meta</span></code>
+the RaaS receiver uses to pre-allocate, so both ends agree on layout and
+order.</p>
+</section>
+<section id="rank-participation">
+<h2>Rank participation<a class="headerlink" href="#rank-participation" title="Link to this heading">¶</a></h2>
+<p>Only <strong>data-parallel head</strong> ranks write the buffer (one writer per
+model-parallel group), mirroring FSDP’s primary-replica rule. The
+TP/PP/EP gathers happen via collectives <em>before</em> the write, so every
+DP-head holds the full HF model and writes it once. Other ranks only
+participate in the gathers and the post-write barrier.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nt">trainer</span><span class="p">:</span>
+</span><span data-line="2"><span class="w">  </span><span class="nt">engine</span><span class="p">:</span>
+</span><span data-line="3"><span class="w">    </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">megatron</span>
+</span><span data-line="4"><span class="w">    </span><span class="nt">tensor_parallel_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+</span><span data-line="5"><span class="w">    </span><span class="nt">pipeline_parallel_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</span><span data-line="6"><span class="w">    </span><span class="nt">expert_parallel_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</span><span data-line="7"><span class="w">  </span><span class="nt">actor</span><span class="p">:</span>
+</span><span data-line="8"><span class="w">    </span><span class="nt">megatron</span><span class="p">:</span>
+</span><span data-line="9"><span class="w">      </span><span class="nt">weight_export_bucket_bytes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">536870912</span><span class="w">   </span><span class="c1"># 512 MiB gather bucket</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">backend:</span> <span class="pre">megatron</span></code> is auto-selected when <code class="docutils literal notranslate"><span class="pre">pipeline_parallel_size</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>
+or <code class="docutils literal notranslate"><span class="pre">expert_parallel_size</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>.</p>
+</section>
+<section id="invariants-checklist-for-reviewers">
+<h2>Invariants checklist (for reviewers)<a class="headerlink" href="#invariants-checklist-for-reviewers" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Trainer hands WeightManager <strong>HF-named, HF-layout, full-model</strong>
+tensors. Backend differences end at <code class="docutils literal notranslate"><span class="pre">export_hf_named_params</span></code>.</p></li>
+<li><p>Sparsity / delta is computed in <strong>HF byte space</strong>, on a double buffer.</p></li>
+<li><p><strong>One bucket</strong> of gathered tensors alive at a time — never
+<code class="docutils literal notranslate"><span class="pre">full_tensor()</span></code> the whole model.</p></li>
+<li><p>Only <strong>DP-head</strong> ranks write the buffer.</p></li>
+<li><p>The <strong>RaaS receive path is unchanged</strong> between FSDP and Megatron.</p></li>
+</ol>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="weight-manager.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">WeightManager</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="../recipes/math.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Math</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025-2026, AstraFlow Team</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

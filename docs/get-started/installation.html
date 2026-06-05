@@ -2,14 +2,14 @@
 <html lang="en" data-accent-color="violet" data-content_root="../">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation - AstraFlow 0.1.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quick Start" href="quickstart.html" /><link rel="prev" title="AstraFlow v0.1.0 Documentation" href="../index.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation - AstraFlow 0.1.1 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quick Start" href="quickstart.html" /><link rel="prev" title="AstraFlow v0.1.1 Documentation" href="../index.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
     <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=338524fc" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -72,6 +72,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1"><a class="reference internal" href="../architecture/raas.html">RaaS</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/trainer.html">Trainer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture/weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/megatron-weight-sync.html">Megatron Weight Synchronization</a></li>
 </ul>
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
 <ul>
@@ -81,6 +82,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent (Math)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/textcraft-recursive.html">TextCraft (Recursive Agent)</a></li>
 </ul>
 
         </div>
@@ -103,7 +105,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#sglang-inference-backend">SGLang (inference backend)</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#step-5-verify-installation">Step 5: Verify installation</a></li>
+<li><a class="reference internal" href="#step-5-optional-install-the-megatron-training-backend">Step 5 (optional): Install the Megatron training backend</a></li>
+<li><a class="reference internal" href="#step-6-verify-installation">Step 6: Verify installation</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#option-b-docker">Option B: Docker</a></li>
@@ -218,8 +221,66 @@ for its own attention backend — you do not install that one yourself.</p>
 </div>
 </section>
 </section>
-<section id="step-5-verify-installation">
-<h3>Step 5: Verify installation<a class="headerlink" href="#step-5-verify-installation" title="Link to this heading">¶</a></h3>
+<section id="step-5-optional-install-the-megatron-training-backend">
+<h3>Step 5 (optional): Install the Megatron training backend<a class="headerlink" href="#step-5-optional-install-the-megatron-training-backend" title="Link to this heading">¶</a></h3>
+<p>Only needed if you want to train with the <strong>Megatron-LM backend</strong> (tensor /
+pipeline / expert parallelism, MoE models). The default <strong>FSDP</strong> backend and
+all inference need nothing here — skip to Step 6.</p>
+<blockquote>
+<div><p><strong>Prefer Docker?</strong> Skip this entire step with the pre-built
+<code class="docutils literal notranslate"><span class="pre">astraflowai/astraflow:v0.1.1.megatron</span></code> image (see Option B below), which already
+bundles Transformer Engine + apex.</p>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">megatron-core</span></code> and <code class="docutils literal notranslate"><span class="pre">mbridge</span></code> are already installed by Step 3. The Megatron
+backend additionally uses <strong>Transformer Engine</strong> (fused LayerNorm + sequence
+parallelism) and benefits from <strong>apex</strong> (fused LayerNorm / Adam). Both are
+compiled from source against the installed PyTorch:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># nvcc must be on PATH (same CUDA toolchain as the flash-attn build above)</span>
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">CUDA_HOME</span><span class="o">=</span>/usr/local/cuda-13.0
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUDA_HOME</span><span class="s2">/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+</span><span data-line="4"><span class="nb">export</span><span class="w"> </span><span class="nv">NVTE_FRAMEWORK</span><span class="o">=</span>pytorch
+</span><span data-line="5">
+</span><span data-line="6"><span class="c1"># Transformer Engine (required for the Megatron backend with TP/SP).</span>
+</span><span data-line="7"><span class="c1"># The prebuilt transformer-engine wheels link libcublas.so.12 and do NOT load</span>
+</span><span data-line="8"><span class="c1"># on a CUDA 13 install (ImportError: libcublas.so.12). Build TE from source</span>
+</span><span data-line="9"><span class="c1"># against your CUDA 13 toolkit instead; nvidia-mathdx provides the build-time</span>
+</span><span data-line="10"><span class="c1"># cuBLASDx / cuDNN frontend headers.</span>
+</span><span data-line="11">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>nvidia-mathdx<span class="o">==</span><span class="m">25</span>.6.0
+</span><span data-line="12">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-v<span class="w"> </span>--no-build-isolation<span class="w"> </span><span class="se">\</span>
+</span><span data-line="13"><span class="w">  </span><span class="s2">&quot;git+https://github.com/NVIDIA/TransformerEngine.git@release_v2.13&quot;</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="c1"># apex (optional — Megatron falls back to Torch Norm / torch Adam if absent).</span>
+</span><span data-line="16"><span class="c1"># APEX_CPP_EXT/APEX_CUDA_EXT select the fused kernels; FORCE_CUDA=1 builds them</span>
+</span><span data-line="17"><span class="c1"># without a visible GPU.</span>
+</span><span data-line="18">git<span class="w"> </span>clone<span class="w"> </span>--depth<span class="w"> </span><span class="m">1</span><span class="w"> </span>https://github.com/NVIDIA/apex.git<span class="w"> </span>/tmp/apex
+</span><span data-line="19"><span class="nb">cd</span><span class="w"> </span>/tmp/apex
+</span><span data-line="20"><span class="nv">FORCE_CUDA</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">APEX_CPP_EXT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="nv">APEX_CUDA_EXT</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+</span><span data-line="21"><span class="w">  </span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-v<span class="w"> </span>--no-build-isolation<span class="w"> </span>.
+</span><span data-line="22"><span class="nb">cd</span><span class="w"> </span>-<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/tmp/apex
+</span></pre></div>
+</div>
+<blockquote>
+<div><p>If apex’s build complains about a CUDA toolkit vs. PyTorch CUDA minor-version
+mismatch, the difference is safe to ignore — comment out the
+<code class="docutils literal notranslate"><span class="pre">check_cuda_torch_binary_vs_bare_metal</span></code> guard in apex’s <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>, or just
+skip apex (Transformer Engine is the only hard requirement). The
+<code class="docutils literal notranslate"><span class="pre">docker/Dockerfile.sglang.megatron</span></code> image automates all of this.</p>
+</div></blockquote>
+<p>Verify the Megatron extras:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span data-line="2"><span class="s2">import transformer_engine.pytorch  # noqa: F401</span>
+</span><span data-line="3"><span class="s2">print(&#39;transformer-engine: OK&#39;)</span>
+</span><span data-line="4"><span class="s2">try:</span>
+</span><span data-line="5"><span class="s2">    from apex.normalization import FusedLayerNorm  # noqa: F401</span>
+</span><span data-line="6"><span class="s2">    print(&#39;apex: OK&#39;)</span>
+</span><span data-line="7"><span class="s2">except ImportError:</span>
+</span><span data-line="8"><span class="s2">    print(&#39;apex: not installed (Torch Norm fallback)&#39;)</span>
+</span><span data-line="9"><span class="s2">&quot;</span>
+</span></pre></div>
+</div>
+</section>
+<section id="step-6-verify-installation">
+<h3>Step 6: Verify installation<a class="headerlink" href="#step-6-verify-installation" title="Link to this heading">¶</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
 </span><span data-line="2"><span class="s2">import astraflow, torch, transformers</span>
 </span><span data-line="3"><span class="s2">print(f&#39;astraflow:    {astraflow.version.__version__}&#39;)</span>
@@ -240,9 +301,15 @@ for its own attention backend — you do not install that one yourself.</p>
 </section>
 <section id="option-b-docker">
 <h2>Option B: Docker<a class="headerlink" href="#option-b-docker" title="Link to this heading">¶</a></h2>
-<p>A pre-built image is published on Docker Hub — it skips the from-source steps above
-entirely. Requires the NVIDIA Container Toolkit so <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> works.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.0
+<p>Pre-built images are published on Docker Hub — they skip the from-source steps above
+entirely. Requires the NVIDIA Container Toolkit so <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> works. Choose the image
+by <strong>training backend</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># FSDP backend (default) — covers most recipes</span>
+</span><span data-line="2">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">65536</span>:65536<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.1
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># Megatron-LM backend — adds Transformer Engine + apex (Step 5 above, pre-built in).</span>
+</span><span data-line="5"><span class="c1"># Use this for `backend: megatron` (TP/PP/EP, MoE, large models).</span>
+</span><span data-line="6">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">65536</span>:65536<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.1.megatron
 </span></pre></div>
 </div>
 <blockquote>
@@ -256,7 +323,13 @@ recipes. Size <code class="docutils literal notranslate"><span class="pre">/dev/
 reservation, so it only consumes host RAM as actually used — set it to a value
 comfortably below host RAM.</p>
 </div></blockquote>
-<p>The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (<code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>) for
+<blockquote>
+<div><p><strong>Note on <code class="docutils literal notranslate"><span class="pre">--ulimit</span> <span class="pre">nofile</span></code>:</strong> a recipe run drives many concurrent rollouts whose
+reward workers open a large number of file descriptors. The container’s default
+<code class="docutils literal notranslate"><span class="pre">nofile</span></code> soft limit (1024) is far too low and the reward pool fails with
+<code class="docutils literal notranslate"><span class="pre">[Errno</span> <span class="pre">24]</span> <span class="pre">Too</span> <span class="pre">many</span> <span class="pre">open</span> <span class="pre">files</span></code>. Raise it with <code class="docutils literal notranslate"><span class="pre">--ulimit</span> <span class="pre">nofile=65536:65536</span></code>.</p>
+</div></blockquote>
+<p>The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (<code class="docutils literal notranslate"><span class="pre">v0.1.1</span></code>) for
 reproducibility; <code class="docutils literal notranslate"><span class="pre">:latest</span></code> tracks the most recent release. See <code class="docutils literal notranslate"><span class="pre">docker/README.md</span></code> for
 build details and the NVIDIA Container Toolkit install guide.</p>
 </section>
@@ -305,7 +378,7 @@ build details and the NVIDIA Container Toolkit install guide.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/documentation_options.js?v=a58bc63e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
