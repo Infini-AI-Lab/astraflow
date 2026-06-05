@@ -273,7 +273,10 @@ class RecursiveAgentWorkflow(RolloutWorkflow):
         max_steps_per_episode: int = 50,
         max_concurrent_subagents: int = 8,
         delegation_reward_cap: float = 0.0,
-        depth_level_weighting: bool = True,
+        # Disabled by default: 1/(depth+1) on raw reward gives sub-agents
+        # backwards credit (see qwen3-4b-recursive experiment.yaml). Opt in
+        # explicitly only if you know the weighting is what you want.
+        depth_level_weighting: bool = False,
         dump_prob: float = 1 / 128,
         parse_error_observation: str = (
             "ERROR: could not parse your response. Reply with a single "

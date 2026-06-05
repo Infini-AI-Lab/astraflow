@@ -500,6 +500,15 @@ class WeightManager:
         for _name, tensor in hf_named_params:
             nbytes = tensor.numel() * tensor.element_size()
             if is_writer:
+                # Guard against the export disagreeing with the metadata that
+                # sized the buffer. Without this, an overflow at inactive idx 0
+                # silently spills into the active half (corrupting weights the
+                # sender is shipping); mirrors the check in _copy_all_gather.
+                if offset + nbytes > self._single_buffer_length:
+                    raise RuntimeError(
+                        f"Buffer overflow: name={_name}, offset={offset}, "
+                        f"size={nbytes}, buffer={self._single_buffer_length}"
+                    )
                 # Direct device->host DMA straight into the inactive half.
                 # self._buffer is cudaHostRegister'd (pinned), so copying a
                 # CUDA tensor into a view of it hits the fast PCIe DMA path
