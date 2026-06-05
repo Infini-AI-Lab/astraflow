@@ -99,8 +99,14 @@ export CUDA_HOME=/usr/local/cuda-13.0
 export PATH="$CUDA_HOME/bin:$PATH"
 export NVTE_FRAMEWORK=pytorch
 
-# Transformer Engine (required for the Megatron backend with TP/SP)
-uv pip install --no-build-isolation "transformer-engine[pytorch]>=2.13.0,<2.14"
+# Transformer Engine (required for the Megatron backend with TP/SP).
+# The prebuilt transformer-engine wheels link libcublas.so.12 and do NOT load
+# on a CUDA 13 install (ImportError: libcublas.so.12). Build TE from source
+# against your CUDA 13 toolkit instead; nvidia-mathdx provides the build-time
+# cuBLASDx / cuDNN frontend headers.
+uv pip install nvidia-mathdx==25.6.0
+uv pip install -v --no-build-isolation \
+  "git+https://github.com/NVIDIA/TransformerEngine.git@release_v2.13"
 
 # apex (optional — Megatron falls back to Torch Norm / torch Adam if absent).
 # APEX_CPP_EXT/APEX_CUDA_EXT select the fused kernels; FORCE_CUDA=1 builds them
