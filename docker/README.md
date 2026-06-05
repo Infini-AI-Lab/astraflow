@@ -23,14 +23,22 @@ backend and inference do not require it.
 
 ## Pull pre-built image
 
-A pre-built image is published on Docker Hub — use it to skip the build entirely:
+Pre-built images are published on Docker Hub — use them to skip the build entirely.
+Pick the one that matches your **training backend**:
 
 ```bash
+# FSDP backend (default) — astraflow + SGLang + flash-attn. Covers most recipes.
 docker pull astraflowai/astraflow:v0.1.1
+
+# Megatron-LM backend — the above plus Transformer Engine + apex.
+# Only needed when training with `backend: megatron` (TP/PP/EP, MoE, large models).
+docker pull astraflowai/astraflow:v0.1.1.megatron
 ```
 
-This image is built from `Dockerfile.sglang` (astraflow + SGLang + flash-attn). Pin a
-version tag (`v0.1.1`) for reproducibility; `:latest` tracks the most recent release.
+`v0.1.1` is built from `Dockerfile.sglang`; `v0.1.1.megatron` from
+`Dockerfile.sglang.megatron`. The Megatron image is a strict superset, so if you are
+unsure it also runs every FSDP recipe. Pin a version tag for reproducibility;
+`:latest` tracks the most recent FSDP release.
 
 ## Build from source
 
@@ -48,8 +56,11 @@ docker build -f docker/Dockerfile.sglang.megatron -t astraflow:sglang-megatron .
 ## Quick Start
 
 ```bash
-# Run the pre-built image with host network and all GPUs
+# Run the pre-built FSDP image with host network and all GPUs
 docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
+
+# ...or the Megatron-backend image
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1.megatron
 
 # ...or run a locally built image
 docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflow:sglang

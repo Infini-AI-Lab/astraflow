@@ -32,6 +32,18 @@ space and the RaaS receive path is identical to FSDP. See
 | RaaS (SGLang, model0) | 0,1,2,3 | DP=4 |
 | Trainer model0 (Megatron) | 4,5,6,7 | TP=4 |
 
+## Docker
+
+This recipe uses the Megatron backend, so it needs the Megatron image (Transformer
+Engine + apex), **not** the default FSDP one:
+
+```bash
+docker pull astraflowai/astraflow:v0.1.1.megatron
+```
+
+The plain `astraflowai/astraflow:v0.1.1` image is FSDP-only and lacks these deps. See
+[`docker/README.md`](../../../docker/README.md).
+
 ## Run
 
 ```bash

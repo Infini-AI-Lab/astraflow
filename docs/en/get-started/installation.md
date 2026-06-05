@@ -84,6 +84,10 @@ Only needed if you want to train with the **Megatron-LM backend** (tensor /
 pipeline / expert parallelism, MoE models). The default **FSDP** backend and
 all inference need nothing here — skip to Step 6.
 
+> **Prefer Docker?** Skip this entire step with the pre-built
+> `astraflowai/astraflow:v0.1.1.megatron` image (see Option B below), which already
+> bundles Transformer Engine + apex.
+
 `megatron-core` and `mbridge` are already installed by Step 3. The Megatron
 backend additionally uses **Transformer Engine** (fused LayerNorm + sequence
 parallelism) and benefits from **apex** (fused LayerNorm / Adam). Both are
@@ -151,11 +155,17 @@ print(f'sglang:     {sglang.__version__}')
 
 ## Option B: Docker
 
-A pre-built image is published on Docker Hub — it skips the from-source steps above
-entirely. Requires the NVIDIA Container Toolkit so `--gpus all` works.
+Pre-built images are published on Docker Hub — they skip the from-source steps above
+entirely. Requires the NVIDIA Container Toolkit so `--gpus all` works. Choose the image
+by **training backend**:
 
 ```bash
+# FSDP backend (default) — covers most recipes
 docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
+
+# Megatron-LM backend — adds Transformer Engine + apex (Step 5 above, pre-built in).
+# Use this for `backend: megatron` (TP/PP/EP, MoE, large models).
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1.megatron
 ```
 
 > **Note on `--shm-size`:** this sets the size of the container's `/dev/shm`. A
