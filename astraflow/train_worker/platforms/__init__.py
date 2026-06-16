@@ -33,6 +33,15 @@ def _init_platform() -> Platform:
         if "NVIDIA" in device_name:
             logger.info("Initializing CUDA platform (NVIDIA).")
             return CudaPlatform()
+        # ROCm/HIP: torch exposes the AMD GPU through the torch.cuda API
+        # (cuda->HIP, nccl->rccl), so CudaPlatform works as-is. torch.version.hip
+        # is the canonical ROCm marker; the device-name check covers builds that
+        # leave it unset.
+        if getattr(torch.version, "hip", None) or any(
+            tag in device_name for tag in ("AMD", "INSTINCT", "RADEON", "GFX")
+        ):
+            logger.info("Initializing CUDA platform (AMD ROCm/HIP).")
+            return CudaPlatform()
         logger.warning("Unrecognized CUDA device. Falling back to UnknownPlatform.")
         return UnknownPlatform()
     elif is_npu_available:
