@@ -476,7 +476,7 @@ class TrainEngineConfig:
         default="flash_attention_2",
         metadata={
             "help": "Attention implementation for huggingface transformers model.",
-            "choices": ["flash_attention_2"],
+            "choices": ["flash_attention_2", "sdpa", "eager"],
         },
     )
     init_from_scratch: bool = field(

@@ -94,9 +94,6 @@ from astraflow.train_worker.utils.hf_utils import (
 from astraflow.train_worker.utils.model import (
     disable_dropout_in_model,
     is_gemma3_model,
-    is_qwen3_5_model,
-    is_qwen3_moe_model,
-    is_qwen3_vl_model,
     is_qwen_vl_model,
     is_valid_vision_model,
 )
@@ -1207,18 +1204,14 @@ class FSDPEngine(TrainEngine):
             ]
             mb["use_cache"] = False
             padded_mb["use_cache"] = False
-            if (
-                is_qwen3_moe_model(self.model_config.model_type)
-                or is_qwen3_vl_model(self.model_config.model_type)
-                or is_qwen3_5_model(self.model_config.model_type)
-            ):
-                mb["attention_mask"] = None
-                padded_mb["attention_mask"] = None
-            else:
-                mb["attention_mask"] = dict(full_attention=None, sliding_attention=None)
-                padded_mb["attention_mask"] = dict(
-                    full_attention=None, sliding_attention=None
-                )
+            # Always pass attention_mask=None for the packed/varlen forward: per-sequence
+            # causal masking is driven by cu_seqlens + position_ids, and the model builds
+            # the right mask from None. The old dict(full_attention=None, sliding_attention=
+            # None) form is a transformers-4.x relic: on transformers>=5 a dense model
+            # (qwen3 / qwen2) treats that dict as a *precomputed* mask, skips creation, and
+            # crashes. None is correct for all archs (dense, moe, vl, qwen3.5/GDN).
+            mb["attention_mask"] = None
+            padded_mb["attention_mask"] = None
             if "multi_modal_input" in mb:
                 image_grid_thw_list = [
                     item["image_grid_thw"]
