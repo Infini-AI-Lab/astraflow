@@ -10,7 +10,7 @@
 # ============================================================================
 
 rollout:
-  max_concurrent_rollouts: 1024
+  max_concurrent_rollouts: 512
   # Cap concurrent eval prefills to bound peak KV pressure during the
   # ~3.5k-item eval burst (5 datasets x repeat=4) — default 128 OOMs sglang.
   max_concurrent_evals: 64
@@ -28,6 +28,10 @@ engine:
 
 sglang:
   context_length: 16384
-  mem_fraction_static: 0.8
+  mem_fraction_static: 0.7
+  # Chunk prefill so the LM-head fp32 logits upcast can't spike to ~16 GiB
+  # and OOM a worker (root cause of the step-101 hang). Bounds per-forward
+  # tokens to 8192.
+  chunked_prefill_size: 8192
   max_running_requests: null
   skip_tokenizer_init: true
