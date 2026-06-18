@@ -306,6 +306,14 @@ class RemoteInfEngine:
         self.lock = Lock()
 
         self.lora_initialized = False
+        # Versioned LoRA adapter naming: each weight sync loads under a NEW
+        # name (``lora_v{seq}``) and we never unload. Unloading an adapter that
+        # still has paused/aborted in-flight requests deadlocks on SGLang's
+        # ``wait_for_unload`` (aborted requests never release their usage
+        # counter). New unique names avoid the unload entirely; SGLang's
+        # mem-pool LRU evicts stale adapters from GPU automatically.
+        self._lora_seq = 0
+        self._current_lora_name: str | None = None
 
         self._executor: ProcessPoolExecutor | None = None
         self._paused: bool = False
@@ -654,7 +662,7 @@ class RemoteInfEngine:
                     f"agenerate() building HTTP request, rid={req.rid}, "
                     f"iteration={iteration}, server_addr={server_addr}"
                 )
-                http_req = self.backend.build_generation_request(req, self.lora_initialized)
+                http_req = self.backend.build_generation_request(req, self._current_lora_name)
 
                 # Loop until the generation is complete
                 logger.debug(
@@ -745,19 +753,25 @@ class RemoteInfEngine:
         For full weights: ``/update_weights_from_disk`` includes
         ``abort_all_requests: True`` and ``flush_cache`` internally.
 
-        For LoRA adapters (``use_lora=True``): unloads the old adapter,
-        loads the new one, then flushes the KV cache via ``/flush_cache``
-        to discard stale entries computed with the old LoRA weights.
-        Relies on sglang releasing the ``lora_registry`` counter for
-        aborted requests (fixed upstream in
-        ``TokenizerManager._handle_abort_finish_reason`` as of 0.5.12).
+        For LoRA adapters (``use_lora=True``): loads the new adapter under a
+        fresh versioned name (``lora_v{seq}``) without unloading the previous
+        one, then flushes the KV cache. We never unload because unloading an
+        adapter with paused/aborted in-flight requests deadlocks SGLang's
+        ``wait_for_unload``; SGLang's mem-pool LRU reclaims GPU slots for
+        stale adapters automatically (bounded by ``max_loras_per_batch``).
         """
         import time as _time
 
         _t0 = _time.monotonic()
-        lora_name = "lora_1"
 
         if use_lora:
+            # Load under a NEW versioned name and do NOT unload the old one.
+            # Unloading an adapter with paused/aborted in-flight requests
+            # deadlocks SGLang's ``wait_for_unload`` (the usage counter for
+            # aborted requests is never released). A fresh name has no such
+            # counter; SGLang's mem-pool LRU evicts stale adapters from GPU.
+            self._lora_seq += 1
+            lora_name = f"lora_v{self._lora_seq}"
             logger.info(
                 "load_weights_from_path: sending /load_lora_adapter "
                 "to %d servers (path=%s, lora_name=%s) ...",
@@ -766,19 +780,13 @@ class RemoteInfEngine:
                 lora_name,
             )
             try:
-                if self.lora_initialized:
-                    unload_req = HttpRequest(
-                        endpoint="/unload_lora_adapter",
-                        payload={"lora_name": lora_name},
-                    )
-                    self._run_request_on_all_servers(unload_req)
-
                 load_req = HttpRequest(
                     endpoint="/load_lora_adapter",
                     payload={"lora_name": lora_name, "lora_path": str(path)},
                 )
                 self._run_request_on_all_servers(load_req)
                 self.lora_initialized = True
+                self._current_lora_name = lora_name
 
                 # Flush stale KV cache entries computed with old LoRA weights.
                 # Safe because caller already paused generation (is_pause=True
