@@ -1,7 +1,7 @@
 # Installation (AMD ROCm)
 
-This page covers running AstraFlow on AMD Instinct GPUs (MI300X / MI325X,
-`gfx942`) under ROCm. For the NVIDIA path, see [Installation](installation.md).
+Running AstraFlow on AMD Instinct GPUs (MI300X / MI325X, `gfx942`) under
+ROCm. For the NVIDIA path, see [Installation](installation.md).
 
 ## Prerequisites
 
@@ -9,101 +9,81 @@ This page covers running AstraFlow on AMD Instinct GPUs (MI300X / MI325X,
 - AMD Instinct MI300X / MI325X (CDNA3 / `gfx942`)
 - Docker
 
-The base image and the dependency layout are designed around the official
-**SGLang ROCm image** — it already ships a ROCm-built PyTorch 2.9.1, SGLang
-0.5.12.post1, `sgl_kernel`, and [`aiter`](https://github.com/ROCm/aiter) (the
-ROCm attention backend SGLang uses for inference). AstraFlow's ROCm build
-layers on top **without reinstalling those packages** — replacing them would
-pull CUDA wheels and break the GPU stack.
-
-## Option A: Custom Installation (inside the SGLang ROCm base)
-
-The manual, step-by-step path — these are the same operations the Dockerfile
-runs.
-
-### Step 1: Run the SGLang ROCm base container
+## Build the image
 
 ```bash
-docker run -it --rm \
-  --device=/dev/kfd --device=/dev/dri --group-add video \
-  -v "$PWD":/workspace/astraflow -w /workspace/astraflow \
-  lmsysorg/sglang:v0.5.12.post1-rocm720-mi30x bash
+cd /path/to/astraflow
+docker build -f docker/Dockerfile.rocm -t astraflow:rocm .
 ```
 
-The base provides `python 3.10` in a venv at `/opt/venv` with
-`torch 2.9.1+rocm7.2.0`, `sglang 0.5.12.post1`, `sgl_kernel`, `aiter`, ROCm
-`apex`, and ROCm `triton 3.5.1+rocm7.2.0`. All steps below run inside this
-container.
+The build pulls the SGLang ROCm base (~25 GB) and finishes in a few minutes;
+the resulting image is ~75 GB.
 
-### Step 2: Pin the base's GPU stack as pip constraints
+### What's in the image
 
-```bash
-python docker/rocm/gen_constraints.py /tmp/rocm-constraints.txt
-```
+`docker/Dockerfile.rocm` starts from the official SGLang ROCm image and layers
+AstraFlow on top **without reinstalling the GPU stack**. Specifically:
 
-This writes a pip constraints file containing the **exact** versions of
-`torch`, `torchvision`, `torchaudio`, `triton`, `sglang`, `sgl-kernel`, and
-`numpy` that ship in the base image — using `importlib.metadata` so the long
-ROCm local-version strings (e.g. `torch==2.9.1+rocm7.2.0.lw.git7e1940d4`) are
-captured verbatim. Every subsequent `pip install` is run under this constraint
-file so the GPU stack cannot be replaced.
-
-### Step 3: Strip CUDA-only pins from pyproject and install AstraFlow
-
-`pyproject.toml`'s `[project] dependencies` pins `torch==2.11.0` (and friends).
-Strip those plus `megatron-core` and `mbridge` (whose `numpy<2.0.0` pin
-conflicts with the base's numpy 2.x), then install:
-
-```bash
-python - <<'PY'
-import re
-STRIP = {"torch","torchaudio","torchvision","torchdata",
-        "torch_memory_saver","torch-memory-saver","megatron-core","mbridge"}
-norm = lambda s: re.split(r"[<>=!~\[ ]", s.strip(), 1)[0].strip().lower().replace("_","-")
-out, in_deps = [], False
-for line in open("pyproject.toml").readlines():
-    s = line.strip()
-    if s.startswith("dependencies = ["): in_deps = True; out.append(line); continue
-    if in_deps and s.startswith("]"): in_deps = False; out.append(line); continue
-    m = re.match(r'\s*"([^"]+)"', line) if in_deps else None
-    if m and norm(m.group(1)) in STRIP: continue
-    out.append(line)
-open("pyproject.toml","w").writelines(out)
-PY
-
-pip install --no-build-isolation -e . -c /tmp/rocm-constraints.txt
-pip install --no-deps megatron-core==0.13.1 mbridge==0.13.0 torchdata
-pip install torch_memory_saver==0.0.9.post1 -c /tmp/rocm-constraints.txt
-```
-
-This installs AstraFlow + its pure-python deps, bumps `transformers` to 5.6.1
-(the patch fix AstraFlow needs), and adds `megatron-core` / `mbridge` /
-`torchdata` / `torch_memory_saver` whose import sites the FSDP path reaches.
-
-### Step 4: Install Flash Attention (Triton-AMD backend)
-
-The FSDP trainer packs multiple sequences per microbatch and passes
-`cu_seq_lens_q/k`; transformers honors those boundaries **only** under
-`attn_implementation="flash_attention_2"`. The base SGLang ROCm image does not
-ship the `flash_attn` Python package (SGLang uses `aiter` internally), so
-install it with the Triton-AMD backend, which JITs Triton kernels on `gfx942`
-with no CK/CUDA compile:
-
-```bash
-export FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE
-pip install flash-attn==2.8.3 --no-build-isolation -c /tmp/rocm-constraints.txt
-```
-
-Install completes in seconds (no nvcc). At runtime keep
-`FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE` exported so `flash_attn` dispatches to
-the Triton path.
+- **Base** — `lmsysorg/sglang:v0.5.12.post1-rocm720-mi30x`: Python 3.10 venv at
+  `/opt/venv`, `torch 2.9.1+rocm7.2.0`, `sglang 0.5.12.post1`, `sgl_kernel`,
+  [`aiter`](https://github.com/ROCm/aiter) (the ROCm attention backend SGLang
+  uses for inference), ROCm `apex`, ROCm `triton`.
+- **Pinned base versions** — a constraints file generated from
+  `pip freeze` is passed to every install step so pip cannot replace the
+  ROCm-built `torch`, `sglang`, `triton`, `numpy`, etc. with CUDA wheels.
+- **AstraFlow + pure-python deps** — `pip install -e .` with the CUDA-only
+  pins stripped from `pyproject.toml`. `transformers` is bumped to 5.6.1 (the
+  patch fix AstraFlow needs) over the base's 5.6.0.
+- **`megatron-core`, `mbridge`, `torchdata`, `torch_memory_saver`** —
+  installed `--no-deps` (megatron-core's `numpy<2.0.0` pin conflicts with the
+  base's numpy 2.x but is fine at runtime); their import sites are reached on
+  the FSDP path.
+- **Flash Attention (Triton-AMD backend)** —
+  `FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE pip install flash-attn==2.8.3`. This
+  JITs Triton kernels on `gfx942` with no CK/CUDA compile (seconds, not
+  minutes). The Dockerfile sets `ENV FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE`
+  so the trainer's `flash_attention_2` path dispatches to it automatically
+  inside the container.
 
 > **`flash_attention_2` is a correctness requirement on ROCm, not a perf
-> choice.** Under `sdpa` (or any non-varlen backend), the trainer's recomputed
-> logprobs diverge from the rollout, importance weights explode, and the M2PO
-> policy gradient is corrupted — while the task reward still looks plausible.
+> choice.** AstraFlow's FSDP trainer packs multiple sequences per microbatch
+> and passes `cu_seq_lens_q/k`; transformers honors those boundaries only in
+> the `flash_attention_2` path. Under `sdpa` the packed sub-sequences attend
+> across boundaries, the trainer's recomputed logprobs diverge from the
+> rollout, importance weights explode, and the M2PO policy gradient is
+> corrupted — while the task reward still looks plausible. The Triton-AMD
+> `flash_attn` install above is what keeps this path correct.
 
-### Step 5: Verify installation
+## Run
+
+```bash
+docker run --rm \
+  --device=/dev/kfd --device=/dev/dri --group-add video \
+  --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
+  --ipc=host --network=host --shm-size=512g --ulimit nofile=65536:65536 \
+  -v /home:/home \
+  -e HF_TOKEN -e WANDB_API_KEY \
+  -it astraflow:rocm
+```
+
+`--device=/dev/kfd --device=/dev/dri --group-add video` give the container
+access to the AMD GPUs. The recipe launcher
+(`examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full_amd.sh`)
+wraps the same `docker run` and runs the recipe end-to-end.
+
+> **Note on `--shm-size`:** RaaS stages received model weights under
+> `/dev/shm/astraflow_weights` during weight transfer. The container default
+> (64 MB) and small values like `16g` are far too small for 8B-scale recipes
+> and cause `OSError: [Errno 28] No space left on device` during training.
+> `--shm-size=512g` is a tmpfs *cap*, not a reservation, so it only consumes
+> host RAM as actually used — set it comfortably below host RAM.
+
+> **Note on `--ulimit nofile`:** a recipe run drives many concurrent rollouts
+> whose reward workers open a large number of file descriptors. The container
+> default (1024) is too low and the reward pool fails with `[Errno 24] Too
+> many open files`. Raise it with `--ulimit nofile=65536:65536`.
+
+## Verify installation
 
 ```bash
 python -c "
@@ -121,59 +101,16 @@ print(f'sglang:     {sglang.__version__}')
 "
 ```
 
-Then run the recipe with a small smoke step count:
+Then run the math recipe with a small smoke step count:
 
 ```bash
 SMOKE_STEPS=2 bash examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full_amd.sh
 ```
 
 A healthy ROCm run logs `importance_sampling/importance_weight/avg ≈ 1.0000`
-on the first PPO step. Values far from 1 (e.g. ≈ 0.4) or `m2po_mean_m2 ≫ 0.01`
-indicate the attention path is broken (most commonly `flash_attention_2` is
-not active).
-
-## Option B: Docker
-
-The Dockerfile bakes Steps 1-4 of Option A into an image:
-
-```bash
-cd /path/to/astraflow
-docker build -f docker/Dockerfile.rocm -t astraflow:rocm .
-```
-
-The build pulls the SGLang ROCm base (~25 GB), installs AstraFlow's deps under
-the constraints file, and finishes with the Triton-AMD `flash-attn` install.
-Final image is ~75 GB.
-
-Run a recipe (or an interactive shell):
-
-```bash
-docker run --rm \
-  --device=/dev/kfd --device=/dev/dri --group-add video \
-  --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
-  --ipc=host --network=host --shm-size=512g --ulimit nofile=65536:65536 \
-  -v /home:/home \
-  -e HF_TOKEN -e WANDB_API_KEY \
-  -it astraflow:rocm
-```
-
-`--device=/dev/kfd --device=/dev/dri --group-add video` give the container
-access to the AMD GPUs. The recipe launcher
-(`examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full_amd.sh`)
-wraps this `docker run` with the env vars the recipe needs.
-
-> **Note on `--shm-size`:** same reason as the CUDA image — RaaS stages
-> received model weights under `/dev/shm/astraflow_weights` during weight
-> transfer, and the container default (64 MB) is far too small for 8B-scale
-> recipes. `--shm-size=512g` is a tmpfs *cap*, not a reservation.
-
-> **Note on `--ulimit nofile`:** a recipe run drives many concurrent rollouts
-> whose reward workers open a large number of file descriptors. The container
-> default (1024) is too low; raise it with `--ulimit nofile=65536:65536`.
-
-> **Note on `FLASH_ATTENTION_TRITON_AMD_ENABLE`:** the Dockerfile already sets
-> this via `ENV`, so the trainer's `flash_attention_2` path dispatches to the
-> Triton-AMD backend automatically inside the container.
+on the first PPO step. Values far from 1 (e.g. ≈ 0.4) or
+`m2po_mean_m2 ≫ 0.01` indicate the attention path is broken (most commonly
+`flash_attention_2` is not active).
 
 ## Notes
 
@@ -191,10 +128,10 @@ the box — no user action needed:
 
 ### Recommended runtime env
 
-Set inside the container (the recipe launcher sets these for you):
+The recipe launcher sets these for you; if you exec into the container
+manually:
 
 ```bash
-export FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE  # set by ENV in Dockerfile.rocm
 export NCCL_CUMEM_ENABLE=0
 export PYTORCH_HIP_ALLOC_CONF=expandable_segments:True
 export MIOPEN_USER_DB_PATH=/tmp/miopen/db
@@ -202,9 +139,11 @@ export MIOPEN_CUSTOM_CACHE_DIR=/tmp/miopen/cache
 mkdir -p "$MIOPEN_USER_DB_PATH" "$MIOPEN_CUSTOM_CACHE_DIR"
 ```
 
-`CUDA_VISIBLE_DEVICES` works as-is — ROCm PyTorch maps it to HIP devices, so
-the recipe's `SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3` /
-`TRAINER_MODEL0_GPUS=4,5,6,7` split works unchanged.
+`FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE` is already set by `ENV` in
+`Dockerfile.rocm`. `CUDA_VISIBLE_DEVICES` works as-is — ROCm PyTorch maps it
+to HIP devices, so the recipe's
+`SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3` / `TRAINER_MODEL0_GPUS=4,5,6,7` split
+works unchanged.
 
 ### Known limitations
 
