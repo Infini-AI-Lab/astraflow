@@ -43,6 +43,14 @@ bash examples/math/qwen3-1.7b-m2po-2gpus-full/scripts/run_qwen3-1.7b-m2po-2gpus-
 | Train dataset | DeepScaleR |
 | Eval datasets | AIME24, AIME25, AMC, Minerva Math, MATH500 |
 
+### LoRA variant
+
+[`qwen3-1.7b-m2po-2gpus-lora/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-lora) trains a LoRA adapter on the actor instead of full fine-tuning, keeping the same 2-GPU layout. Each step the trainer syncs the adapter to the SGLang server under a fresh versioned name (`lora_v{n}`) and never unloads it — SGLang's memory-pool LRU reclaims old versions — which avoids the unload deadlock that occurs when an adapter still holds aborted in-flight requests. One important caveat: a LoRA update is effectively much larger than a full-fine-tuning step at the same learning rate (the `alpha/rank` scaling), so LoRA needs near-on-policy training to stay stable. The recipe therefore sets `ppo_n_minibatches: 1`, `max_staleness: 1`, and `recompute_logprob: true` (with `lr` 5e-6); with these it shows a clean rising eval curve. On each weight sync the server first pauses generation and drains its in-flight requests (aborting any still running), then loads the new adapter under the fresh versioned name and flushes the stale KV cache before resuming — the old adapter is deliberately never unloaded, because unloading one that still holds aborted requests would block SGLang's `wait_for_unload` forever. Run it with:
+
+```bash
+bash examples/math/qwen3-1.7b-m2po-2gpus-lora/scripts/run_qwen3-1.7b-m2po-2gpus-lora.sh
+```
+
 ## Qwen3-8B — 8 GPUs
 
 The full-scale recipe. It needs an 8-GPU node — 4 GPUs for inference, 4 for training — and also comes in full and delta transfer variants:
