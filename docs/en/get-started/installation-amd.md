@@ -8,9 +8,7 @@ under ROCm. For NVIDIA installs, see [Installation](installation.md).
 - Linux with ROCm 7.0+ kernel driver installed (verify with `rocminfo`)
 - AMD Instinct MI300X / MI325X (gfx942 / CDNA3), 8 GPUs per node for the
   default math recipe (RaaS=4 + Trainer=4)
-- One of:
-  - **Docker** (used in the recipes below), or
-  - **enroot + pyxis** under Slurm (for clusters without a Docker daemon)
+- Docker
 
 ## Image strategy
 
@@ -31,7 +29,7 @@ ROCm image and layers AstraFlow on top without disturbing the base GPU stack:
   - `transformers==5.6.1` (a patch over base's 5.6.0; see top-level `pyproject.toml`)
   - a **Triton-AMD `flash-attn`** for the trainer (see below)
 
-## Option A: Docker build
+## Docker build
 
 ```bash
 cd /path/to/astraflow
@@ -64,23 +62,6 @@ docker run --rm \
 `--device=/dev/kfd --device=/dev/dri --group-add video` give the container
 access to the AMD GPUs. `--shm-size=512g` and `--ulimit nofile=65536:65536` are
 needed for the same reasons as the CUDA image (see [docker/README.md]).
-
-## Option B: enroot + pyxis (no Docker daemon)
-
-For Slurm clusters that use pyxis but lack a Docker daemon, `examples/_common/build_astraflow_rocm.sh`
-performs the equivalent build via two `srun` steps:
-
-```bash
-# Default destination: <repo>/.images/astraflow-rocm.sqsh
-bash examples/_common/build_astraflow_rocm.sh
-```
-
-It (1) imports the SGLang ROCm base into a squashfs via pyxis `--container-save`,
-then (2) layers the AstraFlow install into the saved image. Building requires
-`--container-remap-root` so pip can write to the image's root-owned `/opt/venv`.
-
-Launch via `srun --container-image=.images/astraflow-rocm.sqsh ...` in your job
-script.
 
 ## Required runtime environment
 
