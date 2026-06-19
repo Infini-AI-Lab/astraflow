@@ -31,9 +31,14 @@ class VLLMBackend:
         pass
 
     def build_generation_request(
-        self, req: ModelRequest, with_lora: bool
+        self, req: ModelRequest, lora_name: str | None
     ) -> HttpRequest:
-        """Convert a ModelRequest into a vLLM completions or chat HTTP request."""
+        """Convert a ModelRequest into a vLLM completions or chat HTTP request.
+
+        ``lora_name`` is a truthy marker that a LoRA is active; vLLM selects
+        the adapter via ``gconfig.lora_name`` (its own naming), so the marker's
+        value is unused here.
+        """
         gconfig = req.gconfig
         stop_token_ids = gconfig.stop_token_ids
         stop = gconfig.stop
@@ -54,7 +59,7 @@ class VLLMBackend:
         if stop:
             payload["stop"] = stop
 
-        if with_lora and len(gconfig.lora_name) > 0:
+        if lora_name and len(gconfig.lora_name) > 0:
             payload["model"] = gconfig.lora_name
 
         if req.vision_msg_vllm:
@@ -181,6 +186,10 @@ class VLLMEngine:
         self.config = config
         self._engine = RemoteInfEngine(config, VLLMBackend())
         self._engine.lora_initialized = config.use_lora
+        # vLLM selects the adapter via gconfig.lora_name; this just marks LoRA
+        # active so the shared generation-request builder passes a truthy flag.
+        if config.use_lora:
+            self._engine._current_lora_name = "vllm_lora"
 
     def __getattr__(self, name: str):
         return getattr(self._engine, name)

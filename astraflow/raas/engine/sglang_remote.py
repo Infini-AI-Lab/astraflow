@@ -22,9 +22,13 @@ class SGLangBackend:
     """Backend that translates engine operations into SGLang HTTP API calls."""
 
     def build_generation_request(
-        self, req: ModelRequest, with_lora: bool
+        self, req: ModelRequest, lora_name: str | None
     ) -> HttpRequest:
-        """Convert a ModelRequest into an SGLang /generate HTTP request."""
+        """Convert a ModelRequest into an SGLang /generate HTTP request.
+
+        ``lora_name`` is the currently-active versioned adapter name (e.g.
+        ``lora_v3``) or ``None`` when no adapter is loaded.
+        """
         gconfig = req.gconfig
         stop_token_ids = gconfig.stop_token_ids
         stop = gconfig.stop
@@ -55,8 +59,8 @@ class SGLangBackend:
             "stream": False,
         }
 
-        if with_lora:
-            payload["lora_path"] = "lora_1"
+        if lora_name:
+            payload["lora_path"] = lora_name
 
         return HttpRequest(endpoint="/generate", payload=payload)
 
