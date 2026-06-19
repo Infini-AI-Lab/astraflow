@@ -9,6 +9,7 @@ on distributed GPU clusters.
    :caption: Get Started
 
    get-started/installation
+   get-started/installation-amd
    get-started/quickstart
 
 .. toctree::
