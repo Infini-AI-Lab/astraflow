@@ -44,10 +44,8 @@ echo "[build] 3b/4 megatron-core + mbridge + torchdata (--no-deps)"
 # the ROCm torch untouched.
 pip install --no-deps megatron-core==0.13.1 mbridge==0.13.0 torchdata
 
-echo "[build] 4/4 torch_memory_saver (real, else no-op shim)"
-pip install torch_memory_saver==0.0.9.post1 -c /tmp/rocm-constraints.txt \
-  || { echo "[tms] real package unavailable on ROCm — installing no-op shim";
-       python docker/rocm/install_tms_shim.py; }
+echo "[build] 4/4 torch_memory_saver"
+pip install torch_memory_saver==0.0.9.post1 -c /tmp/rocm-constraints.txt
 
 echo "[build] sanity import check"
 python - <<'PY'

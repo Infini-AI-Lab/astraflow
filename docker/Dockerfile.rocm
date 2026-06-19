@@ -49,11 +49,9 @@ RUN pip install --no-build-isolation -e . -c /tmp/rocm-constraints.txt
 RUN pip install --no-deps megatron-core==0.13.1 mbridge==0.13.0 torchdata
 
 # 4. torch_memory_saver: imported at module load on the FSDP path (megatron_engine.py),
-#    but only *used* on the megatron offload path. Install the real package if it
-#    builds on ROCm; otherwise drop in a no-op shim so the import succeeds.
-RUN pip install torch_memory_saver==0.0.9.post1 -c /tmp/rocm-constraints.txt \
-    || (echo "[tms] real package unavailable on ROCm — installing no-op shim" && \
-        python docker/rocm/install_tms_shim.py)
+#    only *used* on the megatron offload path. Ships as an abi3 manylinux wheel that
+#    installs fine on ROCm.
+RUN pip install torch_memory_saver==0.0.9.post1 -c /tmp/rocm-constraints.txt
 
 # 4b. flash-attn for the TRAINER (Triton AMD backend). astraflow's FSDP engine packs
 #     multiple sequences per microbatch and passes cu_seq_lens; transformers honors
