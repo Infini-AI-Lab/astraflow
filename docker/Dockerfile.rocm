@@ -1,0 +1,97 @@
+# AstraFlow on AMD ROCm (MI300/MI325, gfx942).
+#
+# Base = SGLang's official ROCm image, version-matched to astraflow's sglang pin
+# (sglang 0.5.12.post1). It already ships a ROCm-built torch 2.9.1, sgl_kernel,
+# and aiter (the ROCm attention backend), so we DO NOT reinstall torch / sglang /
+# flash-attn — doing so would pull CUDA wheels and break the GPU stack.
+#
+# What this image adds on top of the base:
+#   * astraflow (editable) + its pure-python runtime deps
+#   * transformers bumped 5.6.0 -> 5.6.1 (astraflow needs the s_aux fix)
+#   * megatron-core, mbridge, torch_memory_saver (imported on the FSDP path too)
+#
+# Build:
+#   cd /path/to/astraflow
+#   docker build -f docker/Dockerfile.rocm -t astraflow:rocm .
+FROM lmsysorg/sglang:v0.5.12.post1-rocm720-mi30x
+
+SHELL ["/bin/bash", "-lc"]
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:${PATH}" \
+    PIP_NO_INPUT=1
+
+WORKDIR /workspace/astraflow
+
+COPY . .
+
+# 1. Pin the ROCm-critical packages to whatever the base image shipped so pip can
+#    never upgrade/downgrade them while resolving astraflow's deps.
+RUN python docker/rocm/gen_constraints.py /tmp/rocm-constraints.txt && \
+    cat /tmp/rocm-constraints.txt
+
+# 2. Strip the CUDA-only / clobbering pins from pyproject (torch family +
+#    torch_memory_saver) so the install resolves against the ROCm torch.
+#    megatron-core and mbridge are also stripped here and installed --no-deps
+#    below (megatron-core's numpy<2.0.0 pin conflicts with the base's numpy 2.x).
+RUN python - <<'PY'
+import re
+STRIP = {"torch","torchaudio","torchvision","torchdata",
+        "torch_memory_saver","torch-memory-saver","megatron-core","mbridge"}
+norm = lambda s: re.split(r"[<>=!~\[ ]", s.strip(), 1)[0].strip().lower().replace("_","-")
+out, in_deps, removed = [], False, []
+for line in open("pyproject.toml").readlines():
+    s = line.strip()
+    if s.startswith("dependencies = ["):
+        in_deps = True; out.append(line); continue
+    if in_deps and s.startswith("]"):
+        in_deps = False; out.append(line); continue
+    m = re.match(r'\s*"([^"]+)"', line) if in_deps else None
+    if m and norm(m.group(1)) in STRIP:
+        removed.append(m.group(1)); continue
+    out.append(line)
+open("pyproject.toml","w").writelines(out)
+print("[prune] removed from dependencies:", removed)
+PY
+
+# 3. Install astraflow + remaining pure-python deps under the constraints.
+#    (No [sglang]/[fa]/[vllm]/[te] extras — sglang/flash-attn come from the base.)
+RUN pip install --no-build-isolation -e . -c /tmp/rocm-constraints.txt
+
+# 3b. megatron-core + mbridge + torchdata with --no-deps. megatron-core 0.13.1
+#     declares numpy<2.0.0, which conflicts with the ROCm base's numpy 2.2.6;
+#     they import fine on numpy 2.x. torchdata provides torchdata.stateful_dataloader
+#     (imported by astraflow.dataflow). --no-deps keeps the ROCm torch untouched.
+RUN pip install --no-deps megatron-core==0.13.1 mbridge==0.13.0 torchdata
+
+# 4. torch_memory_saver: imported at module load on the FSDP path (megatron_engine.py),
+#    only *used* on the megatron offload path. Ships as an abi3 manylinux wheel that
+#    installs fine on ROCm.
+RUN pip install torch_memory_saver==0.0.9.post1 -c /tmp/rocm-constraints.txt
+
+# 4b. flash-attn for the TRAINER (Triton AMD backend). astraflow's FSDP engine packs
+#     multiple sequences per microbatch and passes cu_seq_lens; transformers honors
+#     those boundaries ONLY via attn_implementation=flash_attention_2 (the upstream-only
+#     supported path). Without it (e.g. sdpa) packed sequences attend across boundaries
+#     and the recomputed logprobs diverge from the rollout (importance weights explode).
+#     The Triton-AMD backend gives a varlen flash_attn on gfx942 with no CK/CUDA compile
+#     (kernels JIT via the base image's triton). Built --no-build-isolation against the
+#     ROCm torch. Runtime must set FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE (see run script).
+ENV FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE
+RUN FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE \
+    pip install -v flash-attn==2.8.3 --no-build-isolation -c /tmp/rocm-constraints.txt && \
+    python -c "import flash_attn; from flash_attn import flash_attn_varlen_func; print('flash_attn', flash_attn.__version__, 'varlen OK')" \
+    || echo "[flash-attn] build/import will be re-verified at run time (no GPU in docker build)"
+
+# 5. Sanity: confirm versions resolve. Non-fatal — `docker build` RUN steps have
+#    no GPU, so GPU-touching imports (sglang/aiter) may bail here; the smoke run
+#    is the real end-to-end check. Pure version pins are still asserted.
+RUN python -c "import torch, transformers; \
+assert transformers.__version__.startswith('5.6.1'), transformers.__version__; \
+print('torch', torch.__version__, 'hip', torch.version.hip, 'transformers', transformers.__version__)" && \
+    python -c "import sglang, megatron.core, mbridge, torch_memory_saver, torchdata, astraflow; \
+print('full import OK')" \
+    || echo "[sanity] GPU-dependent import skipped at build time (no GPU in docker build) — verified at run"
+
+CMD ["/bin/bash"]

@@ -1,5 +1,7 @@
 # Installation
 
+> For AMD ROCm (MI300/MI325) installs, see [Installation (AMD ROCm)](installation-amd.md).
+
 ## Prerequisites
 
 - Linux (Ubuntu 20.04+ recommended)

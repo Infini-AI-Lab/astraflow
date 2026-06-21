@@ -1,4 +1,5 @@
 import functools
+import os
 from collections.abc import Callable
 from typing import TypeVar
 
@@ -28,6 +29,14 @@ def _gather_logprobs_entropy(
 
 
 def _should_use_torch_compile() -> bool:
+    # Explicit override: ASTRAFLOW_FORCE_TORCH_COMPILE=1/0 forces on/off.
+    force = os.environ.get("ASTRAFLOW_FORCE_TORCH_COMPILE")
+    if force is not None:
+        return force == "1"
+    # ROCm/HIP: torch.compile + inductor currently fail to codegen these logprob
+    # reductions on gfx942 (torch 2.9), so fall back to eager. (NPU also opts out.)
+    if getattr(torch.version, "hip", None):
+        return False
     return not is_npu_available
 
 
