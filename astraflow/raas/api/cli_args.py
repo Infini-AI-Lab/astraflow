@@ -383,6 +383,13 @@ class SGLangConfig:
     max_loaded_loras: int = 1
     max_loras_per_batch: int = 1
     lora_backend: str = "triton"
+    # Seconds a LoRA request may wait before SGLang's LoRADrainer rescues it by
+    # draining another adapter to free a GPU adapter slot. 0.0 disables the
+    # drainer (default) -> under RL version churn the OLDEST adapter's requests
+    # can starve forever (never get a slot), never finish, and never release
+    # their LoRA usage counter -> wait_for_unload deadlocks at eviction. Set > 0
+    # to enable it so old-version requests drain and eviction stays safe.
+    lora_drain_wait_threshold: float = 0.0
     # logging
     log_level: str = "warning"
     log_level_http: str | None = "warning"

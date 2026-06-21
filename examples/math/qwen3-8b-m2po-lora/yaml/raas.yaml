@@ -1,0 +1,63 @@
+# ============================================================================
+# RaaS config — Inference serving instance (hardware/resources)
+# Experiment: math / qwen3-8b-m2po-lora
+#
+# Hardware: 4x GPU, TP=1
+#   model0:  DP=4, TP=1
+#
+# Merged with experiment.yaml at launch (--config experiment.yaml --config raas.yaml)
+# experiment.yaml provides: model_path, tokenizer_path, seed, dtype, models/gconfig
+#
+# LoRA notes:
+#   - enable_lora + max_lora_rank (>= actor.lora_rank) + lora_target_modules
+#     must be set at launch so SGLang pre-sizes its adapter memory pool.
+#   - lora_target_modules uses HF leaf names; SGLang normalizes q/k/v -> qkv_proj
+#     and gate/up -> gate_up_proj internally, matching the receiver's adapter.
+#   - attention_backend=triton + lora_backend=triton are required (the LoRA
+#     kernels assume the triton path).
+# ============================================================================
+
+rollout:
+  max_concurrent_rollouts: 512
+  # Cap concurrent eval prefills to bound peak KV pressure during the
+  # ~3.5k-item eval burst (5 datasets x repeat=4) — default 128 OOMs sglang.
+  max_concurrent_evals: 64
+  pause_grace_period: 3
+  # Adaptive availability — drive /availability off sglang /get_load.
+  enable_adaptive_availability: true
+  target_waiting_queue_per_dp: 4
+  adaptive_step_size: 4
+  load_cache_ttl_ms: 100
+
+engine:
+  model0:
+    backend: sglang
+    data_parallel_size: 4
+    # Mirror the actor's LoRA setting (drives the inference engine's LoRA mode).
+    use_lora: true
+
+sglang:
+  context_length: 16384
+  mem_fraction_static: 0.7
+  # Chunk prefill so the LM-head fp32 logits upcast can't spike to ~16 GiB
+  # and OOM a worker (root cause of the step-101 hang). Bounds per-forward
+  # tokens to 8192.
+  chunked_prefill_size: 8192
+  max_running_requests: null
+  skip_tokenizer_init: true
+  attention_backend: triton
+  # ── LoRA ──
+  enable_lora: true
+  max_lora_rank: 32
+  lora_target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+  # The weight-sync path loads each new adapter under a fresh versioned name
+  # (lora_v{N}) and never explicitly unloads it (unloading an adapter with
+  # just-aborted in-flight requests can deadlock SGLang's wait_for_unload).
+  # max_loaded_loras caps the registry: once exceeded, SGLang LRU-evicts the
+  # OLDEST (long-drained) version, which is safe. 64 sits far above the
+  # staleness window (max_staleness=8), so no live off-policy request ever
+  # references an evicted adapter. max_loras_per_batch caps GPU-resident
+  # adapters (mem-pool LRU evicts the rest).
+  max_loaded_loras: 1024
+  max_loras_per_batch: 8
+  lora_backend: triton
