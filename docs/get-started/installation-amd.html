@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Installation (AMD ROCm) - AstraFlow 0.1.1 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quick Start" href="quickstart.html" /><link rel="prev" title="Installation" href="installation.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Installation (AMD ROCm)"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>AstraFlow</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Get Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation (AMD ROCm)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">System Components</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/overview.html">System Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/dataflow.html">Dataflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/raas.html">RaaS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/trainer.html">Trainer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/weight-manager.html">WeightManager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture/megatron-weight-sync.html">Megatron Weight Synchronization</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Recipes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/math.html">Math</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/math-offline.html">Math (Offline)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/multi-agent.html">Multi-Agent (Math)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/agentbench.html">AgentBench</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/search.html">Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../recipes/textcraft-recursive.html">TextCraft (Recursive Agent)</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#build-the-image">Build the image</a><ul>
+<li><a class="reference internal" href="#what-s-in-the-image">What&#8217;s in the image</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run">Run</a></li>
+<li><a class="reference internal" href="#verify-installation">Verify installation</a></li>
+<li><a class="reference internal" href="#notes">Notes</a><ul>
+<li><a class="reference internal" href="#rocm-specific-code-adaptations-already-in-astraflow">ROCm-specific code adaptations (already in AstraFlow)</a></li>
+<li><a class="reference internal" href="#recommended-runtime-env">Recommended runtime env</a></li>
+<li><a class="reference internal" href="#known-limitations">Known limitations</a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">AstraFlow</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Installation (AMD ROCm)</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="installation-amd-rocm">
+<h1>Installation (AMD ROCm)<a class="headerlink" href="#installation-amd-rocm" title="Link to this heading">¶</a></h1>
+<p>Running AstraFlow on AMD Instinct GPUs (MI300X / MI325X, <code class="docutils literal notranslate"><span class="pre">gfx942</span></code>) under
+ROCm. For the NVIDIA path, see <a class="reference internal" href="installation.html"><span class="std std-doc">Installation</span></a>.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Linux with the ROCm 7.0+ kernel driver installed (verify with <code class="docutils literal notranslate"><span class="pre">rocminfo</span></code>)</p></li>
+<li><p>AMD Instinct MI300X / MI325X (CDNA3 / <code class="docutils literal notranslate"><span class="pre">gfx942</span></code>)</p></li>
+<li><p>Docker</p></li>
+</ul>
+</section>
+<section id="build-the-image">
+<h2>Build the image<a class="headerlink" href="#build-the-image" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">cd</span><span class="w"> </span>/path/to/astraflow
+</span><span data-line="2">docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>docker/Dockerfile.rocm<span class="w"> </span>-t<span class="w"> </span>astraflow:rocm<span class="w"> </span>.
+</span></pre></div>
+</div>
+<p>The build pulls the SGLang ROCm base (~25 GB) and finishes in a few minutes;
+the resulting image is ~75 GB.</p>
+<section id="what-s-in-the-image">
+<h3>What’s in the image<a class="headerlink" href="#what-s-in-the-image" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">docker/Dockerfile.rocm</span></code> starts from the official SGLang ROCm image and layers
+AstraFlow on top <strong>without reinstalling the GPU stack</strong>. Specifically:</p>
+<ul class="simple">
+<li><p><strong>Base</strong> — <code class="docutils literal notranslate"><span class="pre">lmsysorg/sglang:v0.5.12.post1-rocm720-mi30x</span></code>: Python 3.10 venv at
+<code class="docutils literal notranslate"><span class="pre">/opt/venv</span></code>, <code class="docutils literal notranslate"><span class="pre">torch</span> <span class="pre">2.9.1+rocm7.2.0</span></code>, <code class="docutils literal notranslate"><span class="pre">sglang</span> <span class="pre">0.5.12.post1</span></code>, <code class="docutils literal notranslate"><span class="pre">sgl_kernel</span></code>,
+<a class="reference external" href="https://github.com/ROCm/aiter"><code class="docutils literal notranslate"><span class="pre">aiter</span></code></a> (the ROCm attention backend SGLang
+uses for inference), ROCm <code class="docutils literal notranslate"><span class="pre">apex</span></code>, ROCm <code class="docutils literal notranslate"><span class="pre">triton</span></code>.</p></li>
+<li><p><strong>Pinned base versions</strong> — a constraints file generated from
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span></code> is passed to every install step so pip cannot replace the
+ROCm-built <code class="docutils literal notranslate"><span class="pre">torch</span></code>, <code class="docutils literal notranslate"><span class="pre">sglang</span></code>, <code class="docutils literal notranslate"><span class="pre">triton</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, etc. with CUDA wheels.</p></li>
+<li><p><strong>AstraFlow + pure-python deps</strong> — <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code> with the CUDA-only
+pins stripped from <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>. <code class="docutils literal notranslate"><span class="pre">transformers</span></code> is bumped to 5.6.1 (the
+patch fix AstraFlow needs) over the base’s 5.6.0.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">megatron-core</span></code>, <code class="docutils literal notranslate"><span class="pre">mbridge</span></code>, <code class="docutils literal notranslate"><span class="pre">torchdata</span></code>, <code class="docutils literal notranslate"><span class="pre">torch_memory_saver</span></code></strong> —
+installed <code class="docutils literal notranslate"><span class="pre">--no-deps</span></code> (megatron-core’s <code class="docutils literal notranslate"><span class="pre">numpy&lt;2.0.0</span></code> pin conflicts with the
+base’s numpy 2.x but is fine at runtime); their import sites are reached on
+the FSDP path.</p></li>
+<li><p><strong>Flash Attention (Triton-AMD backend)</strong> —
+<code class="docutils literal notranslate"><span class="pre">FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">flash-attn==2.8.3</span></code>. This
+JITs Triton kernels on <code class="docutils literal notranslate"><span class="pre">gfx942</span></code> with no CK/CUDA compile (seconds, not
+minutes). The Dockerfile sets <code class="docutils literal notranslate"><span class="pre">ENV</span> <span class="pre">FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE</span></code>
+so the trainer’s <code class="docutils literal notranslate"><span class="pre">flash_attention_2</span></code> path dispatches to it automatically
+inside the container.</p></li>
+</ul>
+<blockquote>
+<div><p><strong><code class="docutils literal notranslate"><span class="pre">flash_attention_2</span></code> is a correctness requirement on ROCm, not a perf
+choice.</strong> AstraFlow’s FSDP trainer packs multiple sequences per microbatch
+and passes <code class="docutils literal notranslate"><span class="pre">cu_seq_lens_q/k</span></code>; transformers honors those boundaries only in
+the <code class="docutils literal notranslate"><span class="pre">flash_attention_2</span></code> path. Under <code class="docutils literal notranslate"><span class="pre">sdpa</span></code> the packed sub-sequences attend
+across boundaries, the trainer’s recomputed logprobs diverge from the
+rollout, importance weights explode, and the M2PO policy gradient is
+corrupted — while the task reward still looks plausible. The Triton-AMD
+<code class="docutils literal notranslate"><span class="pre">flash_attn</span></code> install above is what keeps this path correct.</p>
+</div></blockquote>
+</section>
+</section>
+<section id="run">
+<h2>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+</span><span data-line="2"><span class="w">  </span>--device<span class="o">=</span>/dev/kfd<span class="w"> </span>--device<span class="o">=</span>/dev/dri<span class="w"> </span>--group-add<span class="w"> </span>video<span class="w"> </span><span class="se">\</span>
+</span><span data-line="3"><span class="w">  </span>--cap-add<span class="o">=</span>SYS_PTRACE<span class="w"> </span>--security-opt<span class="w"> </span><span class="nv">seccomp</span><span class="o">=</span>unconfined<span class="w"> </span><span class="se">\</span>
+</span><span data-line="4"><span class="w">  </span>--ipc<span class="o">=</span>host<span class="w"> </span>--network<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">65536</span>:65536<span class="w"> </span><span class="se">\</span>
+</span><span data-line="5"><span class="w">  </span>-v<span class="w"> </span>/home:/home<span class="w"> </span><span class="se">\</span>
+</span><span data-line="6"><span class="w">  </span>-e<span class="w"> </span>HF_TOKEN<span class="w"> </span>-e<span class="w"> </span>WANDB_API_KEY<span class="w"> </span><span class="se">\</span>
+</span><span data-line="7"><span class="w">  </span>-it<span class="w"> </span>astraflow:rocm
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--device=/dev/kfd</span> <span class="pre">--device=/dev/dri</span> <span class="pre">--group-add</span> <span class="pre">video</span></code> give the container
+access to the AMD GPUs. The recipe launcher
+(<code class="docutils literal notranslate"><span class="pre">examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full_amd.sh</span></code>)
+wraps the same <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> and runs the recipe end-to-end.</p>
+<blockquote>
+<div><p><strong>Note on <code class="docutils literal notranslate"><span class="pre">--shm-size</span></code>:</strong> RaaS stages received model weights under
+<code class="docutils literal notranslate"><span class="pre">/dev/shm/astraflow_weights</span></code> during weight transfer. The container default
+(64 MB) and small values like <code class="docutils literal notranslate"><span class="pre">16g</span></code> are far too small for 8B-scale recipes
+and cause <code class="docutils literal notranslate"><span class="pre">OSError:</span> <span class="pre">[Errno</span> <span class="pre">28]</span> <span class="pre">No</span> <span class="pre">space</span> <span class="pre">left</span> <span class="pre">on</span> <span class="pre">device</span></code> during training.
+<code class="docutils literal notranslate"><span class="pre">--shm-size=512g</span></code> is a tmpfs <em>cap</em>, not a reservation, so it only consumes
+host RAM as actually used — set it comfortably below host RAM.</p>
+</div></blockquote>
+<blockquote>
+<div><p><strong>Note on <code class="docutils literal notranslate"><span class="pre">--ulimit</span> <span class="pre">nofile</span></code>:</strong> a recipe run drives many concurrent rollouts
+whose reward workers open a large number of file descriptors. The container
+default (1024) is too low and the reward pool fails with <code class="docutils literal notranslate"><span class="pre">[Errno</span> <span class="pre">24]</span> <span class="pre">Too</span> <span class="pre">many</span> <span class="pre">open</span> <span class="pre">files</span></code>. Raise it with <code class="docutils literal notranslate"><span class="pre">--ulimit</span> <span class="pre">nofile=65536:65536</span></code>.</p>
+</div></blockquote>
+</section>
+<section id="verify-installation">
+<h2>Verify installation<a class="headerlink" href="#verify-installation" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span data-line="2"><span class="s2">import astraflow, torch, transformers</span>
+</span><span data-line="3"><span class="s2">print(f&#39;astraflow:    {astraflow.version.__version__}&#39;)</span>
+</span><span data-line="4"><span class="s2">print(f&#39;torch:        {torch.__version__}, hip={torch.version.hip}, GPUs: {torch.cuda.device_count()}&#39;)</span>
+</span><span data-line="5"><span class="s2">print(f&#39;transformers: {transformers.__version__}&#39;)</span>
+</span><span data-line="6"><span class="s2">&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+</span><span data-line="9"><span class="s2">import flash_attn, sglang</span>
+</span><span data-line="10"><span class="s2">from flash_attn import flash_attn_varlen_func</span>
+</span><span data-line="11"><span class="s2">print(f&#39;flash-attn: {flash_attn.__version__} (varlen OK)&#39;)</span>
+</span><span data-line="12"><span class="s2">print(f&#39;sglang:     {sglang.__version__}&#39;)</span>
+</span><span data-line="13"><span class="s2">&quot;</span>
+</span></pre></div>
+</div>
+<p>Then run the math recipe with a small smoke step count:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nv">SMOKE_STEPS</span><span class="o">=</span><span class="m">2</span><span class="w"> </span>bash<span class="w"> </span>examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full_amd.sh
+</span></pre></div>
+</div>
+<p>A healthy ROCm run logs <code class="docutils literal notranslate"><span class="pre">importance_sampling/importance_weight/avg</span> <span class="pre">≈</span> <span class="pre">1.0000</span></code>
+on the first PPO step. Values far from 1 (e.g. ≈ 0.4) or
+<code class="docutils literal notranslate"><span class="pre">m2po_mean_m2</span> <span class="pre">≫</span> <span class="pre">0.01</span></code> indicate the attention path is broken (most commonly
+<code class="docutils literal notranslate"><span class="pre">flash_attention_2</span></code> is not active).</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<section id="rocm-specific-code-adaptations-already-in-astraflow">
+<h3>ROCm-specific code adaptations (already in AstraFlow)<a class="headerlink" href="#rocm-specific-code-adaptations-already-in-astraflow" title="Link to this heading">¶</a></h3>
+<p>Two minor adaptations live in the tree so a fresh ROCm install works out of
+the box — no user action needed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">astraflow/train_worker/platforms/__init__.py</span></code> recognizes ROCm/HIP and
+returns <code class="docutils literal notranslate"><span class="pre">CudaPlatform</span></code> (NCCL → RCCL is handled by ROCm PyTorch).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">astraflow/train_worker/utils/functional/vocab_parallel.py</span></code> falls back to
+eager for <code class="docutils literal notranslate"><span class="pre">_gather_logprobs</span></code> on ROCm where inductor codegen of these
+reductions currently fails on <code class="docutils literal notranslate"><span class="pre">gfx942</span></code>. Override with
+<code class="docutils literal notranslate"><span class="pre">ASTRAFLOW_FORCE_TORCH_COMPILE=1</span></code> to try compile.</p></li>
+</ul>
+</section>
+<section id="recommended-runtime-env">
+<h3>Recommended runtime env<a class="headerlink" href="#recommended-runtime-env" title="Link to this heading">¶</a></h3>
+<p>The recipe launcher sets these for you; if you exec into the container
+manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">NCCL_CUMEM_ENABLE</span><span class="o">=</span><span class="m">0</span>
+</span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">PYTORCH_HIP_ALLOC_CONF</span><span class="o">=</span>expandable_segments:True
+</span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">MIOPEN_USER_DB_PATH</span><span class="o">=</span>/tmp/miopen/db
+</span><span data-line="4"><span class="nb">export</span><span class="w"> </span><span class="nv">MIOPEN_CUSTOM_CACHE_DIR</span><span class="o">=</span>/tmp/miopen/cache
+</span><span data-line="5">mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MIOPEN_USER_DB_PATH</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MIOPEN_CUSTOM_CACHE_DIR</span><span class="s2">&quot;</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">FLASH_ATTENTION_TRITON_AMD_ENABLE=TRUE</span></code> is already set by <code class="docutils literal notranslate"><span class="pre">ENV</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Dockerfile.rocm</span></code>. <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES</span></code> works as-is — ROCm PyTorch maps it
+to HIP devices, so the recipe’s
+<code class="docutils literal notranslate"><span class="pre">SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3</span></code> / <code class="docutils literal notranslate"><span class="pre">TRAINER_MODEL0_GPUS=4,5,6,7</span></code> split
+works unchanged.</p>
+</section>
+<section id="known-limitations">
+<h3>Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Megatron-LM backend</strong> (Transformer Engine + apex) is not built into the
+ROCm image. Use the FSDP backend on ROCm (the math recipe’s default).</p></li>
+<li><p>The base SGLang ROCm image’s <code class="docutils literal notranslate"><span class="pre">xgrammar</span></code> pins <code class="docutils literal notranslate"><span class="pre">apache-tvm-ffi</span> <span class="pre">&gt;=</span> <span class="pre">0.1.9</span></code> while
+the installed version is <code class="docutils literal notranslate"><span class="pre">0.1.8</span></code>; the warning is harmless for math RL (no
+grammar-constrained decoding is used).</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="installation.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Installation</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="quickstart.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Quick Start</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2025-2026, AstraFlow Team</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+  <iconify-icon icon="simple-icons:github"></iconify-icon>
+</a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>
