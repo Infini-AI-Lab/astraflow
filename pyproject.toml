@@ -140,7 +140,12 @@ te = [
 ]
 
 sglang = [
-    "sglang==0.5.12.post1",
+    # Pinned to the validated main-branch build (commit 373cadc9): it ships qwen3_5
+    # support + the TritonGDNKernel and requires transformers==5.8.1. The published
+    # 0.5.12.post1 release predates qwen3_5 and pins transformers 5.6.x, so it is
+    # not usable for the Qwen3.5 recipe. Installs from source (sgl-project/sglang,
+    # subdirectory=python); see examples/math/qwen3.5-4b-m2po-full/README.md.
+    "sglang @ git+https://github.com/sgl-project/sglang.git@373cadc92ea421710e32c395e8c0e931f000c707#subdirectory=python",
 ]
 
 vllm = [
@@ -192,20 +197,19 @@ include = ["astraflow*"]
 exclude = ["tests*", "docs*", "examples*"]
 
 [tool.uv]
-# sglang 0.5.12 depends on flash-attn-4>=4.0.0b9 (a pre-release wheel, pulled
-# in automatically as a sglang dependency). Without this, `uv pip install
+# The pinned sglang build depends on flash-attn-4>=4.0.0b9 (a pre-release wheel,
+# pulled in automatically as a sglang dependency). Without this, `uv pip install
 # -e ".[sglang]"` fails to resolve with "pre-releases weren't enabled".
 prerelease = "allow"
 exclude-dependencies = ["flash-attn"]
 override-dependencies=[
     "outlines-core==0.1.26",
-    # The Qwen3.5 + Qwen3-dense math recipes are validated on transformers 5.8.1
-    # (see examples/math/qwen3.5-4b-m2po-full/README.md). sglang 0.5.12 pins
-    # transformers==5.6.0; override that exact pin to install the validated 5.8.1.
+    # Pin transformers to 5.8.1, the version the pinned sglang build requires and
+    # the Qwen3.5 + Qwen3-dense math recipes are validated on
+    # (see examples/math/qwen3.5-4b-m2po-full/README.md).
     "transformers==5.8.1",
-    # transformers 5.8.1 is validated against kernels 0.14.x (sglang otherwise
-    # resolves kernels 0.15+, whose LayerRepository() revision handling breaks
-    # `import sglang`). Pin to the range the validated stack was built against.
+    # The pinned sglang build requires kernels<0.15; pin >=0.14 so uv selects the
+    # validated 0.14.x rather than an older kernels release.
     "kernels>=0.14.0,<0.15",
 ]
 
