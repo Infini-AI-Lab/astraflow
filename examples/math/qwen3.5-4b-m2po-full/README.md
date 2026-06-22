@@ -34,14 +34,13 @@ hand-patched framework source:
 | `flashinfer-python` | `0.6.11.post1` |
 | attention impl | `sdpa` (set in `experiment.yaml`) |
 
-> **Install note.** The repo's default `pyproject.toml` pins
-> (`transformers==5.6.1`, `sglang==0.5.12.post1`) resolve and *load* `qwen3_5`,
-> but the recipe was trained on the stack above — install it out of band
-> (e.g. a dedicated env). A `pyproject` pin bump is intentionally **not** part
-> of this PR: the validated SGLang is a dev build (older than the pinned
-> `0.5.12.post1`), so it cannot be pinned to a clean release yet. Bumping the
-> pins is deferred to a separate, explicitly-tested PR once a published SGLang
-> release with `qwen3_5` support is available.
+> **Install note.** `pyproject.toml` pins `transformers==5.8.1` (the validated
+> training version) with `kernels>=0.14,<0.15`; `torch` is already `2.11.0` and
+> `flashinfer` is pulled in automatically as an SGLang dependency. SGLang itself
+> stays pinned at the published `0.5.12.post1` — the Qwen3.5 *inference* path
+> above was validated on an SGLang main/dev build that ships `qwen3_5` +
+> `TritonGDNKernel`, so if your installed SGLang doesn't serve `qwen3_5`, install
+> a build that does.
 
 ## GPU layout (default, 8 GPUs)
 
