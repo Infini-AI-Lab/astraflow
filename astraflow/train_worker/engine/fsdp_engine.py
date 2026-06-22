@@ -1206,11 +1206,11 @@ class FSDPEngine(TrainEngine):
             padded_mb["use_cache"] = False
             # Always pass attention_mask=None for the packed/varlen forward: per-sequence
             # causal masking is driven by cu_seqlens + position_ids, and the model builds
-            # the right mask from None. The old dict(full_attention=None, sliding_attention=
-            # None) form is a transformers-4.x relic: on transformers>=5 a dense model
-            # (qwen3 / qwen2) treats that dict as a *precomputed* mask, skips creation, and
-            # crashes. Passing None lets the model build its mask from cu_seqlens +
-            # position_ids instead.
+            # the right mask from None. The old dict(full_attention=None,
+            # sliding_attention=None) form is a transformers-4.x relic: on transformers>=5
+            # a dense model (qwen3 / qwen2) treats that dict as a *precomputed* mask, skips
+            # creation, and crashes. Passing None lets the model build its mask from
+            # cu_seqlens + position_ids instead.
             mb["attention_mask"] = None
             padded_mb["attention_mask"] = None
             if "multi_modal_input" in mb:

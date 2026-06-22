@@ -34,17 +34,16 @@ hand-patched framework source:
 | `flashinfer-python` | `0.6.11.post1` |
 | attention impl | `sdpa` (set in `experiment.yaml`) |
 
-> **Install note.** `pyproject.toml` pins `transformers==5.8.1` (the validated
-> training version) with `kernels>=0.14,<0.15`; `torch` is already `2.11.0` and
-> `flashinfer` is pulled in automatically as an SGLang dependency. SGLang itself
-> stays pinned at the published `0.5.12.post1` — the Qwen3.5 *inference* path
-> above was validated on an SGLang main/dev build that ships `qwen3_5` +
-> `TritonGDNKernel`, so if your installed SGLang doesn't serve `qwen3_5`, install
-> a build that does.
+> **Install note.** `pyproject.toml` pins the full validated stack:
+> `transformers==5.8.1` (with `kernels>=0.14,<0.15`), `torch==2.11.0`, and SGLang
+> pinned to the validated main-branch build (`sgl-project/sglang` @ `373cadc9`) —
+> the published `0.5.12.post1` release predates `qwen3_5`, so the git build is
+> required. It installs from source and pulls `flashinfer` in automatically, so
+> `uv pip install -e ".[sglang]"` resolves the validated environment directly.
 
 ## GPU layout (default, 8 GPUs)
 
-```
+```text
 SERVICE_CUDA_VISIBLE_DEVICES=0,1,2,3  ->  RaaS / SGLang inference (model0, dp=4)
 TRAINER_MODEL0_GPUS=4,5,6,7           ->  Trainer model0 (FSDP, 4 GPUs)
 ```

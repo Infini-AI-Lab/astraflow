@@ -14,8 +14,11 @@
 
 rollout:
   max_concurrent_rollouts: 512
+  # Cap concurrent eval prefills to bound peak KV pressure during the
+  # ~3.5k-item eval burst (5 datasets x repeat=4) — default 128 OOMs sglang.
   max_concurrent_evals: 64
   pause_grace_period: 3
+  # Adaptive availability — drive /availability off sglang /get_load.
   enable_adaptive_availability: true
   target_waiting_queue_per_dp: 4
   adaptive_step_size: 4

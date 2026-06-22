@@ -5,7 +5,7 @@ VALID_VISION_MODELS = [
     "qwen2_vl",
     "qwen2_5_vl",
     "qwen3_vl",
-    # qwen3.5 dense math checkpoints ship as Qwen3_5ForConditionalGeneration, so they
+    # Qwen3.5 dense math checkpoints ship as Qwen3_5ForConditionalGeneration, so they
     # load via the ImageTextToText path even though these recipes train text-only.
     "qwen3_5",
     "gemma3",
