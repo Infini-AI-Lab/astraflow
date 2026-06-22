@@ -1209,7 +1209,8 @@ class FSDPEngine(TrainEngine):
             # the right mask from None. The old dict(full_attention=None, sliding_attention=
             # None) form is a transformers-4.x relic: on transformers>=5 a dense model
             # (qwen3 / qwen2) treats that dict as a *precomputed* mask, skips creation, and
-            # crashes. None is correct for all archs (dense, moe, vl, qwen3.5/GDN).
+            # crashes. Passing None lets the model build its mask from cu_seqlens +
+            # position_ids instead.
             mb["attention_mask"] = None
             padded_mb["attention_mask"] = None
             if "multi_modal_input" in mb:

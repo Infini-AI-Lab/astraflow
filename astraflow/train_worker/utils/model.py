@@ -5,6 +5,8 @@ VALID_VISION_MODELS = [
     "qwen2_vl",
     "qwen2_5_vl",
     "qwen3_vl",
+    # qwen3.5 dense math checkpoints ship as Qwen3_5ForConditionalGeneration, so they
+    # load via the ImageTextToText path even though these recipes train text-only.
     "qwen3_5",
     "gemma3",
 ]
@@ -24,10 +26,6 @@ def is_qwen2_vl_model(model_type: str) -> bool:
 
 def is_qwen3_vl_model(model_type: str) -> bool:
     return model_type in ["qwen3_vl"]
-
-
-def is_qwen3_5_model(model_type: str) -> bool:
-    return model_type in ["qwen3_5"]
 
 
 def is_qwen_vl_model(model_type: str) -> bool:
