@@ -86,7 +86,7 @@ dependencies = [
     "numba",
     "blosc",
     "pybind11>=2.10.0",
-    "networkx==3.3",
+    "networkx==3.6.1",
     "aiofiles",
     "aiohttp>=3.11.10",
     "httpx>=0.28.1",
@@ -147,6 +147,10 @@ sglang = [
     # (sgl-project/sglang, subdirectory=python); see
     # examples/math/qwen3.5-4b-m2po-full/README.md.
     "sglang @ git+https://github.com/sgl-project/sglang.git@373cadc92ea421710e32c395e8c0e931f000c707#subdirectory=python",
+    # Fast Gated-DeltaNet kernels for Qwen3.5 GDN training. Optional (transformers
+    # falls back to a slower pure-torch path when absent), but the validated runs
+    # used it; pin to the validated version.
+    "flash-linear-attention==0.5.0",
 ]
 
 vllm = [
