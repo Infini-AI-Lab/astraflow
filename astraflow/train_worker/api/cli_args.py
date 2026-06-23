@@ -473,10 +473,22 @@ class TrainEngineConfig:
     trial_name: str = ""
     path: str = field(default="", metadata={"help": "Path to HuggingFace checkpoint"})
     attn_impl: str = field(
-        default="flash_attention_2",
+        default="kernels-community/flash-attn2",
         metadata={
-            "help": "Attention implementation for huggingface transformers model.",
-            "choices": ["flash_attention_2", "sdpa", "eager"],
+            "help": (
+                "Attention implementation for huggingface transformers model. "
+                "Default pulls a prebuilt FlashAttention-2 kernel from the HF kernels "
+                "hub (ABI-matched to torch, incl. varlen for packed sequences). The "
+                "literal 'flash_attention_2' loads the local flash-attn wheel, which is "
+                "ABI-broken on torch>=2.11+cu13; 'sdpa' works but relies on position_ids "
+                "resets for packed block-diagonal masking."
+            ),
+            "choices": [
+                "kernels-community/flash-attn2",
+                "flash_attention_2",
+                "sdpa",
+                "eager",
+            ],
         },
     )
     init_from_scratch: bool = field(
