@@ -1,0 +1,49 @@
+# ============================================================================
+# RaaS config — Inference serving instance (hardware/resources)
+# Experiment: math / qwen3.5-4b-m2po-delta
+#
+# Hardware: 4x GPU, TP=1
+#   model0:  DP=4, TP=1
+#
+# Qwen3.5-4B is a hybrid Gated-DeltaNet model: SGLang allocates a Mamba/SSM
+# state cache (~10 GB) in addition to the KV cache, so keep mem_fraction_static
+# conservative. Served by SGLang main via its TritonGDNKernel backend.
+#
+# Merged with experiment.yaml at launch (--config experiment.yaml --config raas.yaml)
+# ============================================================================
+
+rollout:
+  max_concurrent_rollouts: 512
+  max_concurrent_evals: 64
+  pause_grace_period: 3
+  enable_adaptive_availability: true
+  target_waiting_queue_per_dp: 4
+  adaptive_step_size: 4
+  load_cache_ttl_ms: 100
+
+engine:
+  model0:
+    backend: sglang
+    data_parallel_size: 4
+
+sglang:
+  context_length: 8192
+  mem_fraction_static: 0.7
+  # Attention backend. NOTE: this is specific to Qwen3.5's HYBRID
+  # Gated-DeltaNet architecture, NOT a general L40 limitation:
+  #   - Plain dense Qwen3 (full-attention) runs fine with the default fa3 on
+  #     L40/Ada. But for Qwen3.5's GDN path, fa3 dispatches a Hopper-only
+  #     kernel (hopper/flash_fwd_launch_template.h) that fails on Ada (sm_89)
+  #     with "CUDA error: invalid argument" under real load.
+  #   - On non-Hopper archs SGLang auto-selects flashinfer (full-attn) +
+  #     triton (the GDN/linear-attn + mamba layers). Both flashinfer and
+  #     triton are verified working for Qwen3.5-4B here; flashinfer is set
+  #     explicitly (SGLang's literal auto-default on Ada/L40). triton is an
+  #     equally-valid alternative (set attention_backend: triton).
+  attention_backend: flashinfer
+  # Cap concurrency: with n_samples=8 x max_new_tokens=4000 and an
+  # unbounded queue, the hybrid GDN's KV + Mamba state cache overflows
+  # -> 'KV cache pool full, retract' -> CUDA OOM on a 44GB L40. 32 keeps
+  # peak KV bounded while still saturating the engine.
+  max_running_requests: 32
+  skip_tokenizer_init: true
