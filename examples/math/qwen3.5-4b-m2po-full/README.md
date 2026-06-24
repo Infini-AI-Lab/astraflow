@@ -29,17 +29,16 @@ hand-patched framework source:
 | `torch` | `2.11.0+cu130` |
 | `transformers` | `5.8.1` |
 | `kernels` | `0.14.1` |
-| `sglang` | main/dev with `qwen3_5` support, served with `attention_backend: flashinfer` (validated build `0.5.6.post3.dev5643`) |
+| `sglang` | `0.5.13.post1` (published release with `qwen3_5` support), served with `attention_backend: flashinfer` |
 | `flash-linear-attention` (`fla`) | `0.5.0` |
-| `flashinfer-python` | `0.6.11.post1` |
+| `flashinfer-python` | `0.6.12` (pulled by sglang) |
 | attention impl | `sdpa` (set in `experiment.yaml`) |
 
 > **Install note.** `pyproject.toml` pins the full validated stack:
-> `transformers==5.8.1` (with `kernels>=0.14,<0.15`), `torch==2.11.0`, and SGLang
-> pinned to the validated main-branch build (`sgl-project/sglang` @ `373cadc9`) —
-> the published `0.5.12.post1` release predates `qwen3_5`, so the git build is
-> required. It installs from source and pulls `flashinfer` in automatically, so
-> `uv pip install -e ".[sglang]"` resolves the validated environment directly.
+> `transformers==5.8.1` (with `kernels>=0.14,<0.15`), `torch==2.11.0`, and
+> `sglang==0.5.13.post1` — the published release that ships `qwen3_5` support (the
+> older `0.5.12.post1` predated it). It pulls `flashinfer 0.6.12` in automatically,
+> so `uv pip install -e ".[sglang]"` resolves the validated environment directly.
 
 ## GPU layout (default, 8 GPUs)
 

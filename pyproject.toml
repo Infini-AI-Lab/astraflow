@@ -140,13 +140,13 @@ te = [
 ]
 
 sglang = [
-    # Pinned to the validated main-branch build (commit 373cadc9): it ships
-    # qwen3_5 support + the TritonGDNKernel and requires transformers==5.8.1. The
-    # published 0.5.12.post1 release predates qwen3_5 and pins transformers 5.6.x,
-    # so it is not usable for the Qwen3.5 recipe. Installs from source
-    # (sgl-project/sglang, subdirectory=python); see
-    # examples/math/qwen3.5-4b-m2po-full/README.md.
-    "sglang @ git+https://github.com/sgl-project/sglang.git@373cadc92ea421710e32c395e8c0e931f000c707#subdirectory=python",
+    # Pinned to the validated published release 0.5.13.post1: it ships qwen3_5
+    # support (sglang/srt/models/qwen3_5.py) + the TritonGDNKernel and requires
+    # transformers==5.8.1. (A git build was pinned earlier while the then-latest
+    # 0.5.12.post1 still predated qwen3_5; 0.5.13.post1 supersedes it and is the
+    # release the Qwen3.5 + Qwen3-dense math recipes are validated against -- see
+    # examples/math/qwen3.5-4b-m2po-full/README.md.)
+    "sglang==0.5.13.post1",
     # Fast Gated-DeltaNet kernels for Qwen3.5 GDN training. Optional (transformers
     # falls back to a slower pure-torch path when absent), but the validated runs
     # used it; pin to the validated version.
@@ -202,18 +202,19 @@ include = ["astraflow*"]
 exclude = ["tests*", "docs*", "examples*"]
 
 [tool.uv]
-# The pinned sglang build depends on flash-attn-4>=4.0.0b9 (a pre-release wheel,
-# pulled in automatically as a sglang dependency). Without this, `uv pip install
-# -e ".[sglang]"` fails to resolve with "pre-releases weren't enabled".
+# The pinned sglang release (0.5.13.post1) depends on flash-attn-4>=4.0.0b9 (a
+# pre-release wheel -- 4.0.0b15 in the validated env -- pulled in automatically as
+# a sglang dependency). Without this, `uv pip install -e ".[sglang]"` fails to
+# resolve with "pre-releases weren't enabled".
 prerelease = "allow"
 exclude-dependencies = ["flash-attn"]
 override-dependencies=[
     "outlines-core==0.1.26",
-    # Pin transformers to 5.8.1, the version the pinned sglang build requires and
+    # Pin transformers to 5.8.1, the version the pinned sglang release requires and
     # the Qwen3.5 + Qwen3-dense math recipes are validated on
     # (see examples/math/qwen3.5-4b-m2po-full/README.md).
     "transformers==5.8.1",
-    # The pinned sglang build requires kernels<0.15; pin >=0.14 so uv selects the
+    # The pinned sglang release requires kernels<0.15; pin >=0.14 so uv selects the
     # validated 0.14.x rather than an older kernels release.
     "kernels>=0.14.0,<0.15",
 ]
