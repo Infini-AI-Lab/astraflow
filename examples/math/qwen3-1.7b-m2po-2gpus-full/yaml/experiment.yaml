@@ -109,6 +109,7 @@ trainer_base:
     data_parallel_size: 1
 
   actor:
+    attn_impl: kernels-community/flash-attn2
     gradient_checkpointing: true
     mb_spec:
       max_tokens_per_mb: 17408
@@ -134,6 +135,7 @@ trainer_base:
     adv_norm: { mean_level: batch, std_level: batch }
 
   ref:
+    attn_impl: kernels-community/flash-attn2
     mb_spec:
       max_tokens_per_mb: 17408
 

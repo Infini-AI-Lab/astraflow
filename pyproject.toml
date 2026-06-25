@@ -47,7 +47,7 @@ dependencies = [
     "torchdata",
     "huggingface_hub",
     "datasets>=3.0.0",
-    "transformers==5.6.1",
+    "transformers==5.8.1",
     "megatron-core==0.13.1",
     "mbridge==0.13.0",
     "torch_memory_saver==0.0.9.post1",
@@ -86,7 +86,7 @@ dependencies = [
     "numba",
     "blosc",
     "pybind11>=2.10.0",
-    "networkx==3.3",
+    "networkx==3.6.1",
     "aiofiles",
     "aiohttp>=3.11.10",
     "httpx>=0.28.1",
@@ -140,7 +140,17 @@ te = [
 ]
 
 sglang = [
-    "sglang==0.5.12.post1",
+    # Pinned to the validated published release 0.5.13.post1: it ships qwen3_5
+    # support (sglang/srt/models/qwen3_5.py) + the TritonGDNKernel and requires
+    # transformers==5.8.1. (A git build was pinned earlier while the then-latest
+    # 0.5.12.post1 still predated qwen3_5; 0.5.13.post1 supersedes it and is the
+    # release the Qwen3.5 + Qwen3-dense math recipes are validated against -- see
+    # examples/math/qwen3.5-4b-m2po-full/README.md.)
+    "sglang==0.5.13.post1",
+    # Fast Gated-DeltaNet kernels for Qwen3.5 GDN training. Optional (transformers
+    # falls back to a slower pure-torch path when absent), but the validated runs
+    # used it; pin to the validated version.
+    "flash-linear-attention==0.5.0",
 ]
 
 vllm = [
@@ -192,23 +202,21 @@ include = ["astraflow*"]
 exclude = ["tests*", "docs*", "examples*"]
 
 [tool.uv]
-# sglang 0.5.12 depends on flash-attn-4>=4.0.0b9 (a pre-release wheel, pulled
-# in automatically as a sglang dependency). Without this, `uv pip install
-# -e ".[sglang]"` fails to resolve with "pre-releases weren't enabled".
+# The pinned sglang release (0.5.13.post1) depends on flash-attn-4>=4.0.0b9 (a
+# pre-release wheel -- 4.0.0b15 in the validated env -- pulled in automatically as
+# a sglang dependency). Without this, `uv pip install -e ".[sglang]"` fails to
+# resolve with "pre-releases weren't enabled".
 prerelease = "allow"
 exclude-dependencies = ["flash-attn"]
 override-dependencies=[
     "outlines-core==0.1.26",
-    # sglang 0.5.12 pins transformers==5.6.0, which has a flash-attention bug
-    # (unconditional s_aux.to() crashes non-sink models like Qwen3). 5.6.1 is
-    # a patch release that fixes it; override sglang's exact pin to pick it up.
-    "transformers==5.6.1",
-    # sglang requires an unbounded "kernels", so uv resolves the latest (0.15+),
-    # but transformers 5.6.1 only supports kernels<0.13 (its hub_kernels module
-    # calls LayerRepository() without a revision/version, which 0.15 rejects ->
-    # `import sglang` crashes with "Either a revision or a version must be
-    # specified."). Pin to the range transformers 5.6.1 was built against.
-    "kernels>=0.12.0,<0.13",
+    # Pin transformers to 5.8.1, the version the pinned sglang release requires and
+    # the Qwen3.5 + Qwen3-dense math recipes are validated on
+    # (see examples/math/qwen3.5-4b-m2po-full/README.md).
+    "transformers==5.8.1",
+    # The pinned sglang release requires kernels<0.15; pin >=0.14 so uv selects the
+    # validated 0.14.x rather than an older kernels release.
+    "kernels>=0.14.0,<0.15",
 ]
 
 [tool.uv.extra-build-dependencies]
