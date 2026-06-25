@@ -70,3 +70,10 @@ Qwen3.5-4B-full, overall metrics across the eval suite:
 |---|---|---|---|
 | overall avg@k | 47.8% | 57.4% | +9.6 |
 | overall pass@k | 56.5% | 67.4% | +10.9 |
+
+The table above was produced on the predecessor SGLang git build. Both variants
+(`full` and `delta`) were subsequently re-validated end-to-end on the pinned
+`sglang==0.5.13.post1` release: training completes with no crashes, full
+(`shard_copy`) and delta (~7× compressed) weight transfer both function, and
+eval holds at the baseline (overall avg@k ≈ 49–51% over a short run) — i.e. the
+published-release pin introduces no regression versus the git build.
