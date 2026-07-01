@@ -14,7 +14,8 @@
 #   - lora_target_modules uses HF leaf names; SGLang normalizes q/k/v -> qkv_proj
 #     and gate/up -> gate_up_proj internally, matching the receiver's adapter.
 #   - lora_backend=triton is required (the LoRA kernels assume the triton path).
-#   - Single-version pause-and-swap: max_loaded_loras / max_loras_per_batch = 1.
+#   - Versioned pause-and-swap: each step loads a fresh adapter name; the registry
+#     (max_loaded_loras) and GPU pool (max_loras_per_batch) LRU-evict old versions.
 # ============================================================================
 
 rollout:
@@ -43,11 +44,13 @@ sglang:
   enable_lora: true
   max_lora_rank: 32
   lora_target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
-  # Versioned adapters accumulate in the registry (we never unload, to avoid
-  # SGLang's wait_for_unload deadlock). max_loaded_loras caps the registry —
-  # size it above the expected step count; max_loras_per_batch caps GPU-resident
-  # adapters (mem-pool LRU evicts the rest) and allows a couple versions to
-  # coexist at weight-sync boundaries.
+  # Versioned adapters accumulate in the registry; we don't explicitly unload.
+  # max_loaded_loras caps the registry (LRU-evicts old versions once full);
+  # max_loras_per_batch caps GPU-resident adapters (mem-pool LRU evicts the rest)
+  # and lets a couple versions coexist at weight-sync boundaries. The registry-LRU
+  # eviction internally calls SGLang's wait_for_unload, which is now safe:
+  # LoRACounterLeakPatch (astraflow/raas/patch/sglang.py) fixes the abort-time
+  # usage-counter leak that used to hang it once this cap was reached.
   max_loaded_loras: 256
   max_loras_per_batch: 4
   lora_backend: triton

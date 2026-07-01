@@ -754,22 +754,30 @@ class RemoteInfEngine:
         ``abort_all_requests: True`` and ``flush_cache`` internally.
 
         For LoRA adapters (``use_lora=True``): loads the new adapter under a
-        fresh versioned name (``lora_v{seq}``) without unloading the previous
-        one, then flushes the KV cache. We never unload because unloading an
-        adapter with paused/aborted in-flight requests deadlocks SGLang's
-        ``wait_for_unload``; SGLang's mem-pool LRU reclaims GPU slots for
-        stale adapters automatically (bounded by ``max_loras_per_batch``).
+        fresh versioned name (``lora_v{seq}``) without explicitly unloading the
+        previous one, then flushes the KV cache. SGLang's registry LRU evicts
+        old versions once ``max_loaded_loras`` is reached and its mem-pool LRU
+        reclaims GPU slots (bounded by ``max_loras_per_batch``); an evicted
+        adapter is transparently re-loaded on next use.
+
+        Historically, explicitly unloading an adapter that still had
+        paused/aborted in-flight requests deadlocked SGLang's ``wait_for_unload``
+        because the adapter's usage counter was never released on abort. That
+        leak is now fixed at the source by ``LoRACounterLeakPatch``
+        (``astraflow/raas/patch/sglang.py``), so unload/eviction is safe. We keep
+        the fresh-name scheme because it stays correct without draining under
+        ``lora_update_lock`` on every sync.
         """
         import time as _time
 
         _t0 = _time.monotonic()
 
         if use_lora:
-            # Load under a NEW versioned name and do NOT unload the old one.
-            # Unloading an adapter with paused/aborted in-flight requests
-            # deadlocks SGLang's ``wait_for_unload`` (the usage counter for
-            # aborted requests is never released). A fresh name has no such
-            # counter; SGLang's mem-pool LRU evicts stale adapters from GPU.
+            # Load under a NEW versioned name and do NOT explicitly unload the
+            # old one. The abort-time usage-counter leak that used to make
+            # ``wait_for_unload`` (and thus registry-LRU eviction) hang is fixed
+            # by LoRACounterLeakPatch, so eviction is safe; the fresh name also
+            # avoids draining under ``lora_update_lock`` on every sync.
             self._lora_seq += 1
             lora_name = f"lora_v{self._lora_seq}"
             logger.info(
