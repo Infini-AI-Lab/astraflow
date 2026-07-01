@@ -1815,11 +1815,15 @@ class RaaS3Manager:
                 model_id, exc_info=True,
             )
 
-        # Sync LoRA state to eval engines
+        # Sync LoRA state to eval engines. They share the same SGLang server,
+        # so they must use the same versioned adapter name in generation.
         if use_lora:
+            main_inner = getattr(engine, "_engine", engine)
+            cur_name = getattr(main_inner, "_current_lora_name", None)
             for eval_eng in self._eval_engines.values():
                 inner = getattr(eval_eng, "_engine", eval_eng)
                 inner.lora_initialized = True
+                inner._current_lora_name = cur_name
 
         _timing = (
             f"notify_version: loaded {model_id} v={version}  "
