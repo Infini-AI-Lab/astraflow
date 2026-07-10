@@ -31,6 +31,12 @@ engine:
 sglang:
   context_length: 8192
   mem_fraction_static: 0.7
+  # [H100 fix] Chunk the prefill. With the default -1 (off), a batch's prefill
+  # upcasts the LM-head logits to fp32 in one shot -> worker stalls/OOMs ->
+  # rollout starvation -> "detokenizer unresponsive" health-check failures ->
+  # scheduler crash in forward_extend (observed on 8xH100). The qwen3-8b recipe
+  # already sets this; the GDN hybrid needs it too.
+  chunked_prefill_size: 8192
   # Attention backend. NOTE: this is specific to Qwen3.5's HYBRID
   # Gated-DeltaNet architecture, NOT a general L40 limitation:
   #   - Plain dense Qwen3 (full-attention) runs fine with the default fa3 on
