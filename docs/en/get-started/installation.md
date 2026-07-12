@@ -28,7 +28,7 @@ pip install -U "uv>=0.10"
 > (`extra-build-dependencies`, `override-dependencies`) that older uv
 > releases don't recognize. When uv hits an unknown `[tool.uv]` key it
 > silently ignores the *entire* `[tool.uv]` table, so the
-> `transformers==5.6.1` override (which must beat sglang's `==5.6.0` pin)
+> `transformers==5.8.1` override (the version the pinned sglang release requires)
 > is dropped and the install fails with an unsolvable
 > `transformers` conflict. The Docker images install the latest uv via the
 > official installer and are unaffected.
@@ -40,7 +40,7 @@ uv pip install -e ".[dev]"
 ```
 
 This installs all core dependencies (~260 packages) including PyTorch 2.11.0,
-Transformers 5.6.1, Megatron-Core 0.13.1, Ray, W&B, and dev tools (pytest, ruff,
+Transformers 5.8.1, Megatron-Core 0.13.1, Ray, W&B, and dev tools (pytest, ruff,
 ipython).
 
 ### Step 4: Install Flash Attention and SGLang
@@ -72,7 +72,7 @@ uv pip install "flash-attn==2.8.3" --no-build-isolation
 #### SGLang (inference backend)
 
 Install via the project extra so uv applies the `[tool.uv]` overrides (the
-`transformers==5.6.1` pin and the `flash-attn-4` pre-release allowance). SGLang
+`transformers==5.8.1` pin and the `flash-attn-4` pre-release allowance). SGLang
 pulls in FlashAttention-**4** (`flash-attn-4`, a pre-release wheel) automatically
 for its own attention backend — you do not install that one yourself.
 
