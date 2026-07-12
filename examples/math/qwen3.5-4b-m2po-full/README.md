@@ -18,6 +18,16 @@ Two variants:
 | `qwen3.5-4b-m2po-full`  | full (push the whole model each sync) |
 | `qwen3.5-4b-m2po-delta` | delta (push only changed weights) |
 
+## Backend support
+
+These recipes run on the **FSDP** trainer backend only. **The Megatron backend
+does not support Qwen3.5 yet:** the HF→Megatron converter (`mbridge`) has no
+`qwen3_5` bridge and Megatron-Core has no Gated-DeltaNet layer spec, so the
+GDN-hybrid model cannot be built or weight-loaded under Megatron (TP/PP/EP).
+Supporting it would require a new `mbridge` model plus a Megatron GDN layer spec
+and weight mapping. Dense Qwen3 (standard attention) *does* run on Megatron — see
+`examples/math/qwen3-8b-megatron-delta`.
+
 ## Validated environment
 
 These recipes were validated end-to-end on the following stack (8× L40 /
