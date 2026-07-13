@@ -95,6 +95,9 @@ sleep 15
 
 export ASTRAFLOW_RAAS_URL="http://127.0.0.1:${RAAS_PORT}"
 
+# Hopper needs FLA_TILELANG + CUDA_HOME for the GDN backward (see utils.sh).
+astraflow_setup_qwen35_hopper_env
+
 echo "[3/3] Starting trainer model0..."
 CUDA_VISIBLE_DEVICES="${TRAINER_MODEL0_GPUS}" \
 WEIGHT_TRANSFER_HTTP_PORT="${WEIGHT_TRANSFER_HTTP_PORT_MODEL0}" \
