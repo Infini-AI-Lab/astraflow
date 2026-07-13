@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -143,11 +143,11 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="weightmanager">
-<h1>WeightManager<a class="headerlink" href="#weightmanager" title="Link to this heading">¶</a></h1>
+<h1>WeightManager<a class="headerlink" href="#weightmanager" title="Link to this heading">#</a></h1>
 <p>The WeightManager (<code class="docutils literal notranslate"><span class="pre">astraflow/core/weight_manager/</span></code>) is an independent component
 that handles all weight transfer between Trainer and RaaS.</p>
 <section id="design-principle-independent-transport-layer">
-<h2>Design Principle: Independent Transport Layer<a class="headerlink" href="#design-principle-independent-transport-layer" title="Link to this heading">¶</a></h2>
+<h2>Design Principle: Independent Transport Layer<a class="headerlink" href="#design-principle-independent-transport-layer" title="Link to this heading">#</a></h2>
 <p>WeightManager is a <strong>shared component</strong> — both Trainer and RaaS import
 from it, but neither depends on the other. This keeps the three swappable
 components (Trainer, RaaS, WeightManager) cleanly separated:</p>
@@ -164,7 +164,7 @@ components (Trainer, RaaS, WeightManager) cleanly separated:</p>
 </div>
 </section>
 <section id="key-components">
-<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">¶</a></h2>
+<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">WeightManager</span></code></strong> — Main class that owns buffer allocation, GPU→CPU
 copy (shard-direct and all-gather paths), sender agent lifecycle, and
@@ -181,7 +181,7 @@ endpoints and serves TCP weight pulls from RaaS.</p></li>
 </ul>
 </section>
 <section id="weight-sync-flow">
-<h2>Weight Sync Flow<a class="headerlink" href="#weight-sync-flow" title="Link to this heading">¶</a></h2>
+<h2>Weight Sync Flow<a class="headerlink" href="#weight-sync-flow" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Trainer calls <code class="docutils literal notranslate"><span class="pre">wm.offload()</span></code> — GPU weights are copied to the inactive
 half of a shared-memory double buffer, then the buffer index is swapped.</p></li>
@@ -214,14 +214,14 @@ inference engines, loads weights, and resumes.</p></li>
 </div>
 </section>
 <section id="timeline-what-blocks-what">
-<h2>Timeline: What Blocks What<a class="headerlink" href="#timeline-what-blocks-what" title="Link to this heading">¶</a></h2>
+<h2>Timeline: What Blocks What<a class="headerlink" href="#timeline-what-blocks-what" title="Link to this heading">#</a></h2>
 <p>The key insight is that <strong>weight transfer never blocks the trainer GPU
 directly</strong>. The trainer’s GPU is only blocked during the <code class="docutils literal notranslate"><span class="pre">offload()</span></code> call
 (GPU→CPU copy). Everything else — TCP transfer, RaaS weight loading —
 happens asynchronously. The trainer is gated by <strong>data availability</strong>
 (the <code class="docutils literal notranslate"><span class="pre">get_batch</span></code> call), not weight transfer.</p>
 <section id="single-training-step">
-<h3>Single Training Step<a class="headerlink" href="#single-training-step" title="Link to this heading">¶</a></h3>
+<h3>Single Training Step<a class="headerlink" href="#single-training-step" title="Link to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Time ──────────────────────────────────────────────────────────────────────────►
 </span><span data-line="2">
 </span><span data-line="3">TRAINER (GPU)
@@ -279,7 +279,7 @@ finished reading before overwriting.</p></li>
 </ul>
 </section>
 <section id="multi-model-timeline">
-<h3>Multi-Model Timeline<a class="headerlink" href="#multi-model-timeline" title="Link to this heading">¶</a></h3>
+<h3>Multi-Model Timeline<a class="headerlink" href="#multi-model-timeline" title="Link to this heading">#</a></h3>
 <p>With two models (e.g. actor + verifier), each trainer independently
 offloads weights and fires <code class="docutils literal notranslate"><span class="pre">notify_version_async</span></code>. The version barrier
 and weight loading happen on the Dataflow side. Trainers are only
@@ -327,7 +327,7 @@ window is used for checkpoint saving, wandb logging, and other I/O.</p></li>
 </ul>
 </section>
 <section id="eval-steps-synchronous-exception">
-<h3>Eval Steps (Synchronous Exception)<a class="headerlink" href="#eval-steps-synchronous-exception" title="Link to this heading">¶</a></h3>
+<h3>Eval Steps (Synchronous Exception)<a class="headerlink" href="#eval-steps-synchronous-exception" title="Link to this heading">#</a></h3>
 <p>On eval steps, <code class="docutils literal notranslate"><span class="pre">notify_version</span></code> is called <strong>synchronously</strong> because the
 trainer needs eval results before continuing. This is the only case where
 the trainer explicitly waits for the weight load + eval to complete:</p>
@@ -339,7 +339,7 @@ the trainer explicitly waits for the weight load + eval to complete:</p>
 </section>
 </section>
 <section id="gpucpu-copy-strategies">
-<h2>GPU→CPU Copy Strategies<a class="headerlink" href="#gpucpu-copy-strategies" title="Link to this heading">¶</a></h2>
+<h2>GPU→CPU Copy Strategies<a class="headerlink" href="#gpucpu-copy-strategies" title="Link to this heading">#</a></h2>
 <p>WeightManager automatically selects the optimal copy strategy based on
 FSDP parameter placement:</p>
 <p><strong>Shard copy (fast path)</strong> — When all parameters use <code class="docutils literal notranslate"><span class="pre">Shard(0)</span></code> placement
@@ -374,7 +374,7 @@ Slower but handles any sharding strategy.</p>
 </div>
 </section>
 <section id="double-buffer">
-<h2>Double Buffer<a class="headerlink" href="#double-buffer" title="Link to this heading">¶</a></h2>
+<h2>Double Buffer<a class="headerlink" href="#double-buffer" title="Link to this heading">#</a></h2>
 <p>The shared-memory buffer in <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> is 2× model size. The trainer
 writes to the inactive half while the sender serves the active half
 over TCP — no locking between them:</p>
@@ -385,7 +385,7 @@ over TCP — no locking between them:</p>
 <p>The buffer index swap is a single Python int assignment (atomic under GIL).</p>
 </section>
 <section id="optimizations">
-<h2>Optimizations<a class="headerlink" href="#optimizations" title="Link to this heading">¶</a></h2>
+<h2>Optimizations<a class="headerlink" href="#optimizations" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Zero-copy <code class="docutils literal notranslate"><span class="pre">sendfile()</span></code> for TCP transfer</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">mlock</span></code> and transparent huge pages for shared-memory buffers</p></li>
@@ -395,7 +395,7 @@ over TCP — no locking between them:</p>
 </ul>
 </section>
 <section id="project-structure">
-<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">¶</a></h2>
+<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">astraflow/core/weight_manager/
 </span><span data-line="2">  __init__.py              ← exports WeightManager, WeightManagerConfig
 </span><span data-line="3">  weight_manager.py        ← main class: buffer mgmt, GPU→CPU copy, sender lifecycle
@@ -410,7 +410,7 @@ over TCP — no locking between them:</p>
 </div>
 </section>
 <section id="sender-agent-http-api">
-<h2>Sender Agent HTTP API<a class="headerlink" href="#sender-agent-http-api" title="Link to this heading">¶</a></h2>
+<h2>Sender Agent HTTP API<a class="headerlink" href="#sender-agent-http-api" title="Link to this heading">#</a></h2>
 <p>The sender agent runs as a subprocess on the trainer node and exposes
 these endpoints (used by RaaS to pull weights):</p>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -447,7 +447,7 @@ these endpoints (used by RaaS to pull weights):</p>
 </div>
 </section>
 <section id="multi-model-training">
-<h2>Multi-Model Training<a class="headerlink" href="#multi-model-training" title="Link to this heading">¶</a></h2>
+<h2>Multi-Model Training<a class="headerlink" href="#multi-model-training" title="Link to this heading">#</a></h2>
 <p>In multi-model training (e.g. actor + verifier), each model has its own
 WeightManager with its own sender agent and shared-memory buffer.
 Dataflow coordinates them via a version barrier — all models must reach
@@ -455,7 +455,7 @@ the same version before any RaaS loads weights. This prevents serving
 rollouts with mismatched model versions.</p>
 </section>
 <section id="multi-raas">
-<h2>Multi-RaaS<a class="headerlink" href="#multi-raas" title="Link to this heading">¶</a></h2>
+<h2>Multi-RaaS<a class="headerlink" href="#multi-raas" title="Link to this heading">#</a></h2>
 <p>Weight notifications fan out to all RaaS instances in parallel via
 <code class="docutils literal notranslate"><span class="pre">RaaSPool.notify_version(model_id,</span> <span class="pre">version,</span> <span class="pre">sender_endpoint)</span></code>
 (<code class="docutils literal notranslate"><span class="pre">astraflow/dataflow/raas_pool.py</span></code>). Each instance independently
@@ -502,9 +502,9 @@ before entering the live pool.</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

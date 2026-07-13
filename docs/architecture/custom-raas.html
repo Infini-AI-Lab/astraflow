@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -168,7 +168,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="custom-raas-integration">
-<h1>Custom RaaS Integration<a class="headerlink" href="#custom-raas-integration" title="Link to this heading">¶</a></h1>
+<h1>Custom RaaS Integration<a class="headerlink" href="#custom-raas-integration" title="Link to this heading">#</a></h1>
 <p>AstraFlow’s RaaS (Remote Agentic Serving) is a swappable component. You
 can replace the built-in implementation with your own inference service
 as long as it speaks the correct HTTP protocol. This guide documents the
@@ -178,7 +178,7 @@ recommended mode). Weights flow trainer → RaaS via a pull-based TCP
 pipeline; see <a class="reference internal" href="weight-manager.html"><span class="std std-doc">Weight Manager</span></a> for the transport
 layer used by both sides.</p>
 <section id="architecture">
-<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h2>
 <p>A RaaS has three communication surfaces:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">                   ┌───────────────────────┐
 </span><span data-line="2">   Inbound HTTP    │                       │   Outbound HTTP
@@ -215,7 +215,7 @@ reimplement.</p></li>
 </ul>
 </section>
 <section id="what-a-raas-is">
-<h2>What a RaaS Is<a class="headerlink" href="#what-a-raas-is" title="Link to this heading">¶</a></h2>
+<h2>What a RaaS Is<a class="headerlink" href="#what-a-raas-is" title="Link to this heading">#</a></h2>
 <p>A RaaS is a <strong>weight-versioned rollout service</strong>. Its three jobs:</p>
 <ol class="arabic simple">
 <li><p><strong>Host a policy.</strong> Run an inference backend that can generate from
@@ -228,7 +228,7 @@ loop.</p></li>
 publishes version N+1, pull the bytes, hot-swap, keep serving.</p></li>
 </ol>
 <section id="invariants-your-implementation-must-preserve">
-<h3>Invariants your implementation MUST preserve<a class="headerlink" href="#invariants-your-implementation-must-preserve" title="Link to this heading">¶</a></h3>
+<h3>Invariants your implementation MUST preserve<a class="headerlink" href="#invariants-your-implementation-must-preserve" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Tag every output token with its weight version</strong>
 (<code class="docutils literal notranslate"><span class="pre">output_versions</span></code> in the <code class="docutils literal notranslate"><span class="pre">ModelResponse</span></code>). The orchestrator uses
@@ -250,7 +250,7 @@ safetensors file.</p></li>
 </ul>
 </section>
 <section id="what-raas-is-not">
-<h3>What RaaS is NOT<a class="headerlink" href="#what-raas-is-not" title="Link to this heading">¶</a></h3>
+<h3>What RaaS is NOT<a class="headerlink" href="#what-raas-is-not" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Not a stateless inference server. It owns a task queue, a version
 counter, and workflow instances.</p></li>
@@ -262,9 +262,9 @@ functions are user-provided and passed in at
 </section>
 </section>
 <section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
 <section id="inbound-astraflow-raas">
-<h3>Inbound: AstraFlow → RaaS<a class="headerlink" href="#inbound-astraflow-raas" title="Link to this heading">¶</a></h3>
+<h3>Inbound: AstraFlow → RaaS<a class="headerlink" href="#inbound-astraflow-raas" title="Link to this heading">#</a></h3>
 <p>All endpoints below live on the RaaS HTTP server. Two wire formats
 coexist:</p>
 <ul class="simple">
@@ -309,7 +309,7 @@ called when eval windows are enabled. Training-only RaaS
 implementations can omit them.</p></li>
 </ul>
 <section id="get-status-readiness-json">
-<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> — Readiness (JSON)<a class="headerlink" href="#get-status-readiness-json" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> — Readiness (JSON)<a class="headerlink" href="#get-status-readiness-json" title="Link to this heading">#</a></h4>
 <p>Also used as the heartbeat. Must respond quickly; do not block on
 engine work.</p>
 <p><strong>Response</strong> — raw JSON text (no envelope):</p>
@@ -323,7 +323,7 @@ engine work.</p>
 <code class="docutils literal notranslate"><span class="pre">&quot;ready&quot;</span></code> means the pool can route traffic.</p>
 </section>
 <section id="get-availability-capacity-json">
-<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code> — Capacity (JSON)<a class="headerlink" href="#get-availability-capacity-json" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code> — Capacity (JSON)<a class="headerlink" href="#get-availability-capacity-json" title="Link to this heading">#</a></h4>
 <p>Called on <strong>every submit tick</strong> by the orchestrator’s data-acquisition
 loop. Governs load balancing across the RaaS pool — the orchestrator
 routes each request to the instance with the highest <code class="docutils literal notranslate"><span class="pre">available</span></code>.</p>
@@ -367,7 +367,7 @@ routes each request to the instance with the highest <code class="docutils liter
 <p>Return slowly or never and you throttle the whole pipeline.</p>
 </section>
 <section id="post-register-workflow">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_workflow</span></code><a class="headerlink" href="#post-register-workflow" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_workflow</span></code><a class="headerlink" href="#post-register-workflow" title="Link to this heading">#</a></h4>
 <p>Register a workflow class by string name plus its reward function.</p>
 <p>Request fields:</p>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -428,7 +428,7 @@ routes each request to the instance with the highest <code class="docutils liter
 </div>
 </section>
 <section id="post-submit-enqueue-one-rollout">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/submit</span></code> — Enqueue One Rollout<a class="headerlink" href="#post-submit-enqueue-one-rollout" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/submit</span></code> — Enqueue One Rollout<a class="headerlink" href="#post-submit-enqueue-one-rollout" title="Link to this heading">#</a></h4>
 <p>Request fields:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -473,7 +473,7 @@ routes each request to the instance with the highest <code class="docutils liter
 results dict keyed by task_id when done.</p>
 </section>
 <section id="post-pull-drain-completed-rollouts">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/pull</span></code> — Drain Completed Rollouts<a class="headerlink" href="#post-pull-drain-completed-rollouts" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/pull</span></code> — Drain Completed Rollouts<a class="headerlink" href="#post-pull-drain-completed-rollouts" title="Link to this heading">#</a></h4>
 <p>Request fields:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -536,7 +536,7 @@ failures are reported inline so one bad sample doesn’t fail the whole
 drain.</p>
 </section>
 <section id="post-notify-version-per-model-weight-update">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> — Per-Model Weight Update<a class="headerlink" href="#post-notify-version-per-model-weight-update" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> — Per-Model Weight Update<a class="headerlink" href="#post-notify-version-per-model-weight-update" title="Link to this heading">#</a></h4>
 <p>Fires when AstraFlow has new weights to load. <strong>One call per
 <code class="docutils literal notranslate"><span class="pre">(RaaS,</span> <span class="pre">model_id)</span></code></strong> — multi-model training sends N calls, not a
 batched one.</p>
@@ -640,7 +640,7 @@ not inline).</p></li>
 below for the full sequence.</p>
 </section>
 <section id="post-shutdown">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/shutdown</span></code><a class="headerlink" href="#post-shutdown" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/shutdown</span></code><a class="headerlink" href="#post-shutdown" title="Link to this heading">#</a></h4>
 <p>Destroy all engines, kill child processes, exit the uvicorn process.
 Respond <em>before</em> exiting so the client doesn’t see a connection reset.</p>
 <p><strong>Request</strong> — empty dict, pickled:</p>
@@ -657,7 +657,7 @@ Respond <em>before</em> exiting so the client doesn’t see a connection reset.<
 </section>
 </section>
 <section id="inbound-eval-support-optional">
-<h3>Inbound: Eval Support (Optional)<a class="headerlink" href="#inbound-eval-support-optional" title="Link to this heading">¶</a></h3>
+<h3>Inbound: Eval Support (Optional)<a class="headerlink" href="#inbound-eval-support-optional" title="Link to this heading">#</a></h3>
 <p>The five endpoints below are called <strong>only</strong> when the orchestrator
 runs eval windows (any recipe with <code class="docutils literal notranslate"><span class="pre">eval.freq_steps</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>). A
 training-only RaaS can omit them entirely — AstraFlow will never
@@ -667,7 +667,7 @@ call them unless eval is enabled.</p>
 pairs with <code class="docutils literal notranslate"><span class="pre">/eval_end</span></code>, and <code class="docutils literal notranslate"><span class="pre">/eval_pull</span></code> consumes what <code class="docutils literal notranslate"><span class="pre">/eval_submit</span></code>
 produces). Half-implementing the eval stack is worse than omitting it.</p>
 <section id="post-reset-training-engine">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/reset_training_engine</span></code><a class="headerlink" href="#post-reset-training-engine" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/reset_training_engine</span></code><a class="headerlink" href="#post-reset-training-engine" title="Link to this heading">#</a></h4>
 <p>Called before each eval window to quiesce the server. Cancel all
 in-flight training rollout tasks, drain the underlying inference
 engine, clear completed-results, and verify zero inflight requests.</p>
@@ -742,7 +742,7 @@ engine, clear completed-results, and verify zero inflight requests.</p>
 </div>
 </section>
 <section id="post-eval-start-post-eval-end">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_start</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_end</span></code><a class="headerlink" href="#post-eval-start-post-eval-end" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_start</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_end</span></code><a class="headerlink" href="#post-eval-start-post-eval-end" title="Link to this heading">#</a></h4>
 <p>Mark the boundary of an eval window so you can reset eval-specific
 tracking counters (separate from training’s).</p>
 <p><strong>Request</strong> — empty dict, pickled:</p>
@@ -755,7 +755,7 @@ tracking counters (separate from training’s).</p>
 </div>
 </section>
 <section id="post-eval-submit-enqueue-one-eval-rollout">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_submit</span></code> — Enqueue One Eval Rollout<a class="headerlink" href="#post-eval-submit-enqueue-one-eval-rollout" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_submit</span></code> — Enqueue One Eval Rollout<a class="headerlink" href="#post-eval-submit-enqueue-one-eval-rollout" title="Link to this heading">#</a></h4>
 <p>Same request shape as <code class="docutils literal notranslate"><span class="pre">/submit</span></code>. Internally route through a separate
 eval task dict so training and eval do not share state.</p>
 <p><strong>Request</strong> (Python dict, pickled):</p>
@@ -774,7 +774,7 @@ eval task dict so training and eval do not share state.</p>
 </div>
 </section>
 <section id="post-eval-pull-drain-eval-results-note-dict-not-list">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_pull</span></code> — Drain Eval Results (Note: Dict, not List)<a class="headerlink" href="#post-eval-pull-drain-eval-results-note-dict-not-list" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/eval_pull</span></code> — Drain Eval Results (Note: Dict, not List)<a class="headerlink" href="#post-eval-pull-drain-eval-results-note-dict-not-list" title="Link to this heading">#</a></h4>
 <p>Request fields:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -824,10 +824,10 @@ flatten to a list — the eval manager expects this shape.</p>
 </section>
 </section>
 <section id="outbound-raas-astraflow">
-<h3>Outbound: RaaS → AstraFlow<a class="headerlink" href="#outbound-raas-astraflow" title="Link to this heading">¶</a></h3>
+<h3>Outbound: RaaS → AstraFlow<a class="headerlink" href="#outbound-raas-astraflow" title="Link to this heading">#</a></h3>
 <p>One call, once, at startup.</p>
 <section id="post-register-raas">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code><a class="headerlink" href="#post-register-raas" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code><a class="headerlink" href="#post-register-raas" title="Link to this heading">#</a></h4>
 <p>Join the pool. <strong>JSON</strong> (not pickle) — no envelope.</p>
 <p>Request fields:</p>
 <div class="table-wrapper colwidths-auto docutils container">
@@ -880,7 +880,7 @@ is not yet reachable (components can start in any order).</p>
 </section>
 </section>
 <section id="outbound-raas-trainer-weight-sender-agent">
-<h3>Outbound: RaaS → Trainer (Weight Sender Agent)<a class="headerlink" href="#outbound-raas-trainer-weight-sender-agent" title="Link to this heading">¶</a></h3>
+<h3>Outbound: RaaS → Trainer (Weight Sender Agent)<a class="headerlink" href="#outbound-raas-trainer-weight-sender-agent" title="Link to this heading">#</a></h3>
 <p>Three endpoints on the trainer’s weight sender, called during
 <code class="docutils literal notranslate"><span class="pre">/notify_version</span></code>. These are fully documented from the trainer side in
 <a class="reference internal" href="custom-trainer.html#raas-trainer-inbound-weight-sender"><span class="std std-ref">Custom Trainer Integration</span></a>.
@@ -921,7 +921,7 @@ streams, and ZMQ completion signaling. Your RaaS just calls
 </section>
 </section>
 <section id="workflow-execution-contract">
-<h2>Workflow Execution Contract<a class="headerlink" href="#workflow-execution-contract" title="Link to this heading">¶</a></h2>
+<h2>Workflow Execution Contract<a class="headerlink" href="#workflow-execution-contract" title="Link to this heading">#</a></h2>
 <p>A workflow is user code that RaaS must execute correctly. Contract:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># astraflow/core/workflow/api/workflow_api.py</span>
 </span><span data-line="2"><span class="k">class</span><span class="w"> </span><span class="nc">RolloutWorkflow</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
@@ -958,7 +958,7 @@ workflow can look it up.</p></li>
 <code class="docutils literal notranslate"><span class="pre">EngineGroup</span></code> so the workflow can call <code class="docutils literal notranslate"><span class="pre">engine[&quot;model0&quot;].agenerate(...)</span></code>.</p>
 </section>
 <section id="weight-update-lifecycle-end-to-end">
-<h2>Weight Update Lifecycle (end-to-end)<a class="headerlink" href="#weight-update-lifecycle-end-to-end" title="Link to this heading">¶</a></h2>
+<h2>Weight Update Lifecycle (end-to-end)<a class="headerlink" href="#weight-update-lifecycle-end-to-end" title="Link to this heading">#</a></h2>
 <p>What your <code class="docutils literal notranslate"><span class="pre">/notify_version</span></code> handler must do, in order:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">[client] POST /notify_version {model_id, version, sender_endpoint}
 </span><span data-line="2">   │
@@ -996,7 +996,7 @@ other async endpoints including <code class="docutils literal notranslate"><span
 (<code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py:1612</span></code>).</p>
 </section>
 <section id="minimum-viable-skeleton">
-<h2>Minimum Viable Skeleton<a class="headerlink" href="#minimum-viable-skeleton" title="Link to this heading">¶</a></h2>
+<h2>Minimum Viable Skeleton<a class="headerlink" href="#minimum-viable-skeleton" title="Link to this heading">#</a></h2>
 <p>Below is a FastAPI skeleton that wires the required endpoints. Replace
 the stubs with your inference backend and workflow runner.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># my_raas/server.py</span>
@@ -1113,7 +1113,7 @@ custom).</p>
 <code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/routes.py</span></code> + <code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py</span></code>.</p>
 </section>
 <section id="done-checklist">
-<h2>Done Checklist<a class="headerlink" href="#done-checklist" title="Link to this heading">¶</a></h2>
+<h2>Done Checklist<a class="headerlink" href="#done-checklist" title="Link to this heading">#</a></h2>
 <p><strong>Required</strong> — a training-only RaaS is correct if:</p>
 <ul class="simple">
 <li><p>[ ] It answers <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> in &lt;100 ms even while a weight load is
@@ -1146,7 +1146,7 @@ of training tracking.</p></li>
 </ul>
 </section>
 <section id="reference-files">
-<h2>Reference Files<a class="headerlink" href="#reference-files" title="Link to this heading">¶</a></h2>
+<h2>Reference Files<a class="headerlink" href="#reference-files" title="Link to this heading">#</a></h2>
 <p>If you’re starting from scratch, read these in order:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/routes.py</span></code> — all 12 endpoints, 290 lines.</p></li>
@@ -1165,9 +1165,9 @@ ground-truth test of compatibility.</p></li>
 </ol>
 </section>
 <section id="api-summary">
-<h2>API Summary<a class="headerlink" href="#api-summary" title="Link to this heading">¶</a></h2>
+<h2>API Summary<a class="headerlink" href="#api-summary" title="Link to this heading">#</a></h2>
 <section id="required-8-inbound-1-outbound-3-outbound">
-<h3>Required (8 inbound + 1 outbound + 3 outbound)<a class="headerlink" href="#required-8-inbound-1-outbound-3-outbound" title="Link to this heading">¶</a></h3>
+<h3>Required (8 inbound + 1 outbound + 3 outbound)<a class="headerlink" href="#required-8-inbound-1-outbound-3-outbound" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -1250,7 +1250,7 @@ ground-truth test of compatibility.</p></li>
 </div>
 </section>
 <section id="optional-eval-support-5-inbound">
-<h3>Optional — Eval Support (5 inbound)<a class="headerlink" href="#optional-eval-support-5-inbound" title="Link to this heading">¶</a></h3>
+<h3>Optional — Eval Support (5 inbound)<a class="headerlink" href="#optional-eval-support-5-inbound" title="Link to this heading">#</a></h3>
 <p>Implement all five or none.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -1327,9 +1327,9 @@ payload schemas.</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

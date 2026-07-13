@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -134,7 +134,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="megatron-weight-synchronization">
-<h1>Megatron Weight Synchronization<a class="headerlink" href="#megatron-weight-synchronization" title="Link to this heading">¶</a></h1>
+<h1>Megatron Weight Synchronization<a class="headerlink" href="#megatron-weight-synchronization" title="Link to this heading">#</a></h1>
 <p>This page describes how the Megatron-LM training backend exports its
 weights to RaaS, and the invariants that keep the <strong>sparse / delta</strong>
 weight-update path correct under tensor (TP), pipeline (PP), expert
@@ -144,7 +144,7 @@ parallelism.</p>
 <a class="reference internal" href="delta-weight-transfer.html"><span class="std std-doc">Delta Weight Transfer</span></a>, which describe the
 backend-agnostic transport. <strong>Read those first.</strong></p>
 <section id="the-problem">
-<h2>The problem<a class="headerlink" href="#the-problem" title="Link to this heading">¶</a></h2>
+<h2>The problem<a class="headerlink" href="#the-problem" title="Link to this heading">#</a></h2>
 <p>Megatron stores each parameter sharded across TP/PP/EP ranks, fused
 (QKV in one <code class="docutils literal notranslate"><span class="pre">linear_qkv</span></code>, gate+up in one <code class="docutils literal notranslate"><span class="pre">linear_fc1</span></code>), and vocab-padded
 — a layout that bears no resemblance to the HuggingFace checkpoint names
@@ -159,7 +159,7 @@ in the buffer <strong>must be in the same layout that RaaS applies them in</stro
 For Megatron it is the central design constraint.</p>
 </section>
 <section id="design-invariant">
-<h2>Design invariant<a class="headerlink" href="#design-invariant" title="Link to this heading">¶</a></h2>
+<h2>Design invariant<a class="headerlink" href="#design-invariant" title="Link to this heading">#</a></h2>
 <blockquote>
 <div><p><strong>The trainer always writes HF-named, HF-layout, full-model tensors into
 the transfer buffer. Sparsity / delta is always computed in HF byte
@@ -184,7 +184,7 @@ weights. Always diff in HF space.</p>
 </div></blockquote>
 </section>
 <section id="the-per-tensor-generator">
-<h2>The per-tensor generator<a class="headerlink" href="#the-per-tensor-generator" title="Link to this heading">¶</a></h2>
+<h2>The per-tensor generator<a class="headerlink" href="#the-per-tensor-generator" title="Link to this heading">#</a></h2>
 <p>The reconstruction is a <strong>streaming generator</strong> that yields
 <code class="docutils literal notranslate"><span class="pre">(hf_name,</span> <span class="pre">full_unsharded_cpu_tensor)</span></code> one bucket at a time. Only one
 bucket of fully-gathered tensors is alive at any moment, so a 100B / MoE
@@ -223,7 +223,7 @@ group and rewrite local→global expert id.</p></li>
 (<code class="docutils literal notranslate"><span class="pre">HfWeightIteratorDirect</span></code>) converged on; the difference is the consumer.</p>
 </section>
 <section id="how-it-plugs-into-weightmanager">
-<h2>How it plugs into WeightManager<a class="headerlink" href="#how-it-plugs-into-weightmanager" title="Link to this heading">¶</a></h2>
+<h2>How it plugs into WeightManager<a class="headerlink" href="#how-it-plugs-into-weightmanager" title="Link to this heading">#</a></h2>
 <p>verl / slime push the generator’s tensors GPU→GPU (NCCL / CUDA-IPC) into
 the inference engine. AstraFlow instead <strong>writes them into the CPU
 double buffer</strong> that the sender agent TCP-pulls:</p>
@@ -249,7 +249,7 @@ the RaaS receiver uses to pre-allocate, so both ends agree on layout and
 order.</p>
 </section>
 <section id="rank-participation">
-<h2>Rank participation<a class="headerlink" href="#rank-participation" title="Link to this heading">¶</a></h2>
+<h2>Rank participation<a class="headerlink" href="#rank-participation" title="Link to this heading">#</a></h2>
 <p>Only <strong>data-parallel head</strong> ranks write the buffer (one writer per
 model-parallel group), mirroring FSDP’s primary-replica rule. The
 TP/PP/EP gathers happen via collectives <em>before</em> the write, so every
@@ -257,7 +257,7 @@ DP-head holds the full HF model and writes it once. Other ranks only
 participate in the gathers and the post-write barrier.</p>
 </section>
 <section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nt">trainer</span><span class="p">:</span>
 </span><span data-line="2"><span class="w">  </span><span class="nt">engine</span><span class="p">:</span>
 </span><span data-line="3"><span class="w">    </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">megatron</span>
@@ -273,7 +273,7 @@ participate in the gathers and the post-write barrier.</p>
 or <code class="docutils literal notranslate"><span class="pre">expert_parallel_size</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>.</p>
 </section>
 <section id="invariants-checklist-for-reviewers">
-<h2>Invariants checklist (for reviewers)<a class="headerlink" href="#invariants-checklist-for-reviewers" title="Link to this heading">¶</a></h2>
+<h2>Invariants checklist (for reviewers)<a class="headerlink" href="#invariants-checklist-for-reviewers" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Trainer hands WeightManager <strong>HF-named, HF-layout, full-model</strong>
 tensors. Backend differences end at <code class="docutils literal notranslate"><span class="pre">export_hf_named_params</span></code>.</p></li>
@@ -323,9 +323,9 @@ tensors. Backend differences end at <code class="docutils literal notranslate"><
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

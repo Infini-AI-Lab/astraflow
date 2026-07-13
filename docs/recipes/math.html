@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -101,9 +101,14 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#settings">Settings</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#qwen3-8b-8-gpus">Qwen3-8B &#8212; 8 GPUs</a><ul>
+<li><a class="reference internal" href="#qwen3-5-4b-8-gpus-hybrid-gated-deltanet">Qwen3.5-4B &#8212; 8 GPUs (hybrid Gated-DeltaNet)</a><ul>
 <li><a class="reference internal" href="#id1">Run</a></li>
 <li><a class="reference internal" href="#id2">Settings</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qwen3-8b-8-gpus">Qwen3-8B &#8212; 8 GPUs</a><ul>
+<li><a class="reference internal" href="#id3">Run</a></li>
+<li><a class="reference internal" href="#id4">Settings</a></li>
 </ul>
 </li>
 </ul>
@@ -137,19 +142,19 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="math">
-<h1>Math<a class="headerlink" href="#math" title="Link to this heading">¶</a></h1>
+<h1>Math<a class="headerlink" href="#math" title="Link to this heading">#</a></h1>
 <p>Reinforcement learning for single-agent math reasoning with RLVR.</p>
 <p><strong>Math recipes</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math"><code class="docutils literal notranslate"><span class="pre">examples/math/</span></code></a></p>
 <p>Each recipe ships an all-in-one launch script under <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> and its config under <code class="docutils literal notranslate"><span class="pre">yaml/</span></code>.</p>
 <section id="qwen3-1-7b-2-gpus-minimal-reproduction">
-<h2>Qwen3-1.7B — 2 GPUs (minimal reproduction)<a class="headerlink" href="#qwen3-1-7b-2-gpus-minimal-reproduction" title="Link to this heading">¶</a></h2>
+<h2>Qwen3-1.7B — 2 GPUs (minimal reproduction)<a class="headerlink" href="#qwen3-1-7b-2-gpus-minimal-reproduction" title="Link to this heading">#</a></h2>
 <p>The smallest recipe. It runs on a single 2-GPU node — 1 GPU for inference, 1 for training — so it is the quickest way to verify an AstraFlow setup end to end. It comes in two variants that differ <strong>only</strong> in weight transfer mode:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-full"><code class="docutils literal notranslate"><span class="pre">qwen3-1.7b-m2po-2gpus-full/</span></code></a> — full weight transfer</p></li>
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-1.7b-m2po-2gpus-delta"><code class="docutils literal notranslate"><span class="pre">qwen3-1.7b-m2po-2gpus-delta/</span></code></a> — delta weight transfer (only changed weights are sent)</p></li>
 </ul>
 <section id="run">
-<h3>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h3>
+<h3>Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h3>
 <p>One script launches all three processes — the AstraFlow service, the RaaS inference server, and the trainer:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># delta weight transfer</span>
 </span><span data-line="2">bash<span class="w"> </span>examples/math/qwen3-1.7b-m2po-2gpus-delta/scripts/run_qwen3-1.7b-m2po-2gpus-delta.sh
@@ -160,7 +165,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 <section id="settings">
-<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">¶</a></h3>
+<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -213,22 +218,100 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 </section>
+<section id="qwen3-5-4b-8-gpus-hybrid-gated-deltanet">
+<h2>Qwen3.5-4B — 8 GPUs (hybrid Gated-DeltaNet)<a class="headerlink" href="#qwen3-5-4b-8-gpus-hybrid-gated-deltanet" title="Link to this heading">#</a></h2>
+<p>Math RL on <strong>Qwen3.5-4B</strong>, a hybrid Gated-DeltaNet + attention multimodal
+checkpoint trained text-only here. Requires the transformers 5.8 stack
+(<code class="docutils literal notranslate"><span class="pre">transformers==5.8.1</span></code>, <code class="docutils literal notranslate"><span class="pre">sglang==0.5.13.post1</span></code>, <code class="docutils literal notranslate"><span class="pre">fla</span></code> kernels — all pinned by
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, or use the <code class="docutils literal notranslate"><span class="pre">astraflowai/astraflow:v0.1.2</span></code> image). Full and
+delta transfer variants:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3.5-4b-m2po-full"><code class="docutils literal notranslate"><span class="pre">qwen3.5-4b-m2po-full/</span></code></a> — full weight transfer</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3.5-4b-m2po-delta"><code class="docutils literal notranslate"><span class="pre">qwen3.5-4b-m2po-delta/</span></code></a> — delta weight transfer</p></li>
+</ul>
+<section id="id1">
+<h3>Run<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">bash<span class="w"> </span>examples/math/qwen3.5-4b-m2po-full/scripts/run_qwen3.5-4b-m2po-full.sh
+</span></pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>Settings<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Model</p></td>
+<td><p>Qwen3.5-4B (<code class="docutils literal notranslate"><span class="pre">model_type:</span> <span class="pre">qwen3_5</span></code>, GDN hybrid)</p></td>
+</tr>
+<tr class="row-odd"><td><p>GPUs</p></td>
+<td><p>8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4)</p></td>
+</tr>
+<tr class="row-even"><td><p>Backend</p></td>
+<td><p><strong>FSDP only</strong> — Qwen3.5 is not supported on the Megatron backend (no <code class="docutils literal notranslate"><span class="pre">mbridge</span></code> bridge / GDN layer spec)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Algorithm</p></td>
+<td><p>M2PO (<code class="docutils literal notranslate"><span class="pre">m2_threshold</span></code> 0.01)</p></td>
+</tr>
+<tr class="row-even"><td><p>Weight transfer</p></td>
+<td><p>TCP — full or delta</p></td>
+</tr>
+<tr class="row-odd"><td><p>Context length</p></td>
+<td><p>8192</p></td>
+</tr>
+<tr class="row-even"><td><p>Max new tokens</p></td>
+<td><p>4000</p></td>
+</tr>
+<tr class="row-odd"><td><p>Rollouts per prompt</p></td>
+<td><p>8 (<code class="docutils literal notranslate"><span class="pre">temperature</span></code> 1.0)</p></td>
+</tr>
+<tr class="row-even"><td><p>Train batch size</p></td>
+<td><p>256</p></td>
+</tr>
+<tr class="row-odd"><td><p>Learning rate</p></td>
+<td><p>5e-6 (Adam, constant schedule)</p></td>
+</tr>
+<tr class="row-even"><td><p>Train steps</p></td>
+<td><p>800</p></td>
+</tr>
+<tr class="row-odd"><td><p>Workflow / reward</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rlvr</span></code> / <code class="docutils literal notranslate"><span class="pre">math_verify</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Train dataset</p></td>
+<td><p>DeepScaleR</p></td>
+</tr>
+<tr class="row-odd"><td><p>Eval datasets</p></td>
+<td><p>AIME24, AIME25, AMC, Minerva Math, MATH500</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Validated on 8×L40 and 8×H100 (on Hopper the launch scripts auto-set the
+<code class="docutils literal notranslate"><span class="pre">FLA_TILELANG</span></code>/<code class="docutils literal notranslate"><span class="pre">CUDA_HOME</span></code> environment the GDN backward needs). See the
+<a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3.5-4b-m2po-full">recipe README</a>
+for the validated stack and results.</p>
+</section>
+</section>
 <section id="qwen3-8b-8-gpus">
-<h2>Qwen3-8B — 8 GPUs<a class="headerlink" href="#qwen3-8b-8-gpus" title="Link to this heading">¶</a></h2>
+<h2>Qwen3-8B — 8 GPUs<a class="headerlink" href="#qwen3-8b-8-gpus" title="Link to this heading">#</a></h2>
 <p>The full-scale recipe. It needs an 8-GPU node — 4 GPUs for inference, 4 for training — and also comes in full and delta transfer variants:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-8b-m2po-full"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-m2po-full/</span></code></a> — full weight transfer</p></li>
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3-8b-m2po-delta"><code class="docutils literal notranslate"><span class="pre">qwen3-8b-m2po-delta/</span></code></a> — delta weight transfer</p></li>
 </ul>
-<section id="id1">
-<h3>Run<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<section id="id3">
+<h3>Run<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <p>The same single-script pattern launches the whole job:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">bash<span class="w"> </span>examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
 </span></pre></div>
 </div>
 </section>
-<section id="id2">
-<h3>Settings<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<section id="id4">
+<h3>Settings<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -320,9 +403,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

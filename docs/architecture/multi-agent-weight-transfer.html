@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -146,12 +146,12 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="multi-agent-weight-transfer">
-<h1>Multi-Agent Weight Transfer<a class="headerlink" href="#multi-agent-weight-transfer" title="Link to this heading">¶</a></h1>
+<h1>Multi-Agent Weight Transfer<a class="headerlink" href="#multi-agent-weight-transfer" title="Link to this heading">#</a></h1>
 <p>This page describes how weight transfer works in multi-agent (multi-model)
 training, where multiple independently-trained models (e.g., a solver and a
 verifier) share the same RaaS inference cluster.</p>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <p>In a 2-model setup (e.g., <code class="docutils literal notranslate"><span class="pre">actor_and_verify</span></code> workflow):</p>
 <ul class="simple">
 <li><p><strong>model0 (solver)</strong> and <strong>model1 (verifier)</strong> are separate FSDP trainers,
@@ -177,7 +177,7 @@ separate SGLang instances per model.</p></li>
 </div>
 </section>
 <section id="sender-side-trainer-weightmanager-senderagent">
-<h2>Sender Side: Trainer → WeightManager → SenderAgent<a class="headerlink" href="#sender-side-trainer-weightmanager-senderagent" title="Link to this heading">¶</a></h2>
+<h2>Sender Side: Trainer → WeightManager → SenderAgent<a class="headerlink" href="#sender-side-trainer-weightmanager-senderagent" title="Link to this heading">#</a></h2>
 <p>Each trainer is an independent <code class="docutils literal notranslate"><span class="pre">torchrun</span></code> process group. After each training
 step, the trainer offloads weights to its own WeightManager:</p>
 <ol class="arabic">
@@ -201,7 +201,7 @@ server on a distinct port (configured via <code class="docutils literal notransl
 </ol>
 </section>
 <section id="coordination-astraflow-version-barrier">
-<h2>Coordination: AstraFlow Version Barrier<a class="headerlink" href="#coordination-astraflow-version-barrier" title="Link to this heading">¶</a></h2>
+<h2>Coordination: AstraFlow Version Barrier<a class="headerlink" href="#coordination-astraflow-version-barrier" title="Link to this heading">#</a></h2>
 <p>The trainers are independent, but weight loading is <strong>coordinated</strong> — RaaS
 loads both models’ weights atomically so the solver and verifier are always
 at the same version during rollout generation.</p>
@@ -256,7 +256,7 @@ via <code class="docutils literal notranslate"><span class="pre">_version_barrie
 </span></pre></div>
 </div>
 <section id="async-notifications">
-<h3>Async Notifications<a class="headerlink" href="#async-notifications" title="Link to this heading">¶</a></h3>
+<h3>Async Notifications<a class="headerlink" href="#async-notifications" title="Link to this heading">#</a></h3>
 <p>Non-eval steps on the trainer side use <code class="docutils literal notranslate"><span class="pre">notify_version_async</span></code>
 (<code class="docutils literal notranslate"><span class="pre">astraflow/train_worker/trainer/astraflow_client.py:275</span></code>), which submits
 to a single-threaded background executor. The trainer can run <strong>one step
@@ -265,9 +265,9 @@ waits for the previous one to complete before submitting.</p>
 </section>
 </section>
 <section id="receiver-side-astraflow-raas-tcp-pull">
-<h2>Receiver Side: AstraFlow → RaaS → TCP Pull<a class="headerlink" href="#receiver-side-astraflow-raas-tcp-pull" title="Link to this heading">¶</a></h2>
+<h2>Receiver Side: AstraFlow → RaaS → TCP Pull<a class="headerlink" href="#receiver-side-astraflow-raas-tcp-pull" title="Link to this heading">#</a></h2>
 <section id="one-http-request-per-model-per-raas">
-<h3>One HTTP Request Per Model Per RaaS<a class="headerlink" href="#one-http-request-per-model-per-raas" title="Link to this heading">¶</a></h3>
+<h3>One HTTP Request Per Model Per RaaS<a class="headerlink" href="#one-http-request-per-model-per-raas" title="Link to this heading">#</a></h3>
 <p>AstraFlow sends <strong>one</strong> <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> call per model per live
 RaaS instance. There is no batched multi-model endpoint. Each request
 body is pickle-serialized:</p>
@@ -280,7 +280,7 @@ body is pickle-serialized:</p>
 <code class="docutils literal notranslate"><span class="pre">max(instances)</span></code>, not <code class="docutils literal notranslate"><span class="pre">sum(instances)</span></code>.</p>
 </section>
 <section id="per-model-weight-update-cycle">
-<h3>Per-Model Weight Update Cycle<a class="headerlink" href="#per-model-weight-update-cycle" title="Link to this heading">¶</a></h3>
+<h3>Per-Model Weight Update Cycle<a class="headerlink" href="#per-model-weight-update-cycle" title="Link to this heading">#</a></h3>
 <p>Inside each RaaS, <code class="docutils literal notranslate"><span class="pre">RaaS3Manager.notify_version()</span></code>
 (<code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/manager.py:1556</span></code>) handles exactly one model.
 Calls for different models proceed independently; calls for the same
@@ -339,7 +339,7 @@ across steps. Only the <code class="docutils literal notranslate"><span class="p
 pause/load/resume cycle repeats each step.</p>
 </section>
 <section id="multi-model-ordering">
-<h3>Multi-Model Ordering<a class="headerlink" href="#multi-model-ordering" title="Link to this heading">¶</a></h3>
+<h3>Multi-Model Ordering<a class="headerlink" href="#multi-model-ordering" title="Link to this heading">#</a></h3>
 <p>Because each model’s <code class="docutils literal notranslate"><span class="pre">notify_version</span></code> call is independent, the orchestrator
 controls whether updates are effectively parallel or serialized:</p>
 <ul class="simple">
@@ -356,9 +356,9 @@ before eval rollouts start.</p></li>
 </section>
 </section>
 <section id="end-to-end-timeline">
-<h2>End-to-End Timeline<a class="headerlink" href="#end-to-end-timeline" title="Link to this heading">¶</a></h2>
+<h2>End-to-End Timeline<a class="headerlink" href="#end-to-end-timeline" title="Link to this heading">#</a></h2>
 <section id="non-eval-step-async-fire-and-forget">
-<h3>Non-Eval Step (async fire-and-forget)<a class="headerlink" href="#non-eval-step-async-fire-and-forget" title="Link to this heading">¶</a></h3>
+<h3>Non-Eval Step (async fire-and-forget)<a class="headerlink" href="#non-eval-step-async-fire-and-forget" title="Link to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Trainer model0          AstraFlow                 RaaS Manager           Trainer model1
 </span><span data-line="2">     │                      │                         │                       │
 </span><span data-line="3"> train step N               │                         │                   train step N
@@ -386,7 +386,7 @@ via the per-model <code class="docutils literal notranslate"><span class="pre">a
 the async load.</p>
 </section>
 <section id="eval-step-deferred-leader-serialises-loads">
-<h3>Eval Step (deferred, leader serialises loads)<a class="headerlink" href="#eval-step-deferred-leader-serialises-loads" title="Link to this heading">¶</a></h3>
+<h3>Eval Step (deferred, leader serialises loads)<a class="headerlink" href="#eval-step-deferred-leader-serialises-loads" title="Link to this heading">#</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">Trainer model0           AstraFlow                    RaaS Manager
 </span><span data-line="2">     │                      │                              │
 </span><span data-line="3"> offload v=N+1              │                              │
@@ -417,7 +417,7 @@ preventing the multi-model deadlock that earlier designs suffered from.</p>
 </section>
 </section>
 <section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">#</a></h2>
 <p>In the launch script, each trainer gets a distinct HTTP port for its
 sender agent:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># TCP weight-transfer ports (one per trainer)</span>
@@ -450,7 +450,7 @@ sender agent:</p>
 </div>
 </section>
 <section id="key-source-files">
-<h2>Key Source Files<a class="headerlink" href="#key-source-files" title="Link to this heading">¶</a></h2>
+<h2>Key Source Files<a class="headerlink" href="#key-source-files" title="Link to this heading">#</a></h2>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -521,9 +521,9 @@ sender agent:</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

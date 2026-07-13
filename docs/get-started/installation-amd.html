@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -140,11 +140,11 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="installation-amd-rocm">
-<h1>Installation (AMD ROCm)<a class="headerlink" href="#installation-amd-rocm" title="Link to this heading">¶</a></h1>
+<h1>Installation (AMD ROCm)<a class="headerlink" href="#installation-amd-rocm" title="Link to this heading">#</a></h1>
 <p>Running AstraFlow on AMD Instinct GPUs (MI300X / MI325X, <code class="docutils literal notranslate"><span class="pre">gfx942</span></code>) under
 ROCm. For the NVIDIA path, see <a class="reference internal" href="installation.html"><span class="std std-doc">Installation</span></a>.</p>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Linux with the ROCm 7.0+ kernel driver installed (verify with <code class="docutils literal notranslate"><span class="pre">rocminfo</span></code>)</p></li>
 <li><p>AMD Instinct MI300X / MI325X (CDNA3 / <code class="docutils literal notranslate"><span class="pre">gfx942</span></code>)</p></li>
@@ -152,7 +152,7 @@ ROCm. For the NVIDIA path, see <a class="reference internal" href="installation.
 </ul>
 </section>
 <section id="build-the-image">
-<h2>Build the image<a class="headerlink" href="#build-the-image" title="Link to this heading">¶</a></h2>
+<h2>Build the image<a class="headerlink" href="#build-the-image" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">cd</span><span class="w"> </span>/path/to/astraflow
 </span><span data-line="2">docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>docker/Dockerfile.rocm<span class="w"> </span>-t<span class="w"> </span>astraflow:rocm<span class="w"> </span>.
 </span></pre></div>
@@ -160,7 +160,7 @@ ROCm. For the NVIDIA path, see <a class="reference internal" href="installation.
 <p>The build pulls the SGLang ROCm base (~25 GB) and finishes in a few minutes;
 the resulting image is ~75 GB.</p>
 <section id="what-s-in-the-image">
-<h3>What’s in the image<a class="headerlink" href="#what-s-in-the-image" title="Link to this heading">¶</a></h3>
+<h3>What’s in the image<a class="headerlink" href="#what-s-in-the-image" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">docker/Dockerfile.rocm</span></code> starts from the official SGLang ROCm image and layers
 AstraFlow on top <strong>without reinstalling the GPU stack</strong>. Specifically:</p>
 <ul class="simple">
@@ -198,7 +198,7 @@ corrupted — while the task reward still looks plausible. The Triton-AMD
 </section>
 </section>
 <section id="run">
-<h2>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h2>
+<h2>Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
 </span><span data-line="2"><span class="w">  </span>--device<span class="o">=</span>/dev/kfd<span class="w"> </span>--device<span class="o">=</span>/dev/dri<span class="w"> </span>--group-add<span class="w"> </span>video<span class="w"> </span><span class="se">\</span>
 </span><span data-line="3"><span class="w">  </span>--cap-add<span class="o">=</span>SYS_PTRACE<span class="w"> </span>--security-opt<span class="w"> </span><span class="nv">seccomp</span><span class="o">=</span>unconfined<span class="w"> </span><span class="se">\</span>
@@ -227,7 +227,7 @@ default (1024) is too low and the reward pool fails with <code class="docutils l
 </div></blockquote>
 </section>
 <section id="verify-installation">
-<h2>Verify installation<a class="headerlink" href="#verify-installation" title="Link to this heading">¶</a></h2>
+<h2>Verify installation<a class="headerlink" href="#verify-installation" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
 </span><span data-line="2"><span class="s2">import astraflow, torch, transformers</span>
 </span><span data-line="3"><span class="s2">print(f&#39;astraflow:    {astraflow.version.__version__}&#39;)</span>
@@ -253,9 +253,9 @@ on the first PPO step. Values far from 1 (e.g. ≈ 0.4) or
 <code class="docutils literal notranslate"><span class="pre">flash_attention_2</span></code> is not active).</p>
 </section>
 <section id="notes">
-<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">#</a></h2>
 <section id="rocm-specific-code-adaptations-already-in-astraflow">
-<h3>ROCm-specific code adaptations (already in AstraFlow)<a class="headerlink" href="#rocm-specific-code-adaptations-already-in-astraflow" title="Link to this heading">¶</a></h3>
+<h3>ROCm-specific code adaptations (already in AstraFlow)<a class="headerlink" href="#rocm-specific-code-adaptations-already-in-astraflow" title="Link to this heading">#</a></h3>
 <p>Two minor adaptations live in the tree so a fresh ROCm install works out of
 the box — no user action needed:</p>
 <ul class="simple">
@@ -268,7 +268,7 @@ reductions currently fails on <code class="docutils literal notranslate"><span c
 </ul>
 </section>
 <section id="recommended-runtime-env">
-<h3>Recommended runtime env<a class="headerlink" href="#recommended-runtime-env" title="Link to this heading">¶</a></h3>
+<h3>Recommended runtime env<a class="headerlink" href="#recommended-runtime-env" title="Link to this heading">#</a></h3>
 <p>The recipe launcher sets these for you; if you exec into the container
 manually:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">export</span><span class="w"> </span><span class="nv">NCCL_CUMEM_ENABLE</span><span class="o">=</span><span class="m">0</span>
@@ -285,7 +285,7 @@ to HIP devices, so the recipe’s
 works unchanged.</p>
 </section>
 <section id="known-limitations">
-<h3>Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">¶</a></h3>
+<h3>Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Megatron-LM backend</strong> (Transformer Engine + apex) is not built into the
 ROCm image. Use the FSDP backend on ROCm (the math recipe’s default).</p></li>
@@ -334,9 +334,9 @@ grammar-constrained decoding is used).</p></li>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

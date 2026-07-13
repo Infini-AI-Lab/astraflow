@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -131,9 +131,9 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h1>
+<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">#</a></h1>
 <section id="development-expectations">
-<h2>Development Expectations<a class="headerlink" href="#development-expectations" title="Link to this heading">¶</a></h2>
+<h2>Development Expectations<a class="headerlink" href="#development-expectations" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Keep changes scoped and reproducible.</p></li>
 <li><p>Prefer explicit typing and existing dataclass configs.</p></li>
@@ -141,14 +141,14 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </section>
 <section id="documentation-workflow">
-<h2>Documentation Workflow<a class="headerlink" href="#documentation-workflow" title="Link to this heading">¶</a></h2>
+<h2>Documentation Workflow<a class="headerlink" href="#documentation-workflow" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Add pages under <code class="docutils literal notranslate"><span class="pre">docs/en/</span></code>.</p></li>
 <li><p>Register new pages in the <code class="docutils literal notranslate"><span class="pre">docs/en/index.rst</span></code> toctree.</p></li>
 </ul>
 </section>
 <section id="testing-and-validation">
-<h2>Testing and Validation<a class="headerlink" href="#testing-and-validation" title="Link to this heading">¶</a></h2>
+<h2>Testing and Validation<a class="headerlink" href="#testing-and-validation" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Run focused tests for modified modules.</p></li>
 <li><p>If cluster-dependent tests cannot run locally, state this explicitly.</p></li>
@@ -156,7 +156,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </section>
 <section id="commit-style">
-<h2>Commit Style<a class="headerlink" href="#commit-style" title="Link to this heading">¶</a></h2>
+<h2>Commit Style<a class="headerlink" href="#commit-style" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Use Conventional Commit prefixes (for example <code class="docutils literal notranslate"><span class="pre">docs:</span></code>, <code class="docutils literal notranslate"><span class="pre">feat:</span></code>, <code class="docutils literal notranslate"><span class="pre">fix:</span></code>).</p></li>
 <li><p>Keep commit subjects concise and imperative.</p></li>
@@ -187,9 +187,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

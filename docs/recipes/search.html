@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -133,12 +133,12 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="search">
-<h1>Search<a class="headerlink" href="#search" title="Link to this heading">¶</a></h1>
+<h1>Search<a class="headerlink" href="#search" title="Link to this heading">#</a></h1>
 <p>Reinforcement learning for search-augmented agents (<a class="reference external" href="https://github.com/inclusionAI/ASearcher">ASearcher</a>) that interleave reasoning with local retrieval against a Wikipedia knowledge base.</p>
 <p><strong>Search recipes</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/search"><code class="docutils literal notranslate"><span class="pre">examples/search/</span></code></a></p>
 <p>Each recipe ships an all-in-one launch script under <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> and its config under <code class="docutils literal notranslate"><span class="pre">yaml/</span></code>.</p>
 <section id="environment-setup">
-<h2>Environment setup<a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
+<h2>Environment setup<a class="headerlink" href="#environment-setup" title="Link to this heading">#</a></h2>
 <p>The search recipes query a local FAISS retrieval server over the Wikipedia 2018 corpus. Set it up once before training.</p>
 <p>Install the retrieval server dependencies:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>rag-retriever<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>-y
@@ -167,7 +167,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 <section id="qwen2-5-7b-instruct-8-gpus">
-<h2>Qwen2.5-7B-Instruct — 8 GPUs<a class="headerlink" href="#qwen2-5-7b-instruct-8-gpus" title="Link to this heading">¶</a></h2>
+<h2>Qwen2.5-7B-Instruct — 8 GPUs<a class="headerlink" href="#qwen2-5-7b-instruct-8-gpus" title="Link to this heading">#</a></h2>
 <p>The search recipe trains an ASearcher agent on an 8-GPU node — 4 GPUs for inference, 2 for training, with 2 GPUs left for a local retrieval (RAG) server. It comes in two variants that differ <strong>only</strong> in weight transfer mode:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/search/qwen2.5-7b-instruct-m2po-full"><code class="docutils literal notranslate"><span class="pre">qwen2.5-7b-instruct-m2po-full/</span></code></a> — full weight transfer</p></li>
@@ -175,7 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 <p>The agent uses the <code class="docutils literal notranslate"><span class="pre">async-search-access</span></code> search client, which queries the local FAISS retrieval server from <a class="reference internal" href="#environment-setup"><span class="std std-ref">Environment setup</span></a> above. The launch script reads the server addresses from <code class="docutils literal notranslate"><span class="pre">astraEnv/ASearcher/tmp-log/rag_server_addrs</span></code> and aborts if the server is not running.</p>
 <section id="run">
-<h3>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h3>
+<h3>Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h3>
 <p>With the retrieval server already running, one script launches all three processes — the AstraFlow service, the RaaS inference server, and the trainer:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># delta weight transfer</span>
 </span><span data-line="2">bash<span class="w"> </span>examples/search/qwen2.5-7b-instruct-m2po-delta/scripts/run_qwen2.5-7b-instruct-m2po-delta.sh
@@ -186,7 +186,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 <section id="settings">
-<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">¶</a></h3>
+<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -281,9 +281,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

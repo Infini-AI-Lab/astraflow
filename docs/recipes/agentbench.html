@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -138,7 +138,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="agentbench">
-<h1>AgentBench<a class="headerlink" href="#agentbench" title="Link to this heading">¶</a></h1>
+<h1>AgentBench<a class="headerlink" href="#agentbench" title="Link to this heading">#</a></h1>
 <p>Reinforcement learning for multi-turn, interactive agents on the ALFWorld and WebShop environments from <a class="reference external" href="https://github.com/THUDM/AgentBench">AgentBench</a>, with M2PO.</p>
 <p><strong>AgentBench recipes</strong>:</p>
 <ul class="simple">
@@ -147,7 +147,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 <p>Each recipe ships an all-in-one launch script under <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> and its config under <code class="docutils literal notranslate"><span class="pre">yaml/</span></code>.</p>
 <section id="environment-setup">
-<h2>Environment setup<a class="headerlink" href="#environment-setup" title="Link to this heading">¶</a></h2>
+<h2>Environment setup<a class="headerlink" href="#environment-setup" title="Link to this heading">#</a></h2>
 <p>The AgentBench recipes need the AgentBench environment installed in its own conda env, plus the task container image:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nb">cd</span><span class="w"> </span>astraEnv/AgentBench
 </span><span data-line="2">conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>agent-bench<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9
@@ -163,14 +163,14 @@ data-aria-dark="Switch to auto color mode">
 <p>The all-in-one <code class="docutils literal notranslate"><span class="pre">run_*.sh</span></code> starts the task server itself; the standalone <code class="docutils literal notranslate"><span class="pre">0_&lt;env&gt;_server.sh</span></code> is provided for split launches.</p>
 </section>
 <section id="alfworld-qwen2-5-7b-instruct-8-gpus">
-<h2>ALFWorld — Qwen2.5-7B-Instruct — 8 GPUs<a class="headerlink" href="#alfworld-qwen2-5-7b-instruct-8-gpus" title="Link to this heading">¶</a></h2>
+<h2>ALFWorld — Qwen2.5-7B-Instruct — 8 GPUs<a class="headerlink" href="#alfworld-qwen2-5-7b-instruct-8-gpus" title="Link to this heading">#</a></h2>
 <p>Trains an agent to complete embodied household tasks in a text-based environment. Each rollout is a multi-turn episode (up to 15 turns) against an AgentBench task server. The recipe comes in two variants that differ <strong>only</strong> in weight transfer mode:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-full"><code class="docutils literal notranslate"><span class="pre">qwen2.5-7b-instruct-m2po-full/</span></code></a> — full weight transfer</p></li>
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/alfworld/qwen2.5-7b-instruct-m2po-delta"><code class="docutils literal notranslate"><span class="pre">qwen2.5-7b-instruct-m2po-delta/</span></code></a> — delta weight transfer (full sync every 10 steps)</p></li>
 </ul>
 <section id="run">
-<h3>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h3>
+<h3>Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h3>
 <p>One script launches four processes — the AgentBench ALFWorld environment server, the AstraFlow service, the RaaS inference server, and the trainer. The all-in-one script starts the local environment server itself; the standalone <code class="docutils literal notranslate"><span class="pre">0_alfworld_server.sh</span></code> is provided for split launches.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># full weight transfer</span>
 </span><span data-line="2">bash<span class="w"> </span>examples/alfworld/qwen2.5-7b-instruct-m2po-full/scripts/run_qwen2.5-7b-instruct-m2po-full.sh
@@ -181,7 +181,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 <section id="settings">
-<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">¶</a></h3>
+<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -238,14 +238,14 @@ data-aria-dark="Switch to auto color mode">
 </section>
 </section>
 <section id="webshop-qwen2-5-7b-instruct-8-gpus">
-<h2>WebShop — Qwen2.5-7B-Instruct — 8 GPUs<a class="headerlink" href="#webshop-qwen2-5-7b-instruct-8-gpus" title="Link to this heading">¶</a></h2>
+<h2>WebShop — Qwen2.5-7B-Instruct — 8 GPUs<a class="headerlink" href="#webshop-qwen2-5-7b-instruct-8-gpus" title="Link to this heading">#</a></h2>
 <p>Trains an agent to navigate and purchase products on a simulated e-commerce site. Each rollout is a multi-turn episode (up to 10 turns) against an AgentBench task server. It also comes in full and delta transfer variants:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-full"><code class="docutils literal notranslate"><span class="pre">qwen2.5-7b-instruct-m2po-full/</span></code></a> — full weight transfer</p></li>
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/webshop/qwen2.5-7b-instruct-m2po-delta"><code class="docutils literal notranslate"><span class="pre">qwen2.5-7b-instruct-m2po-delta/</span></code></a> — delta weight transfer (full sync every 10 steps)</p></li>
 </ul>
 <section id="id1">
-<h3>Run<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<h3>Run<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <p>The same single-script pattern launches four processes — the AgentBench WebShop environment server, the AstraFlow service, the RaaS inference server, and the trainer. The all-in-one script starts the local environment server itself; the standalone <code class="docutils literal notranslate"><span class="pre">0_webshop_server.sh</span></code> is provided for split launches.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># full weight transfer</span>
 </span><span data-line="2">bash<span class="w"> </span>examples/webshop/qwen2.5-7b-instruct-m2po-full/scripts/run_qwen2.5-7b-instruct-m2po-full.sh
@@ -256,7 +256,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 <section id="id2">
-<h3>Settings<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<h3>Settings<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -351,9 +351,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

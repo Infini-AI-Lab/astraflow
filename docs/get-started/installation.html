@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -142,29 +142,29 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
 <blockquote>
 <div><p>For AMD ROCm (MI300/MI325) installs, see <a class="reference internal" href="installation-amd.html"><span class="std std-doc">Installation (AMD ROCm)</span></a>.</p>
 </div></blockquote>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Linux (Ubuntu 20.04+ recommended)</p></li>
 <li><p>NVIDIA GPU with CUDA support</p></li>
 </ul>
 </section>
 <section id="option-a-custom-installation-conda">
-<h2>Option A: Custom Installation (Conda)<a class="headerlink" href="#option-a-custom-installation-conda" title="Link to this heading">¶</a></h2>
+<h2>Option A: Custom Installation (Conda)<a class="headerlink" href="#option-a-custom-installation-conda" title="Link to this heading">#</a></h2>
 <p>These steps install AstraFlow into a local conda environment.</p>
 <section id="step-1-create-conda-environment">
-<h3>Step 1: Create conda environment<a class="headerlink" href="#step-1-create-conda-environment" title="Link to this heading">¶</a></h3>
+<h3>Step 1: Create conda environment<a class="headerlink" href="#step-1-create-conda-environment" title="Link to this heading">#</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>astraflow<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>-y
 </span><span data-line="2">conda<span class="w"> </span>activate<span class="w"> </span>astraflow
 </span></pre></div>
 </div>
 </section>
 <section id="step-2-install-uv-fast-pip-replacement">
-<h3>Step 2: Install uv (fast pip replacement)<a class="headerlink" href="#step-2-install-uv-fast-pip-replacement" title="Link to this heading">¶</a></h3>
+<h3>Step 2: Install uv (fast pip replacement)<a class="headerlink" href="#step-2-install-uv-fast-pip-replacement" title="Link to this heading">#</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span><span class="s2">&quot;uv&gt;=0.10&quot;</span>
 </span></pre></div>
 </div>
@@ -173,25 +173,25 @@ data-aria-dark="Switch to auto color mode">
 (<code class="docutils literal notranslate"><span class="pre">extra-build-dependencies</span></code>, <code class="docutils literal notranslate"><span class="pre">override-dependencies</span></code>) that older uv
 releases don’t recognize. When uv hits an unknown <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code> key it
 silently ignores the <em>entire</em> <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code> table, so the
-<code class="docutils literal notranslate"><span class="pre">transformers==5.6.1</span></code> override (which must beat sglang’s <code class="docutils literal notranslate"><span class="pre">==5.6.0</span></code> pin)
+<code class="docutils literal notranslate"><span class="pre">transformers==5.8.1</span></code> override (the version the pinned sglang release requires)
 is dropped and the install fails with an unsolvable
 <code class="docutils literal notranslate"><span class="pre">transformers</span></code> conflict. The Docker images install the latest uv via the
 official installer and are unaffected.</p>
 </div></blockquote>
 </section>
 <section id="step-3-install-astraflow-core-dev-tools">
-<h3>Step 3: Install AstraFlow (core + dev tools)<a class="headerlink" href="#step-3-install-astraflow-core-dev-tools" title="Link to this heading">¶</a></h3>
+<h3>Step 3: Install AstraFlow (core + dev tools)<a class="headerlink" href="#step-3-install-astraflow-core-dev-tools" title="Link to this heading">#</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
 </span></pre></div>
 </div>
 <p>This installs all core dependencies (~260 packages) including PyTorch 2.11.0,
-Transformers 5.6.1, Megatron-Core 0.13.1, Ray, W&amp;B, and dev tools (pytest, ruff,
+Transformers 5.8.1, Megatron-Core 0.13.1, Ray, W&amp;B, and dev tools (pytest, ruff,
 ipython).</p>
 </section>
 <section id="step-4-install-flash-attention-and-sglang">
-<h3>Step 4: Install Flash Attention and SGLang<a class="headerlink" href="#step-4-install-flash-attention-and-sglang" title="Link to this heading">¶</a></h3>
+<h3>Step 4: Install Flash Attention and SGLang<a class="headerlink" href="#step-4-install-flash-attention-and-sglang" title="Link to this heading">#</a></h3>
 <section id="flash-attention">
-<h4>Flash Attention<a class="headerlink" href="#flash-attention" title="Link to this heading">¶</a></h4>
+<h4>Flash Attention<a class="headerlink" href="#flash-attention" title="Link to this heading">#</a></h4>
 <p>This is FlashAttention-<strong>2</strong> (<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">flash_attn</span></code>), used by the FSDP trainer. It
 is excluded from uv resolution (see <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code>) and built from
 source, so it needs the CUDA 13 toolchain and a roomy build-temp directory:</p>
@@ -215,9 +215,9 @@ roomy <code class="docutils literal notranslate"><span class="pre">TMPDIR</span>
 </div></blockquote>
 </section>
 <section id="sglang-inference-backend">
-<h4>SGLang (inference backend)<a class="headerlink" href="#sglang-inference-backend" title="Link to this heading">¶</a></h4>
+<h4>SGLang (inference backend)<a class="headerlink" href="#sglang-inference-backend" title="Link to this heading">#</a></h4>
 <p>Install via the project extra so uv applies the <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code> overrides (the
-<code class="docutils literal notranslate"><span class="pre">transformers==5.6.1</span></code> pin and the <code class="docutils literal notranslate"><span class="pre">flash-attn-4</span></code> pre-release allowance). SGLang
+<code class="docutils literal notranslate"><span class="pre">transformers==5.8.1</span></code> pin and the <code class="docutils literal notranslate"><span class="pre">flash-attn-4</span></code> pre-release allowance). SGLang
 pulls in FlashAttention-<strong>4</strong> (<code class="docutils literal notranslate"><span class="pre">flash-attn-4</span></code>, a pre-release wheel) automatically
 for its own attention backend — you do not install that one yourself.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[sglang]&quot;</span>
@@ -226,13 +226,13 @@ for its own attention backend — you do not install that one yourself.</p>
 </section>
 </section>
 <section id="step-5-optional-install-the-megatron-training-backend">
-<h3>Step 5 (optional): Install the Megatron training backend<a class="headerlink" href="#step-5-optional-install-the-megatron-training-backend" title="Link to this heading">¶</a></h3>
+<h3>Step 5 (optional): Install the Megatron training backend<a class="headerlink" href="#step-5-optional-install-the-megatron-training-backend" title="Link to this heading">#</a></h3>
 <p>Only needed if you want to train with the <strong>Megatron-LM backend</strong> (tensor /
 pipeline / expert parallelism, MoE models). The default <strong>FSDP</strong> backend and
 all inference need nothing here — skip to Step 6.</p>
 <blockquote>
 <div><p><strong>Prefer Docker?</strong> Skip this entire step with the pre-built
-<code class="docutils literal notranslate"><span class="pre">astraflowai/astraflow:v0.1.1.megatron</span></code> image (see Option B below), which already
+<code class="docutils literal notranslate"><span class="pre">astraflowai/astraflow:v0.1.2.megatron</span></code> image (see Option B below), which already
 bundles Transformer Engine + apex.</p>
 </div></blockquote>
 <p><code class="docutils literal notranslate"><span class="pre">megatron-core</span></code> and <code class="docutils literal notranslate"><span class="pre">mbridge</span></code> are already installed by Step 3. The Megatron
@@ -284,7 +284,7 @@ skip apex (Transformer Engine is the only hard requirement). The
 </div>
 </section>
 <section id="step-6-verify-installation">
-<h3>Step 6: Verify installation<a class="headerlink" href="#step-6-verify-installation" title="Link to this heading">¶</a></h3>
+<h3>Step 6: Verify installation<a class="headerlink" href="#step-6-verify-installation" title="Link to this heading">#</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
 </span><span data-line="2"><span class="s2">import astraflow, torch, transformers</span>
 </span><span data-line="3"><span class="s2">print(f&#39;astraflow:    {astraflow.version.__version__}&#39;)</span>
@@ -304,18 +304,31 @@ skip apex (Transformer Engine is the only hard requirement). The
 </section>
 </section>
 <section id="option-b-docker">
-<h2>Option B: Docker<a class="headerlink" href="#option-b-docker" title="Link to this heading">¶</a></h2>
+<h2>Option B: Docker<a class="headerlink" href="#option-b-docker" title="Link to this heading">#</a></h2>
 <p>Pre-built images are published on Docker Hub — they skip the from-source steps above
 entirely. Requires the NVIDIA Container Toolkit so <code class="docutils literal notranslate"><span class="pre">--gpus</span> <span class="pre">all</span></code> works. Choose the image
 by <strong>training backend</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># FSDP backend (default) — covers most recipes</span>
-</span><span data-line="2">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">65536</span>:65536<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.1
-</span><span data-line="3">
-</span><span data-line="4"><span class="c1"># Megatron-LM backend — adds Transformer Engine + apex (Step 5 above, pre-built in).</span>
-</span><span data-line="5"><span class="c1"># Use this for `backend: megatron` (TP/PP/EP, MoE, large models).</span>
-</span><span data-line="6">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">65536</span>:65536<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.1.megatron
+<p>The recommended workflow: <strong>the image provides the environment, your local
+checkout provides the code</strong>. astraflow is installed <em>editable</em> from
+<code class="docutils literal notranslate"><span class="pre">/workspace/astraflow</span></code>, so mounting your repo over that path runs your local
+code — no rebuild needed for code changes; rebuild only when dependency pins or
+the CUDA stack change.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># FSDP backend (default) — run a recipe from YOUR local checkout</span>
+</span><span data-line="2">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">65536</span>:65536<span class="w"> </span><span class="se">\</span>
+</span><span data-line="3"><span class="w">  </span>-v<span class="w"> </span>/path/to/astraflow:/workspace/astraflow<span class="w"> </span><span class="se">\</span>
+</span><span data-line="4"><span class="w">  </span>-v<span class="w"> </span>~/.cache/huggingface:/hf<span class="w"> </span>-e<span class="w"> </span><span class="nv">HF_HOME</span><span class="o">=</span>/hf<span class="w"> </span><span class="se">\</span>
+</span><span data-line="5"><span class="w">  </span>-e<span class="w"> </span><span class="nv">WANDB_API_KEY</span><span class="o">=</span>&lt;your-key&gt;<span class="w"> </span><span class="se">\</span>
+</span><span data-line="6"><span class="w">  </span>astraflowai/astraflow:v0.1.2<span class="w"> </span><span class="se">\</span>
+</span><span data-line="7"><span class="w">  </span>bash<span class="w"> </span>examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># Megatron-LM backend — adds Transformer Engine + apex (Step 5 above, pre-built in).</span>
+</span><span data-line="10"><span class="c1"># Use this for `backend: megatron` (TP/PP/EP, MoE, large models).</span>
+</span><span data-line="11">docker<span class="w"> </span>run<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>--net<span class="o">=</span>host<span class="w"> </span>--shm-size<span class="o">=</span>512g<span class="w"> </span>--ulimit<span class="w"> </span><span class="nv">nofile</span><span class="o">=</span><span class="m">65536</span>:65536<span class="w"> </span>-it<span class="w"> </span>astraflowai/astraflow:v0.1.2.megatron
 </span></pre></div>
 </div>
+<p>Drop the <code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">/path/to/astraflow:...</span></code> mount to use the code baked into the image
+instead; add <code class="docutils literal notranslate"><span class="pre">-it</span></code> for an interactive shell. The <code class="docutils literal notranslate"><span class="pre">-v</span> <span class="pre">~/.cache/huggingface</span></code> mount
+reuses your host model/dataset cache instead of re-downloading in the container.</p>
 <blockquote>
 <div><p><strong>Note on <code class="docutils literal notranslate"><span class="pre">--shm-size</span></code>:</strong> this sets the size of the container’s <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>. A
 recipe run co-locates the trainer, RaaS, and SGLang in a single container, all
@@ -333,7 +346,7 @@ reward workers open a large number of file descriptors. The container’s defaul
 <code class="docutils literal notranslate"><span class="pre">nofile</span></code> soft limit (1024) is far too low and the reward pool fails with
 <code class="docutils literal notranslate"><span class="pre">[Errno</span> <span class="pre">24]</span> <span class="pre">Too</span> <span class="pre">many</span> <span class="pre">open</span> <span class="pre">files</span></code>. Raise it with <code class="docutils literal notranslate"><span class="pre">--ulimit</span> <span class="pre">nofile=65536:65536</span></code>.</p>
 </div></blockquote>
-<p>The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (<code class="docutils literal notranslate"><span class="pre">v0.1.1</span></code>) for
+<p>The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (<code class="docutils literal notranslate"><span class="pre">v0.1.2</span></code>) for
 reproducibility; <code class="docutils literal notranslate"><span class="pre">:latest</span></code> tracks the most recent release. See <code class="docutils literal notranslate"><span class="pre">docker/README.md</span></code> for
 build details and the NVIDIA Container Toolkit install guide.</p>
 </section>
@@ -376,9 +389,9 @@ build details and the NVIDIA Container Toolkit install guide.</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -130,18 +130,18 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="quick-start">
-<h1>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h1>
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h1>
 <p>Run your first AstraFlow training job. This guide uses the smallest recipe — it
 needs just <strong>2 GPUs</strong>, the quickest way to see the whole system working end to end.</p>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>AstraFlow installed — see <a class="reference internal" href="installation.html"><span class="std std-doc">Installation</span></a>.</p></li>
 <li><p>A machine with at least <strong>2 NVIDIA GPUs</strong>.</p></li>
 </ul>
 </section>
 <section id="launch-a-training-run">
-<h2>Launch a training run<a class="headerlink" href="#launch-a-training-run" title="Link to this heading">¶</a></h2>
+<h2>Launch a training run<a class="headerlink" href="#launch-a-training-run" title="Link to this heading">#</a></h2>
 <p>AstraFlow runs as three coordinated processes:</p>
 <ul class="simple">
 <li><p><strong>AstraFlow</strong> — the data orchestrator (CPU-only HTTP service)</p></li>
@@ -164,7 +164,7 @@ are written under <code class="docutils literal notranslate"><span class="pre">d
 </div>
 </section>
 <section id="next-steps">
-<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
 <p>Explore the other recipes for larger models and other tasks:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../recipes/math.html"><span class="std std-doc">Math</span></a> — including the 8-GPU Qwen3-8B recipe</p></li>
@@ -213,9 +213,9 @@ are written under <code class="docutils literal notranslate"><span class="pre">d
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

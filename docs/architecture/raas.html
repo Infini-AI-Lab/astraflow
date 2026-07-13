@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -147,10 +147,10 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="raas">
-<h1>RaaS<a class="headerlink" href="#raas" title="Link to this heading">¶</a></h1>
+<h1>RaaS<a class="headerlink" href="#raas" title="Link to this heading">#</a></h1>
 <p>RaaS (Remote Agentic Serving, <code class="docutils literal notranslate"><span class="pre">astraflow/raas/</span></code>) manages inference engines and rollout generation.</p>
 <section id="key-components">
-<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">¶</a></h2>
+<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">RaaS3Manager</span></code></strong> — Central async manager that maintains per-model inference engines, handles workflow registration, and manages pause/resume for weight sync.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">server/routes.py</span></code></strong> — FastAPI routes exposing the RaaS HTTP API.</p></li>
@@ -160,7 +160,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </section>
 <section id="responsibilities">
-<h2>Responsibilities<a class="headerlink" href="#responsibilities" title="Link to this heading">¶</a></h2>
+<h2>Responsibilities<a class="headerlink" href="#responsibilities" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Launch and manage vLLM/SGLang inference servers.</p></li>
 <li><p>Execute rollout workflows with registered reward functions.</p></li>
@@ -169,7 +169,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </section>
 <section id="how-it-fits">
-<h2>How It Fits<a class="headerlink" href="#how-it-fits" title="Link to this heading">¶</a></h2>
+<h2>How It Fits<a class="headerlink" href="#how-it-fits" title="Link to this heading">#</a></h2>
 <p>RaaS is the inference side of the loop:</p>
 <ul class="simple">
 <li><p>Receives rollout requests from Dataflow</p></li>
@@ -181,14 +181,14 @@ data-aria-dark="Switch to auto color mode">
 </section>
 <hr class="docutils" />
 <section id="raas-http-api">
-<h2>RaaS HTTP API<a class="headerlink" href="#raas-http-api" title="Link to this heading">¶</a></h2>
+<h2>RaaS HTTP API<a class="headerlink" href="#raas-http-api" title="Link to this heading">#</a></h2>
 <p>All endpoints use binary pickle/cloudpickle serialization
 (<code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/octet-stream</span></code>) <strong>except</strong> <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> and
 <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/availability</span></code>, which return JSON. Pickle endpoints wrap responses
 as <code class="docutils literal notranslate"><span class="pre">{&quot;ok&quot;:</span> <span class="pre">True,</span> <span class="pre">&quot;result&quot;:</span> <span class="pre">...}</span></code> on success or <code class="docutils literal notranslate"><span class="pre">{&quot;ok&quot;:</span> <span class="pre">False,</span> <span class="pre">&quot;error&quot;:</span> <span class="pre">...}</span></code>
 on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span class="pre">astraflow/raas/server/routes.py</span></code>.</p>
 <section id="health-status-json">
-<h3>Health &amp; Status (JSON)<a class="headerlink" href="#health-status-json" title="Link to this heading">¶</a></h3>
+<h3>Health &amp; Status (JSON)<a class="headerlink" href="#health-status-json" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -211,7 +211,7 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="rollout-pickle">
-<h3>Rollout (pickle)<a class="headerlink" href="#rollout-pickle" title="Link to this heading">¶</a></h3>
+<h3>Rollout (pickle)<a class="headerlink" href="#rollout-pickle" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -238,7 +238,7 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="weight-sync-pickle">
-<h3>Weight Sync (pickle)<a class="headerlink" href="#weight-sync-pickle" title="Link to this heading">¶</a></h3>
+<h3>Weight Sync (pickle)<a class="headerlink" href="#weight-sync-pickle" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -257,7 +257,7 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="evaluation-pickle">
-<h3>Evaluation (pickle)<a class="headerlink" href="#evaluation-pickle" title="Link to this heading">¶</a></h3>
+<h3>Evaluation (pickle)<a class="headerlink" href="#evaluation-pickle" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -292,7 +292,7 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </div>
 </section>
 <section id="lifecycle-pickle">
-<h3>Lifecycle (pickle)<a class="headerlink" href="#lifecycle-pickle" title="Link to this heading">¶</a></h3>
+<h3>Lifecycle (pickle)<a class="headerlink" href="#lifecycle-pickle" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -313,10 +313,10 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 </section>
 <hr class="docutils" />
 <section id="apis-that-raas-calls-raas-as-client">
-<h2>APIs That RaaS Calls (RaaS as Client)<a class="headerlink" href="#apis-that-raas-calls-raas-as-client" title="Link to this heading">¶</a></h2>
+<h2>APIs That RaaS Calls (RaaS as Client)<a class="headerlink" href="#apis-that-raas-calls-raas-as-client" title="Link to this heading">#</a></h2>
 <p>RaaS is not only a server — it also acts as a client to two external services.</p>
 <section id="dataflow-service">
-<h3>Dataflow Service<a class="headerlink" href="#dataflow-service" title="Link to this heading">¶</a></h3>
+<h3>Dataflow Service<a class="headerlink" href="#dataflow-service" title="Link to this heading">#</a></h3>
 <p>On startup, RaaS self-registers with the Dataflow orchestrator:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -337,7 +337,7 @@ on failure (HTTP 500). Source: <code class="docutils literal notranslate"><span 
 <p>This is triggered at boot when <code class="docutils literal notranslate"><span class="pre">--astraflow-url</span></code> is provided. Dataflow then knows to route rollout requests to this instance.</p>
 </section>
 <section id="trainer-sender-agent-weight-transfer">
-<h3>Trainer Sender Agent (Weight Transfer)<a class="headerlink" href="#trainer-sender-agent-weight-transfer" title="Link to this heading">¶</a></h3>
+<h3>Trainer Sender Agent (Weight Transfer)<a class="headerlink" href="#trainer-sender-agent-weight-transfer" title="Link to this heading">#</a></h3>
 <p>When <code class="docutils literal notranslate"><span class="pre">/notify_version</span></code> is called (one call per model) and RaaS detects a
 version lag, it initiates a <strong>pull-based TCP weight transfer</strong> by calling
 the Trainer’s sender agent:</p>
@@ -389,7 +389,7 @@ requested — see <a class="reference internal" href="multi-agent-weight-transfe
 </section>
 <hr class="docutils" />
 <section id="call-graph-raas-centric">
-<h2>Call Graph (RaaS-Centric)<a class="headerlink" href="#call-graph-raas-centric" title="Link to this heading">¶</a></h2>
+<h2>Call Graph (RaaS-Centric)<a class="headerlink" href="#call-graph-raas-centric" title="Link to this heading">#</a></h2>
 <p>All HTTP calls to and from RaaS, organized by phase.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">                                    ┌─────────────────────┐
 </span><span data-line="2">                                    │        RaaS         │
@@ -443,7 +443,7 @@ requested — see <a class="reference internal" href="multi-agent-weight-transfe
 <p><strong>Inbound (RaaS as server):</strong> Dataflow calls RaaS for rollout, eval, weight sync, and lifecycle management.
 <strong>Outbound (RaaS as client):</strong> RaaS calls Dataflow once at startup (registration) and calls Trainer directly during weight sync (TCP pull).</p>
 <section id="initial-startup-vs-recovery">
-<h3>Initial Startup vs Recovery<a class="headerlink" href="#initial-startup-vs-recovery" title="Link to this heading">¶</a></h3>
+<h3>Initial Startup vs Recovery<a class="headerlink" href="#initial-startup-vs-recovery" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Fresh start (version=0):</strong> Both RaaS and Trainer load the same model checkpoint independently. No weight transfer needed — data acquisition begins immediately.</p></li>
 <li><p><strong>Recovery (version &gt; 0):</strong> Trainer sends <code class="docutils literal notranslate"><span class="pre">recovered_version</span></code> in <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code>. Dataflow then fans out <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> to all RaaS instances (once per registered model) before starting data acquisition, ensuring every RaaS loads the recovered weights.</p></li>
@@ -489,9 +489,9 @@ requested — see <a class="reference internal" href="multi-agent-weight-transfe
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

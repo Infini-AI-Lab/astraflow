@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -132,11 +132,11 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="trainer">
-<h1>Trainer<a class="headerlink" href="#trainer" title="Link to this heading">¶</a></h1>
+<h1>Trainer<a class="headerlink" href="#trainer" title="Link to this heading">#</a></h1>
 <p>The Trainer (<code class="docutils literal notranslate"><span class="pre">astraflow/train_worker/</span></code>) is the distributed training engine
 supporting FSDP and Megatron backends.</p>
 <section id="design-principle-swappable-trainer">
-<h2>Design Principle: Swappable Trainer<a class="headerlink" href="#design-principle-swappable-trainer" title="Link to this heading">¶</a></h2>
+<h2>Design Principle: Swappable Trainer<a class="headerlink" href="#design-principle-swappable-trainer" title="Link to this heading">#</a></h2>
 <p>The trainer is a <strong>swappable component</strong>. AstraFlow provides a built-in
 PPO trainer, but the system is designed so that users can replace it with
 their own training framework. The trainer communicates with Dataflow
@@ -170,7 +170,7 @@ pulling, and version notification.</p></li>
 that RaaS connects to for pulling updated weights.</p></li>
 </ul>
 <section id="trainer-dataflow-api">
-<h3>Trainer → Dataflow API<a class="headerlink" href="#trainer-dataflow-api" title="Link to this heading">¶</a></h3>
+<h3>Trainer → Dataflow API<a class="headerlink" href="#trainer-dataflow-api" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -201,7 +201,7 @@ that RaaS connects to for pulling updated weights.</p></li>
 </div>
 </section>
 <section id="raas-trainer-api-weight-sender">
-<h3>RaaS → Trainer API (weight sender)<a class="headerlink" href="#raas-trainer-api-weight-sender" title="Link to this heading">¶</a></h3>
+<h3>RaaS → Trainer API (weight sender)<a class="headerlink" href="#raas-trainer-api-weight-sender" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -277,9 +277,9 @@ don’t need to reimplement TCP/ZMQ machinery. See
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

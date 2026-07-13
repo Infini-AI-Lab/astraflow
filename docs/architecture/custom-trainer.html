@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -148,7 +148,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="custom-trainer-integration">
-<h1>Custom Trainer Integration<a class="headerlink" href="#custom-trainer-integration" title="Link to this heading">¶</a></h1>
+<h1>Custom Trainer Integration<a class="headerlink" href="#custom-trainer-integration" title="Link to this heading">#</a></h1>
 <p>AstraFlow’s trainer is a swappable component. You can replace the built-in
 PPO trainer with your own training framework as long as it speaks the
 correct HTTP protocol. This guide documents the minimal API your custom
@@ -157,7 +157,7 @@ trainer must implement.</p>
 mode for custom trainers because the trainer only needs to talk to
 AstraFlow — no direct RaaS communication required for data or coordination.</p>
 <section id="architecture">
-<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h2>
 <p>A trainer has two communication surfaces:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">                   ┌───────────────────────┐
 </span><span data-line="2">   Outbound HTTP   │                       │   Inbound HTTP
@@ -186,9 +186,9 @@ is provided as a reusable library. Custom trainers do not need to reimplement
 the TCP/ZMQ transfer machinery.</p>
 </section>
 <section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h2>
 <section id="wire-formats">
-<h3>Wire formats<a class="headerlink" href="#wire-formats" title="Link to this heading">¶</a></h3>
+<h3>Wire formats<a class="headerlink" href="#wire-formats" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p><strong>Pickle / cloudpickle</strong> (<code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">application/octet-stream</span></code>) —
 all three Trainer → AstraFlow endpoints. Payload is a Python dict
@@ -203,10 +203,10 @@ is the only success signal. Below, <code class="docutils literal notranslate"><s
 Python dict before pickling; <code class="docutils literal notranslate"><span class="pre">json</span></code> fences show literal JSON text.</p>
 </section>
 <section id="trainer-astraflow-outbound">
-<h3>Trainer → AstraFlow (outbound)<a class="headerlink" href="#trainer-astraflow-outbound" title="Link to this heading">¶</a></h3>
+<h3>Trainer → AstraFlow (outbound)<a class="headerlink" href="#trainer-astraflow-outbound" title="Link to this heading">#</a></h3>
 <p>These are HTTP calls your trainer makes to the AstraFlow service.</p>
 <section id="registration-post-ready">
-<h4>Registration: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code><a class="headerlink" href="#registration-post-ready" title="Link to this heading">¶</a></h4>
+<h4>Registration: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/ready</span></code><a class="headerlink" href="#registration-post-ready" title="Link to this heading">#</a></h4>
 <p>Signal that the trainer is ready to receive data. AstraFlow starts data
 acquisition only after both RaaS and trainer have signalled readiness.</p>
 <p>Request fields:</p>
@@ -258,7 +258,7 @@ acquisition only after both RaaS and trainer have signalled readiness.</p>
 </div>
 </section>
 <section id="data-get-batch">
-<h4>Data: <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code><a class="headerlink" href="#data-get-batch" title="Link to this heading">¶</a></h4>
+<h4>Data: <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/batch</span></code><a class="headerlink" href="#data-get-batch" title="Link to this heading">#</a></h4>
 <p>Pull a training batch. <strong>Blocks</strong> until sufficient data is available in
 the buffer.</p>
 <p>Query parameters (not a pickle body — real URL query string):</p>
@@ -309,7 +309,7 @@ the batch directly):</p>
 </div>
 </section>
 <section id="weights-post-notify-version">
-<h4>Weights: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code><a class="headerlink" href="#weights-post-notify-version" title="Link to this heading">¶</a></h4>
+<h4>Weights: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code><a class="headerlink" href="#weights-post-notify-version" title="Link to this heading">#</a></h4>
 <p>Notify AstraFlow that new weights are available. AstraFlow’s Python-side
 barrier waits until every registered <code class="docutils literal notranslate"><span class="pre">model_id</span></code> has reported the same
 version, then fans out one <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/notify_version</span></code> per model to every
@@ -374,12 +374,12 @@ live RaaS instance.</p>
 </section>
 </section>
 <section id="raas-trainer-inbound-weight-sender">
-<h3>RaaS → Trainer (inbound, weight sender)<a class="headerlink" href="#raas-trainer-inbound-weight-sender" title="Link to this heading">¶</a></h3>
+<h3>RaaS → Trainer (inbound, weight sender)<a class="headerlink" href="#raas-trainer-inbound-weight-sender" title="Link to this heading">#</a></h3>
 <p>These are HTTP endpoints that RaaS calls on the trainer’s weight sender
 server. The sender agent library handles these automatically — listed here
 for completeness.</p>
 <section id="get-get-buffer-info">
-<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/get_buffer_info</span></code><a class="headerlink" href="#get-get-buffer-info" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/get_buffer_info</span></code><a class="headerlink" href="#get-get-buffer-info" title="Link to this heading">#</a></h4>
 <p>RaaS queries the trainer’s model tensor layout to allocate its receive
 buffer. Called <strong>once</strong> when a RaaS instance first connects.</p>
 <p><strong>Response</strong> (JSON):</p>
@@ -394,7 +394,7 @@ buffer. Called <strong>once</strong> when a RaaS instance first connects.</p>
 </div>
 </section>
 <section id="post-register-sglang-instance">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_sglang_instance</span></code><a class="headerlink" href="#post-register-sglang-instance" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_sglang_instance</span></code><a class="headerlink" href="#post-register-sglang-instance" title="Link to this heading">#</a></h4>
 <p>RaaS registers itself as a weight receiver. Both sides exchange TCP session
 IDs and buffer pointers to establish a persistent TCP connection. Called
 <strong>once</strong> per RaaS instance, after <code class="docutils literal notranslate"><span class="pre">get_buffer_info</span></code>.</p>
@@ -425,7 +425,7 @@ IDs and buffer pointers to establish a persistent TCP connection. Called
 </div>
 </section>
 <section id="post-request-transfer">
-<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/request_transfer</span></code><a class="headerlink" href="#post-request-transfer" title="Link to this heading">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/request_transfer</span></code><a class="headerlink" href="#post-request-transfer" title="Link to this heading">#</a></h4>
 <p>RaaS requests a weight pull. The sender acquires a buffer lock, performs
 TCP bulk copy from the active buffer half to the receiver, and sends a
 ZMQ completion signal. Called <strong>every training step</strong> (or when RaaS detects
@@ -446,7 +446,7 @@ it is behind the latest version).</p>
 </section>
 </section>
 <section id="connection-lifecycle">
-<h3>Connection Lifecycle<a class="headerlink" href="#connection-lifecycle" title="Link to this heading">¶</a></h3>
+<h3>Connection Lifecycle<a class="headerlink" href="#connection-lifecycle" title="Link to this heading">#</a></h3>
 <p>The weight transfer connection between a trainer and each RaaS instance
 follows this lifecycle:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">RaaS                                          Trainer Sender
@@ -478,7 +478,7 @@ step. The TCP connection persists across all transfers.</p>
 </section>
 </section>
 <section id="weight-transfer-double-buffer-design">
-<h2>Weight Transfer: Double-Buffer Design<a class="headerlink" href="#weight-transfer-double-buffer-design" title="Link to this heading">¶</a></h2>
+<h2>Weight Transfer: Double-Buffer Design<a class="headerlink" href="#weight-transfer-double-buffer-design" title="Link to this heading">#</a></h2>
 <p>The sender agent uses a double-buffer in shared memory (<code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>) so
 that weight copying and weight serving never block each other:</p>
 <ol class="arabic simple">
@@ -495,7 +495,7 @@ tells the inference engine to reload.</p></li>
 RaaS is still pulling the current set.</p>
 </section>
 <section id="complete-example">
-<h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">¶</a></h2>
+<h2>Complete Example<a class="headerlink" href="#complete-example" title="Link to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">astraflow.train_worker.trainer.astraflow_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">AstraFlowClient</span>
 </span><span data-line="2">
 </span><span data-line="3"><span class="c1"># --- Startup ---</span>
@@ -547,7 +547,7 @@ RaaS is still pulling the current set.</p>
 </div>
 </section>
 <section id="api-summary">
-<h2>API Summary<a class="headerlink" href="#api-summary" title="Link to this heading">¶</a></h2>
+<h2>API Summary<a class="headerlink" href="#api-summary" title="Link to this heading">#</a></h2>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -626,9 +626,9 @@ sender agent library.</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -131,13 +131,13 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="math-offline">
-<h1>Math (Offline)<a class="headerlink" href="#math-offline" title="Link to this heading">¶</a></h1>
+<h1>Math (Offline)<a class="headerlink" href="#math-offline" title="Link to this heading">#</a></h1>
 <p>Run the math RL recipe on a node with <strong>no internet access</strong> by pre-downloading every training and evaluation dataset to a local directory.</p>
 <p><strong>Recipe</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/offline/qwen3-8b-m2po-full-offline"><code class="docutils literal notranslate"><span class="pre">examples/math/offline/qwen3-8b-m2po-full-offline/</span></code></a></p>
 <p><strong>Downloader</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/offline/download_math_datasets.py"><code class="docutils literal notranslate"><span class="pre">examples/math/offline/download_math_datasets.py</span></code></a></p>
 <p>This is the same Qwen3-8B / M2PO / TCP recipe as <a class="reference internal" href="math.html"><span class="std std-doc">Math</span></a>, with one difference: at startup the AstraFlow service loads every dataset from disk instead of fetching from the HuggingFace Hub.</p>
 <section id="one-time-prep-download-datasets">
-<h2>1. One-time prep — download datasets<a class="headerlink" href="#one-time-prep-download-datasets" title="Link to this heading">¶</a></h2>
+<h2>1. One-time prep — download datasets<a class="headerlink" href="#one-time-prep-download-datasets" title="Link to this heading">#</a></h2>
 <p>From the repo root:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>examples/math/offline/download_math_datasets.py<span class="w"> </span>--root<span class="w"> </span>data-data/math
 </span></pre></div>
@@ -204,7 +204,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </section>
 <section id="run-training">
-<h2>2. Run training<a class="headerlink" href="#run-training" title="Link to this heading">¶</a></h2>
+<h2>2. Run training<a class="headerlink" href="#run-training" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">bash<span class="w"> </span>examples/math/offline/qwen3-8b-m2po-full-offline/scripts/run_qwen3-8b-m2po-full-offline.sh
 </span></pre></div>
 </div>
@@ -217,7 +217,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 <section id="how-it-works">
-<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h2>
 <p>The recipe’s <code class="docutils literal notranslate"><span class="pre">experiment.yaml</span></code> sets a single field under <code class="docutils literal notranslate"><span class="pre">dataflow</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nt">dataflow</span><span class="p">:</span>
 </span><span data-line="2"><span class="w">  </span><span class="nt">data_root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data-data/math</span>
@@ -232,7 +232,7 @@ data-aria-dark="Switch to auto color mode">
 <p>To convert any other recipe to offline mode, add the same <code class="docutils literal notranslate"><span class="pre">dataflow.data_root</span></code> field; no other changes are required.</p>
 </section>
 <section id="caveats">
-<h2>Caveats<a class="headerlink" href="#caveats" title="Link to this heading">¶</a></h2>
+<h2>Caveats<a class="headerlink" href="#caveats" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>Model and tokenizer weights are <em>not</em> covered</strong> by the dataset downloader. <code class="docutils literal notranslate"><span class="pre">model_path</span></code> / <code class="docutils literal notranslate"><span class="pre">tokenizer_path</span></code> still point at <code class="docutils literal notranslate"><span class="pre">Qwen/Qwen3-8B</span></code> and resolve via the HuggingFace cache. For a fully air-gapped run, pre-fetch them with <code class="docutils literal notranslate"><span class="pre">huggingface-cli</span> <span class="pre">download</span> <span class="pre">Qwen/Qwen3-8B</span> <span class="pre">--local-dir</span> <span class="pre">/local/models/Qwen3-8B</span></code> and edit the two paths in <code class="docutils literal notranslate"><span class="pre">experiment.yaml</span></code>.</p></li>
 <li><p>The downloader needs internet at prep time. Once <code class="docutils literal notranslate"><span class="pre">data-data/math/</span></code> is populated, training itself works with <code class="docutils literal notranslate"><span class="pre">HF_HUB_OFFLINE=1</span></code> / <code class="docutils literal notranslate"><span class="pre">HF_DATASETS_OFFLINE=1</span></code>.</p></li>
@@ -277,9 +277,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

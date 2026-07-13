@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -129,10 +129,10 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="dataflow">
-<h1>Dataflow<a class="headerlink" href="#dataflow" title="Link to this heading">¶</a></h1>
+<h1>Dataflow<a class="headerlink" href="#dataflow" title="Link to this heading">#</a></h1>
 <p>The Dataflow core (<code class="docutils literal notranslate"><span class="pre">astraflow/dataflow/</span></code>) is the orchestration layer that manages async data flow between rollout generation and training.</p>
 <section id="key-components">
-<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">¶</a></h2>
+<h2>Key Components<a class="headerlink" href="#key-components" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">AstraFlow</span></code></strong> — Main orchestrator that composes data acquisition and serving. Manages rollout buffers, filtering, staleness tracking, and replay logic.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">DataAcquisition</span></code></strong> — Runs threaded producer loops that pull rollouts from RaaS, filter accepted samples, and publish to data serving.</p></li>
@@ -143,7 +143,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </section>
 <section id="how-it-fits">
-<h2>How It Fits<a class="headerlink" href="#how-it-fits" title="Link to this heading">¶</a></h2>
+<h2>How It Fits<a class="headerlink" href="#how-it-fits" title="Link to this heading">#</a></h2>
 <p>Dataflow sits between RaaS (upstream) and Trainer (downstream):</p>
 <ul class="simple">
 <li><p>Requests rollouts from RaaS via <code class="docutils literal notranslate"><span class="pre">RaaS2InferenceEngine</span></code></p></li>
@@ -190,9 +190,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

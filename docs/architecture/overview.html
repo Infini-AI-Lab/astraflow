@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -136,10 +136,10 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="system-overview">
-<h1>System Overview<a class="headerlink" href="#system-overview" title="Link to this heading">¶</a></h1>
+<h1>System Overview<a class="headerlink" href="#system-overview" title="Link to this heading">#</a></h1>
 <p>AstraFlow is a fully asynchronous reinforcement learning system where inference, training, and data orchestration run as independent services coordinated via HTTP. The system is designed for distributed GPU clusters and supports elastic scaling of both inference and training.</p>
 <section id="components">
-<h2>Components<a class="headerlink" href="#components" title="Link to this heading">¶</a></h2>
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">#</a></h2>
 <p>The system has four cooperating components:</p>
 <ol class="arabic simple">
 <li><p><strong>Dataflow</strong> — Central orchestrator. Manages a global pool of RaaS instances, acquires rollout data, buffers and serves training batches, and coordinates weight synchronization.</p></li>
@@ -149,7 +149,7 @@ data-aria-dark="Switch to auto color mode">
 </ol>
 </section>
 <section id="architecture">
-<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">#</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">┌─────────────────────────────────────────────────────────┐
 </span><span data-line="2">│                       Dataflow                          │
 </span><span data-line="3">│                (Orchestration + Buffering)              │
@@ -175,7 +175,7 @@ data-aria-dark="Switch to auto color mode">
 </div>
 </section>
 <section id="inter-component-call-graph">
-<h2>Inter-Component Call Graph<a class="headerlink" href="#inter-component-call-graph" title="Link to this heading">¶</a></h2>
+<h2>Inter-Component Call Graph<a class="headerlink" href="#inter-component-call-graph" title="Link to this heading">#</a></h2>
 <p>All HTTP calls between the three components, organized by phase.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1">┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
 </span><span data-line="2">│       Trainer        │     │      Dataflow        │     │        RaaS         │
@@ -258,7 +258,7 @@ data-aria-dark="Switch to auto color mode">
 <p>Arrow direction indicates who initiates the HTTP call. During weight sync, RaaS calls Trainer directly (bypassing Dataflow) for the bulk TCP transfer.</p>
 </section>
 <section id="dynamic-raas-pool">
-<h2>Dynamic RaaS Pool<a class="headerlink" href="#dynamic-raas-pool" title="Link to this heading">¶</a></h2>
+<h2>Dynamic RaaS Pool<a class="headerlink" href="#dynamic-raas-pool" title="Link to this heading">#</a></h2>
 <p>RaaS instances are managed by a global <code class="docutils literal notranslate"><span class="pre">RaaSPool</span></code> shared across all agents. Instances register and deregister at runtime via HTTP:</p>
 <ul class="simple">
 <li><p><strong>Join</strong>: A new RaaS instance calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/register_raas</span></code>. The pool initializes the engine, catches it up to the current weight version (so it never serves stale rollouts), then adds it to the live pool.</p></li>
@@ -270,7 +270,7 @@ data-aria-dark="Switch to auto color mode">
 <p>This means you can scale inference throughput by adding more RaaS instances at any time — no restart required.</p>
 </section>
 <section id="multi-model-multi-trainer">
-<h2>Multi-Model, Multi-Trainer<a class="headerlink" href="#multi-model-multi-trainer" title="Link to this heading">¶</a></h2>
+<h2>Multi-Model, Multi-Trainer<a class="headerlink" href="#multi-model-multi-trainer" title="Link to this heading">#</a></h2>
 <p>AstraFlow supports training multiple models simultaneously (e.g., a solver and a verifier in solve-and-verify). Each model has:</p>
 <ul class="simple">
 <li><p>Its own <strong>Trainer</strong> process with dedicated GPUs and a separate weight transfer port.</p></li>
@@ -280,7 +280,7 @@ data-aria-dark="Switch to auto color mode">
 <p>Coordination uses a <strong>version barrier</strong>: each trainer independently notifies its version after a training step. Weight sync to RaaS is triggered only after all models reach the same version. The last trainer to arrive becomes the “leader” and initiates the coordinated weight load across all RaaS instances. Other trainers block until the leader completes.</p>
 </section>
 <section id="training-loop">
-<h2>Training Loop<a class="headerlink" href="#training-loop" title="Link to this heading">¶</a></h2>
+<h2>Training Loop<a class="headerlink" href="#training-loop" title="Link to this heading">#</a></h2>
 <p>Each iteration proceeds as follows:</p>
 <ol class="arabic simple">
 <li><p><strong>Data Acquisition</strong> (background, continuous): Dataflow checks RaaS pool availability, submits prompts to the least-loaded instance, and collects completed rollouts from all instances in parallel. Rollouts are filtered by staleness and reward distribution, then buffered.</p></li>
@@ -297,7 +297,7 @@ data-aria-dark="Switch to auto color mode">
 </ol>
 </section>
 <section id="async-execution-model">
-<h2>Async Execution Model<a class="headerlink" href="#async-execution-model" title="Link to this heading">¶</a></h2>
+<h2>Async Execution Model<a class="headerlink" href="#async-execution-model" title="Link to this heading">#</a></h2>
 <p>Each component runs as a separate process:</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
@@ -331,12 +331,12 @@ data-aria-dark="Switch to auto color mode">
 <p>This decoupling means inference and training overlap — while the trainer processes one batch, the next batch of rollouts is already being generated across all RaaS instances.</p>
 </section>
 <section id="version-tracking-and-staleness">
-<h2>Version Tracking and Staleness<a class="headerlink" href="#version-tracking-and-staleness" title="Link to this heading">¶</a></h2>
+<h2>Version Tracking and Staleness<a class="headerlink" href="#version-tracking-and-staleness" title="Link to this heading">#</a></h2>
 <p>Every rollout is tagged with the model weight version that produced it. During batch retrieval, samples older than <code class="docutils literal notranslate"><span class="pre">current_version</span> <span class="pre">-</span> <span class="pre">max_staleness</span></code> are dropped. This prevents training on outdated rollouts while allowing a configurable lag for throughput.</p>
 <p>When a new RaaS instance joins mid-training, the pool sends it the current weight version and sender endpoints so it loads the latest weights before serving any traffic.</p>
 </section>
 <section id="fault-tolerance">
-<h2>Fault Tolerance<a class="headerlink" href="#fault-tolerance" title="Link to this heading">¶</a></h2>
+<h2>Fault Tolerance<a class="headerlink" href="#fault-tolerance" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><strong>RaaS heartbeat</strong>: Background thread monitors all instances via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> every 10s. Two consecutive failures trigger deregistration. The pool continues operating with remaining instances.</p></li>
 <li><p><strong>Suspect-and-confirm</strong>: Data-path failures mark instances as suspect (skipped for routing) but don’t immediately deregister — the heartbeat thread confirms via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/status</span></code> first.</p></li>
@@ -383,9 +383,9 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

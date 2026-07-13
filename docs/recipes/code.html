@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -138,13 +138,13 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="code">
-<h1>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h1>
+<h1>Code<a class="headerlink" href="#code" title="Link to this heading">#</a></h1>
 <p>Reinforcement learning for code-generation reasoning with RLVR, rewarded by test-case execution.</p>
 <p><strong>Code recipes</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code"><code class="docutils literal notranslate"><span class="pre">examples/code/</span></code></a> and <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent"><code class="docutils literal notranslate"><span class="pre">examples/code-multi-agent/</span></code></a></p>
 <p>Each recipe ships an all-in-one launch script under <code class="docutils literal notranslate"><span class="pre">scripts/</span></code> and its config under <code class="docutils literal notranslate"><span class="pre">yaml/</span></code>.</p>
 <p>LiveCodeBench v5 eval data needs a one-time manual download — see <a class="reference internal" href="#eval-dataset-setup"><span class="std std-ref">Eval Dataset Setup</span></a> below.</p>
 <section id="eval-dataset-setup">
-<h2>Eval Dataset Setup<a class="headerlink" href="#eval-dataset-setup" title="Link to this heading">¶</a></h2>
+<h2>Eval Dataset Setup<a class="headerlink" href="#eval-dataset-setup" title="Link to this heading">#</a></h2>
 <p>The recipes evaluate on HumanEval, LiveCodeBench v5, and DeepCoder Codeforces. Only
 LiveCodeBench v5 needs a one-time manual download before launching — otherwise the
 periodic eval steps fail.</p>
@@ -163,7 +163,7 @@ Hugging Face automatically on first run, so LiveCodeBench v5 above is the only m
 download needed to run a recipe end to end.</p>
 </section>
 <section id="qwen3-8b-8-gpus-single-agent">
-<h2>Qwen3-8B — 8 GPUs (single-agent)<a class="headerlink" href="#qwen3-8b-8-gpus-single-agent" title="Link to this heading">¶</a></h2>
+<h2>Qwen3-8B — 8 GPUs (single-agent)<a class="headerlink" href="#qwen3-8b-8-gpus-single-agent" title="Link to this heading">#</a></h2>
 <p>Single-agent code-generation RL on one 8-GPU node — 4 GPUs for inference, 4 for training. It comes in two variants that differ <strong>only</strong> in weight transfer mode:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code/qwen3-8b-m2po-full"><code class="docutils literal notranslate"><span class="pre">code/qwen3-8b-m2po-full/</span></code></a> — full weight transfer</p></li>
@@ -171,7 +171,7 @@ download needed to run a recipe end to end.</p>
 </ul>
 <p>A near-identical single-agent baseline also lives at <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-single-agent-m2po-full"><code class="docutils literal notranslate"><span class="pre">code-multi-agent/qwen3-8b-single-agent-m2po-full/</span></code></a> as the fair-comparison reference for the codegen+verifier recipe below.</p>
 <section id="run">
-<h3>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h3>
+<h3>Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h3>
 <p>One script launches all three processes — the AstraFlow service, the RaaS inference server, and the trainer:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># delta weight transfer</span>
 </span><span data-line="2">bash<span class="w"> </span>examples/code/qwen3-8b-m2po-delta/scripts/run_qwen3-8b-m2po-delta.sh
@@ -182,7 +182,7 @@ download needed to run a recipe end to end.</p>
 </div>
 </section>
 <section id="settings">
-<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">¶</a></h3>
+<h3>Settings<a class="headerlink" href="#settings" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -236,20 +236,20 @@ download needed to run a recipe end to end.</p>
 </section>
 </section>
 <section id="qwen3-8b-codegen-verifier-2-nodes-8-gpus-multi-agent">
-<h2>Qwen3-8B codegen + verifier — 2 nodes × 8 GPUs (multi-agent)<a class="headerlink" href="#qwen3-8b-codegen-verifier-2-nodes-8-gpus-multi-agent" title="Link to this heading">¶</a></h2>
+<h2>Qwen3-8B codegen + verifier — 2 nodes × 8 GPUs (multi-agent)<a class="headerlink" href="#qwen3-8b-codegen-verifier-2-nodes-8-gpus-multi-agent" title="Link to this heading">#</a></h2>
 <p>A two-agent recipe: model0 generates code, model1 generates verification test cases, and the two are co-trained against each other’s outputs. It spans two 8-GPU nodes — both nodes host both models for inference, while the two trainers live on the starting node:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node"><code class="docutils literal notranslate"><span class="pre">code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/</span></code></a> — codegen + verifier, full weight transfer</p></li>
 </ul>
 <section id="id1">
-<h3>Run<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<h3>Run<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <p>Launch the all-in-one script on the first node; it starts the AstraFlow service, RaaS-B, and both trainers, then prints the exact command to run on the second node (RaaS-A):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">bash<span class="w"> </span>examples/code-multi-agent/qwen3-8b-codegen-verifier-m2po-full-2node/scripts/run_qwen3-8b-codegen-verifier-m2po-full-2node.sh
 </span></pre></div>
 </div>
 </section>
 <section id="id2">
-<h3>Settings<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<h3>Settings<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -341,9 +341,9 @@ download needed to run a recipe end to end.</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>

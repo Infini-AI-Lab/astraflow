@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=e1a1ceaf" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=9454f7d5" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=7f3e9ba4" />
@@ -138,7 +138,7 @@ data-aria-dark="Switch to auto color mode">
       <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
   <article class="yue" role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="textcraft-recursive-agent">
-<h1>TextCraft (Recursive Agent)<a class="headerlink" href="#textcraft-recursive-agent" title="Link to this heading">¶</a></h1>
+<h1>TextCraft (Recursive Agent)<a class="headerlink" href="#textcraft-recursive-agent" title="Link to this heading">#</a></h1>
 <p>A multi-turn recursive-agent recipe on TextCraft, reproducing the design
 from <a class="reference external" href="https://arxiv.org/abs/2605.06639"><em>Recursive Agent Optimization</em></a>
 (Gandhi et al., 2026). The agent
@@ -151,7 +151,7 @@ mutates the same state.</p>
 <p><strong>Recipe</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/textcraft-recursive-agent/qwen3-4b-recursive"><code class="docutils literal notranslate"><span class="pre">examples/textcraft-recursive-agent/qwen3-4b-recursive/</span></code></a></p>
 <p><strong>Workflow class</strong>: <a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/astraflow/core/workflow/impl/textcraft/workflow.py"><code class="docutils literal notranslate"><span class="pre">astraflow/core/workflow/impl/textcraft/workflow.py</span></code></a> — registered as <code class="docutils literal notranslate"><span class="pre">recursive_agent</span></code>.</p>
 <section id="results">
-<h2>Results<a class="headerlink" href="#results" title="Link to this heading">¶</a></h2>
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h2>
 <p>Validation accuracy (<code class="docutils literal notranslate"><span class="pre">eval-avg/textcraft_val/avg&#64;1</span></code>) over a 500-step run.
 Starting from the base Qwen3-4B-Instruct-2507, the recursive agent climbs
 from <strong>~41%</strong> at the first eval (step 20) to <strong>~80%</strong> by step 500, peaking
@@ -162,7 +162,7 @@ bootstrap.</p>
 </a>
 </section>
 <section id="run">
-<h2>Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h2>
+<h2>Run<a class="headerlink" href="#run" title="Link to this heading">#</a></h2>
 <p>One-time prep (synthesizes 1000 train + 100 val tasks locally from the
 bundled recipe DB; no network required):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Generated automatically on first launch; or force-regenerate:</span>
@@ -179,9 +179,9 @@ bundled recipe DB; no network required):</p>
 </div>
 </section>
 <section id="how-it-works">
-<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h2>
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">#</a></h2>
 <section id="tool-call-protocol">
-<h3>Tool-call protocol<a class="headerlink" href="#tool-call-protocol" title="Link to this heading">¶</a></h3>
+<h3>Tool-call protocol<a class="headerlink" href="#tool-call-protocol" title="Link to this heading">#</a></h3>
 <p>Each turn the model emits <strong>exactly one</strong> action block:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">&lt;</span><span class="n">action</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;get_info&quot;</span><span class="o">&gt;</span><span class="p">{</span><span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;stick&quot;</span><span class="p">,</span> <span class="s2">&quot;oak_planks&quot;</span><span class="p">]}</span><span class="o">&lt;/</span><span class="n">action</span><span class="o">&gt;</span>
 </span><span data-line="2"><span class="o">&lt;</span><span class="n">action</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;view_inventory&quot;</span><span class="o">&gt;</span><span class="p">{}</span><span class="o">&lt;/</span><span class="n">action</span><span class="o">&gt;</span>
@@ -199,7 +199,7 @@ want zero sandbox infrastructure. Base Qwen3 reads the format from the
 system prompt with no SFT bootstrap needed.</p>
 </section>
 <section id="stateful-environment">
-<h3>Stateful environment<a class="headerlink" href="#stateful-environment" title="Link to this heading">¶</a></h3>
+<h3>Stateful environment<a class="headerlink" href="#stateful-environment" title="Link to this heading">#</a></h3>
 <p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/astraflow/core/workflow/impl/textcraft/env.py"><code class="docutils literal notranslate"><span class="pre">TextCraftEnv</span></code></a>
 holds a mutable <code class="docutils literal notranslate"><span class="pre">inventory:</span> <span class="pre">dict[str,</span> <span class="pre">int]</span></code> and a shared read-only
 recipe database (~860 Minecraft recipes bundled in
@@ -209,14 +209,14 @@ same dict object</strong> as the parent’s. When a sub-agent calls <code class=
 mutation is visible to the parent. Single asyncio loop → no race.</p>
 </section>
 <section id="spawning">
-<h3>Spawning<a class="headerlink" href="#spawning" title="Link to this heading">¶</a></h3>
+<h3>Spawning<a class="headerlink" href="#spawning" title="Link to this heading">#</a></h3>
 <p>A <code class="docutils literal notranslate"><span class="pre">&lt;action</span> <span class="pre">type=&quot;spawn&quot;&gt;</span></code> block runs all subtasks in parallel via
 <code class="docutils literal notranslate"><span class="pre">asyncio.gather</span></code>, each as a full sub-episode with its own forked env
 and trajectory. Up to 4 children per spawn, up to depth 3 (root + 2
 levels of nesting). Sub-agents share the root’s step budget.</p>
 </section>
 <section id="aggregation-finish-message-only">
-<h3>Aggregation — finish-message only<a class="headerlink" href="#aggregation-finish-message-only" title="Link to this heading">¶</a></h3>
+<h3>Aggregation — finish-message only<a class="headerlink" href="#aggregation-finish-message-only" title="Link to this heading">#</a></h3>
 <p>The parent’s view of a spawn is bounded — only each child’s
 <code class="docutils literal notranslate"><span class="pre">finish_message</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">&lt;</span><span class="n">spawn_result</span><span class="o">&gt;</span>
@@ -231,7 +231,7 @@ work in <code class="docutils literal notranslate"><span class="pre">finish</spa
 </section>
 </section>
 <section id="settings">
-<h2>Settings<a class="headerlink" href="#settings" title="Link to this heading">¶</a></h2>
+<h2>Settings<a class="headerlink" href="#settings" title="Link to this heading">#</a></h2>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -311,7 +311,7 @@ work in <code class="docutils literal notranslate"><span class="pre">finish</spa
 </div>
 </section>
 <section id="reference">
-<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">¶</a></h2>
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
 <p>Gandhi, Chakraborty, Wang, Kumar, Neubig. <em>Recursive Agent Optimization.</em>
 arXiv:2605.06639, 2026. <a class="reference external" href="https://arxiv.org/abs/2605.06639">https://arxiv.org/abs/2605.06639</a></p>
 </section>
@@ -346,9 +346,9 @@ arXiv:2605.06639, 2026. <a class="reference external" href="https://arxiv.org/ab
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
-  <iconify-icon icon="simple-icons:github"></iconify-icon>
-</a></div>
+  <a href="https://github.com/Infini-AI-Lab/astraflow" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
     </div>
   </div>
 </footer>
