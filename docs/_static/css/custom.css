@@ -18,7 +18,7 @@ html.light {
 
 /* Version number, inline to the right of the AstraFlow brand text */
 .sy-head-brand strong::after {
-    content: "v0.1.1";
+    content: "v0.1.2";
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.04em;
