@@ -27,14 +27,6 @@ AstraFlow **natively** supports the following for LLM RL training **without any 
 <!-- ## What can AstraFlow enable? -->
 
 <div align="center">
-<img src="./docs/assets/raas.gif" width="90%" alt="Elastic RaaS pool of mixed-hardware nodes joining and leaving across regions">
-</div>
-
-<p align="center"><i><b>Elastic Heterogeneous Cross-region Rollouts</b>: RaaS instances on mixed hardware and across regions join and leave the rollout pool on demand, with no scheduler- or region-specific code.</i></p>
-
-<br>
-
-<div align="center">
 <img src="./docs/assets/astraflow.gif" width="90%" alt="AstraFlow training a multi-policy workflow on an elastic, heterogeneous, cross-region rollout pool">
 </div>
 
