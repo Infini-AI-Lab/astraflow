@@ -43,6 +43,47 @@ bash examples/math/qwen3-1.7b-m2po-2gpus-full/scripts/run_qwen3-1.7b-m2po-2gpus-
 | Train dataset | DeepScaleR |
 | Eval datasets | AIME24, AIME25, AMC, Minerva Math, MATH500 |
 
+## Qwen3.5-4B — 8 GPUs (hybrid Gated-DeltaNet)
+
+Math RL on **Qwen3.5-4B**, a hybrid Gated-DeltaNet + attention multimodal
+checkpoint trained text-only here. Requires the transformers 5.8 stack
+(`transformers==5.8.1`, `sglang==0.5.13.post1`, `fla` kernels — all pinned by
+`pyproject.toml`, or use the `astraflowai/astraflow:v0.1.2` image). Full and
+delta transfer variants:
+
+- [`qwen3.5-4b-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3.5-4b-m2po-full) — full weight transfer
+- [`qwen3.5-4b-m2po-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3.5-4b-m2po-delta) — delta weight transfer
+
+### Run
+
+```bash
+bash examples/math/qwen3.5-4b-m2po-full/scripts/run_qwen3.5-4b-m2po-full.sh
+```
+
+### Settings
+
+| Setting | Value |
+|---|---|
+| Model | Qwen3.5-4B (`model_type: qwen3_5`, GDN hybrid) |
+| GPUs | 8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4) |
+| Backend | **FSDP only** — Qwen3.5 is not supported on the Megatron backend (no `mbridge` bridge / GDN layer spec) |
+| Algorithm | M2PO (`m2_threshold` 0.01) |
+| Weight transfer | TCP — full or delta |
+| Context length | 8192 |
+| Max new tokens | 4000 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 256 |
+| Learning rate | 5e-6 (Adam, constant schedule) |
+| Train steps | 800 |
+| Workflow / reward | `rlvr` / `math_verify` |
+| Train dataset | DeepScaleR |
+| Eval datasets | AIME24, AIME25, AMC, Minerva Math, MATH500 |
+
+Validated on 8×L40 and 8×H100 (on Hopper the launch scripts auto-set the
+`FLA_TILELANG`/`CUDA_HOME` environment the GDN backward needs). See the
+[recipe README](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/qwen3.5-4b-m2po-full)
+for the validated stack and results.
+
 ## Qwen3-8B — 8 GPUs
 
 The full-scale recipe. It needs an 8-GPU node — 4 GPUs for inference, 4 for training — and also comes in full and delta transfer variants:

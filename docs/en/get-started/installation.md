@@ -87,7 +87,7 @@ pipeline / expert parallelism, MoE models). The default **FSDP** backend and
 all inference need nothing here — skip to Step 6.
 
 > **Prefer Docker?** Skip this entire step with the pre-built
-> `astraflowai/astraflow:v0.1.1.megatron` image (see Option B below), which already
+> `astraflowai/astraflow:v0.1.2.megatron` image (see Option B below), which already
 > bundles Transformer Engine + apex.
 
 `megatron-core` and `mbridge` are already installed by Step 3. The Megatron
@@ -167,14 +167,29 @@ Pre-built images are published on Docker Hub — they skip the from-source steps
 entirely. Requires the NVIDIA Container Toolkit so `--gpus all` works. Choose the image
 by **training backend**:
 
+The recommended workflow: **the image provides the environment, your local
+checkout provides the code**. astraflow is installed *editable* from
+`/workspace/astraflow`, so mounting your repo over that path runs your local
+code — no rebuild needed for code changes; rebuild only when dependency pins or
+the CUDA stack change.
+
 ```bash
-# FSDP backend (default) — covers most recipes
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
+# FSDP backend (default) — run a recipe from YOUR local checkout
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 \
+  -v /path/to/astraflow:/workspace/astraflow \
+  -v ~/.cache/huggingface:/hf -e HF_HOME=/hf \
+  -e WANDB_API_KEY=<your-key> \
+  astraflowai/astraflow:v0.1.2 \
+  bash examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
 
 # Megatron-LM backend — adds Transformer Engine + apex (Step 5 above, pre-built in).
 # Use this for `backend: megatron` (TP/PP/EP, MoE, large models).
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1.megatron
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.2.megatron
 ```
+
+Drop the `-v /path/to/astraflow:...` mount to use the code baked into the image
+instead; add `-it` for an interactive shell. The `-v ~/.cache/huggingface` mount
+reuses your host model/dataset cache instead of re-downloading in the container.
 
 > **Note on `--shm-size`:** this sets the size of the container's `/dev/shm`. A
 > recipe run co-locates the trainer, RaaS, and SGLang in a single container, all
@@ -191,6 +206,6 @@ docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it
 > `nofile` soft limit (1024) is far too low and the reward pool fails with
 > `[Errno 24] Too many open files`. Raise it with `--ulimit nofile=65536:65536`.
 
-The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (`v0.1.1`) for
+The image bundles astraflow, SGLang, and flash-attn. Pin a version tag (`v0.1.2`) for
 reproducibility; `:latest` tracks the most recent release. See `docker/README.md` for
 build details and the NVIDIA Container Toolkit install guide.
