@@ -19,6 +19,24 @@ ENV CUDA_HOME=/usr/local/cuda \
     NVTE_FRAMEWORK=pytorch \
     TORCH_CUDA_ARCH_LIST="8.0;8.9;9.0"
 
+# transformers 5.8 moved `rope_theta` into a nested `config.rope_parameters`
+# dict; mbridge 0.13.0 still reads the old top-level `config.rope_theta` and
+# crashes converting Qwen3 configs to Megatron (AttributeError) at model build.
+# Patch the installed mbridge to read either location. No published mbridge
+# release targets transformers 5.8 yet (AReaL avoids this by staying on
+# transformers <=5.3). mbridge is Megatron-only, so this lives in the Megatron
+# image rather than the FSDP base.
+RUN python - <<'PY'
+p = "/opt/venv/lib/python3.12/site-packages/mbridge/core/llm_bridge.py"
+s = open(p).read()
+old = "rotary_base=self.hf_config.rope_theta,"
+new = ('rotary_base=(getattr(self.hf_config, "rope_theta", None) '
+       'or getattr(self.hf_config, "rope_parameters", {}).get("rope_theta")),')
+assert old in s, "mbridge rope_theta line not found -- patch needs updating"
+open(p, "w").write(s.replace(old, new))
+print("[mbridge] patched rope_theta -> rope_parameters fallback")
+PY
+
 # Transformer Engine. The prebuilt `transformer-engine[pytorch]` wheels link
 # libcublas.so.12 and fail to load on a CUDA 13 base (ImportError:
 # libcublas.so.12), so build TE from source against the image's CUDA 13

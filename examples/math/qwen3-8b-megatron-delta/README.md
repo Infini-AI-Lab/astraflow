@@ -65,3 +65,12 @@ sizes in the `engine` block, e.g. `pipeline_parallel_size: 2` or
 `expert_parallel_size: 2`. The backend auto-selects Megatron when `pp>1` or
 `ep>1`. Ensure `data_parallel_size * tensor_parallel_size *
 pipeline_parallel_size` equals the number of trainer GPUs.
+
+## Supported models
+
+The Megatron backend converts HF checkpoints via `mbridge`, which supports these
+architectures: Qwen2 / Qwen2-MoE / Qwen2.5-VL / Qwen3 / Qwen3-MoE / Llama /
+Mixtral / DeepSeek-V3 / MiMo. **Qwen3.5 (`model_type: qwen3_5`) is not supported
+on Megatron:** it is a Gated-DeltaNet hybrid, and neither `mbridge` (no `qwen3_5`
+bridge) nor Megatron-Core (no GDN layer spec) can build or weight-load it. Train
+Qwen3.5 on the FSDP backend instead — see `examples/math/qwen3.5-4b-m2po-full`.

@@ -29,8 +29,14 @@ RUN uv pip install -e .
 # --- sglang layers (on top of basic) ---
 RUN uv pip install -e ".[sglang]"
 
-# flash-attn is excluded from uv resolution (see pyproject.toml [tool.uv]),
-# so install it explicitly with --no-build-isolation.
-RUN uv pip install "flash-attn==2.8.3" --no-build-isolation
+# flash-attn is excluded from uv's project resolution (pyproject.toml [tool.uv]
+# exclude-dependencies) -- but that exclusion ALSO silently suppresses an
+# explicit `uv pip install flash-attn` when run from the project dir. Install it
+# from /tmp so uv does not read the project's [tool.uv] and actually builds +
+# installs FA2 from source (ABI-matched to the installed torch; builds
+# sm_80/90/100/120 -> Ada/Hopper/Blackwell). Required by the Megatron
+# TransformerEngine `flash` attention backend (THD/packed sequences) and by
+# dense-Qwen3 flash_attention_2.
+RUN cd /tmp && uv pip install "flash-attn==2.8.3" --no-build-isolation
 
 CMD ["/bin/bash"]

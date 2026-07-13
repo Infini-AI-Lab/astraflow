@@ -543,6 +543,33 @@ class AstraFlowPPOTrainer(PPOTrainerBase):
                 and getattr(config.evaluator, "freq_steps", None) is not None
             ):
                 if self._is_rank0:
+                    # Gate the pre-train eval on RaaS-pool readiness. The trainer
+                    # reaches loop entry tens of seconds before the SGLang
+                    # inference servers finish starting and register with the
+                    # dataflow pool; firing the eval immediately hits
+                    # "no healthy RaaS instance available for eval" and the v=0
+                    # baseline is silently dropped. Poll /status until at least
+                    # one RaaS instance is registered, then let init settle.
+                    import time as _time
+
+                    _deadline = _time.monotonic() + 300.0
+                    _raas_ready = False
+                    while _time.monotonic() < _deadline:
+                        try:
+                            _pool = self.astraflow.get_status().get("raas_pool", {})
+                            if int(_pool.get("size", 0)) >= 1:
+                                _raas_ready = True
+                                break
+                        except Exception:
+                            pass
+                        _time.sleep(2.0)
+                    if _raas_ready:
+                        _time.sleep(5.0)  # let the just-registered engine finish init
+                    else:
+                        logger.warning(
+                            "[pre-train] RaaS pool not ready after 300s; "
+                            "initial eval may be skipped",
+                        )
                     print(
                         "[Trainer] [pre-train] Running eval at version=0 ...",
                         flush=True,

@@ -28,17 +28,19 @@ Pick the one that matches your **training backend**:
 
 ```bash
 # FSDP backend (default) — astraflow + SGLang + flash-attn. Covers most recipes.
-docker pull astraflowai/astraflow:v0.1.1
+docker pull astraflowai/astraflow:v0.1.2
 
 # Megatron-LM backend — the above plus Transformer Engine + apex.
 # Only needed when training with `backend: megatron` (TP/PP/EP, MoE, large models).
-docker pull astraflowai/astraflow:v0.1.1.megatron
+docker pull astraflowai/astraflow:v0.1.2.megatron
 ```
 
-`v0.1.1` is built from `Dockerfile.sglang`; `v0.1.1.megatron` from
+`v0.1.2` is built from `Dockerfile.sglang`; `v0.1.2.megatron` from
 `Dockerfile.sglang.megatron`. The Megatron image is a strict superset, so if you are
 unsure it also runs every FSDP recipe. Pin a version tag for reproducibility;
-`:latest` tracks the most recent FSDP release.
+`:latest` tracks the most recent FSDP release. Both `v0.1.2` images are validated
+end-to-end on 8×H100 (400-step math-RL runs incl. eval; FSDP with Qwen3.5-4B and
+dense Qwen3-8B, Megatron with Qwen3-8B).
 
 ## Build from source
 
@@ -55,12 +57,36 @@ docker build -f docker/Dockerfile.sglang.megatron -t astraflow:sglang-megatron .
 
 ## Quick Start
 
+The recommended workflow: **the image provides the environment** (Python venv,
+CUDA 13 toolkit, SGLang, flash-attn, fla kernels); **your local checkout provides
+the code**. astraflow is installed *editable* from `/workspace/astraflow`, so
+mounting your repo over that path makes the container run your code — code
+changes take effect immediately, and you only rebuild the image when the
+*environment* changes (dependency pins, CUDA, system libs).
+
 ```bash
-# Run the pre-built FSDP image with host network and all GPUs
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1
+# Train with YOUR local checkout inside the pre-built environment
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 \
+  -v /path/to/astraflow:/workspace/astraflow \
+  -v ~/.cache/huggingface:/hf -e HF_HOME=/hf \
+  -e WANDB_API_KEY=<your-key> \
+  astraflowai/astraflow:v0.1.2 \
+  bash examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
+```
+
+- `-v /path/to/astraflow:/workspace/astraflow` — your repo replaces the baked-in
+  code (outputs land in `data-experiments/`/`data-log/` inside your checkout).
+- `-v ~/.cache/huggingface:/hf -e HF_HOME=/hf` — reuse your host model/dataset
+  cache instead of re-downloading inside the container.
+
+To poke around the image with its baked-in code instead (no mounts), start an
+interactive shell:
+
+```bash
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.2
 
 # ...or the Megatron-backend image
-docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.1.megatron
+docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflowai/astraflow:v0.1.2.megatron
 
 # ...or run a locally built image
 docker run --gpus all --net=host --shm-size=512g --ulimit nofile=65536:65536 -it astraflow:sglang

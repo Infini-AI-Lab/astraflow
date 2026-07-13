@@ -108,3 +108,20 @@ astraflow_cleanup_trap() {
     wait 2>/dev/null
     exit 0
 }
+
+# Qwen3.5 (Gated-DeltaNet) on Hopper: the GDN backward must use fla's tilelang
+# kernel (fla blocks its triton path on sm_90 as numerically wrong, fla#640),
+# and the tilelang JIT needs a full CUDA toolkit (nvcc + CCCL headers; the
+# pip-shipped nvcc has none). Called by the Qwen3.5 recipe launchers before
+# starting the trainer. No-op on non-Hopper GPUs and when the user has already
+# set the variables.
+astraflow_setup_qwen35_hopper_env() {
+    if nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | grep -q '^9\.'; then
+        export FLA_TILELANG="${FLA_TILELANG:-1}"
+        if [ -z "${CUDA_HOME:-}" ] && [ -d /usr/local/cuda ]; then
+            export CUDA_HOME=/usr/local/cuda
+            export PATH="${CUDA_HOME}/bin:${PATH}"
+        fi
+        echo "Hopper (sm_90) detected: FLA_TILELANG=${FLA_TILELANG} CUDA_HOME=${CUDA_HOME:-unset}"
+    fi
+}
