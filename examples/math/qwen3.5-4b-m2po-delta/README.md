@@ -9,7 +9,9 @@ validated environment (transformers 5.8.1 / kernels 0.14.1 / SGLang
 `0.5.13.post1` with `qwen3_5`, `attention_backend: flashinfer` / `fla` 0.5.0 /
 torch 2.11.0+cu130),
 GPU layout, install note, **backend support (FSDP only — Qwen3.5 is not
-supported on the Megatron backend)**, and validation results.
+supported on the Megatron backend)**, the **Hopper/H100 note** (the trainer
+script auto-sets `FLA_TILELANG=1` + `CUDA_HOME` on sm_90 for the GDN backward),
+and validation results.
 
 ## Run
 

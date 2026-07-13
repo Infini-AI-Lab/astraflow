@@ -30,6 +30,20 @@ export WEIGHT_TRANSFER_HTTP_PORT="${WEIGHT_TRANSFER_HTTP_PORT_MODEL0:-19861}"
 # NCCL / PYTORCH / WANDB tweaks + LOG_DIR. Defined in examples/_common/utils.sh.
 astraflow_setup_env
 
+# Qwen3.5's Gated-DeltaNet backward needs fla's tilelang kernel on Hopper
+# (sm_90): fla blocks its triton path there (numerically wrong, fla#640), and
+# the tilelang wgmma kernel JIT needs a full CUDA toolkit (nvcc + CCCL headers;
+# the pip-shipped nvcc has no CCCL). No-op on Ada/L40 (validated with the
+# default backend) and no-op when the user has already set these.
+if nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | grep -q '^9\.'; then
+  export FLA_TILELANG="${FLA_TILELANG:-1}"
+  if [ -z "${CUDA_HOME:-}" ] && [ -d /usr/local/cuda ]; then
+    export CUDA_HOME=/usr/local/cuda
+    export PATH="${CUDA_HOME}/bin:${PATH}"
+  fi
+  echo "Hopper (sm_90) detected: FLA_TILELANG=${FLA_TILELANG} CUDA_HOME=${CUDA_HOME:-unset}"
+fi
+
 echo "=== Trainer model0 (TCP) ==="
 echo "Experiment config   : ${EXPERIMENT_CONFIG}"
 echo "GPUs                : ${CUDA_VISIBLE_DEVICES} (FSDP dp${TRAINER0_NPROC})"

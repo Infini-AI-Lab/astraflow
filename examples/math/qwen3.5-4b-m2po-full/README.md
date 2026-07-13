@@ -44,6 +44,14 @@ hand-patched framework source:
 | `flashinfer-python` | `0.6.12` (pulled by sglang) |
 | attention impl | `sdpa` (set in `experiment.yaml`) |
 
+> **Hopper (H100) note.** On sm_90 the GDN backward must use `fla`'s tilelang
+> kernel (`FLA_TILELANG=1`) — `fla` blocks its triton path on Hopper as
+> numerically wrong (fla#640) — and the tilelang JIT needs a full CUDA toolkit
+> (`CUDA_HOME` with nvcc + CCCL headers; the pip-shipped nvcc has none). The
+> trainer launch script (`scripts/3_trainer_model0.sh`) now detects Hopper and
+> sets both automatically (respecting pre-set values). Re-validated end-to-end
+> on 8×H100: baseline overall avg@k 47.9 (matches the L40 47.8), step 50 → 57.8.
+
 > **Install note.** `pyproject.toml` pins the full validated stack:
 > `transformers==5.8.1` (with `kernels>=0.14,<0.15`), `torch==2.11.0`, and
 > `sglang==0.5.13.post1` — the published release that ships `qwen3_5` support (the
