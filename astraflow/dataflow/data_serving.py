@@ -128,6 +128,7 @@ class AstraDataServing:
         max_staleness: int | None = None,
         replay_max_size: int | None = None,
         replay_selection_fn: ReplaySelectionFn | str | None = None,
+        queue_order: str = "edf",
     ):
         resolved_replay_selection_fn = self._resolve_replay_selection_fn(
             replay_selection_fn
@@ -139,6 +140,7 @@ class AstraDataServing:
             max_staleness=max_staleness,
             replay_max_size=replay_max_size,
             replay_selection_fn=resolved_replay_selection_fn,
+            queue_order=queue_order,
         )
         self._acq_stats_lock = threading.Lock()
         self._acq_stats: dict[str, float | int] = _empty_acquisition_stats()
@@ -392,7 +394,7 @@ class MultiModelDataServing:
     per_model_config : dict[str, dict] | None
         Optional per-model overrides.  Keys are model_ids, values are dicts
         with optional keys ``buffer_size``, ``max_staleness``,
-        ``replay_max_size``.
+        ``replay_max_size``, ``queue_order``.
     """
 
     def __init__(
@@ -405,6 +407,7 @@ class MultiModelDataServing:
         max_staleness: int | None = None,
         replay_max_size: int | None = None,
         replay_selection_fn: ReplaySelectionFn | str | None = None,
+        queue_order: str = "edf",
         per_model_config: dict[str, dict] | None = None,
     ):
         if model_ids is not None and len(model_ids) > 0:
@@ -424,6 +427,7 @@ class MultiModelDataServing:
                 max_staleness=cfg.get("max_staleness", max_staleness),
                 replay_max_size=cfg.get("replay_max_size", replay_max_size),
                 replay_selection_fn=replay_selection_fn,
+                queue_order=cfg.get("queue_order", queue_order),
             )
             buf.buffer.label = f"[{mid}] " if self._is_multi_model else ""
             self.buffers[mid] = buf

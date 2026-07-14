@@ -7,6 +7,7 @@ buffer module.
 from __future__ import annotations
 
 import copy
+import heapq
 import logging
 import threading
 from collections import deque
@@ -44,8 +45,34 @@ def _slice_tensor_dict(data: dict[str, Any], start: int, end: int) -> dict[str, 
     return sliced_data
 
 
+#: Valid fresh-queue consumption orders.
+QUEUE_ORDERS = ("fifo", "edf")
+
+
 class RolloutBuffer:
-    """Thread-safe storage for fresh and replay rollout examples."""
+    """Thread-safe storage for fresh and replay rollout examples.
+
+    The fresh queue is a priority heap whose consumption order is set by
+    ``queue_order``:
+
+    - ``"edf"`` (default, earliest deadline first): ascending
+      ``min_version``, i.e.
+      the sample closest to its staleness deadline
+      (``min_version + max_staleness``) is consumed first.
+    - ``"fifo"``: arrival order — the historical deque behavior; set
+      explicitly for comparison runs.
+
+    Why edf is the default: long generations
+      enter the buffer with the least remaining staleness budget; FIFO makes
+      them wait behind fresher short samples and expire, biasing training
+      data toward short/easy prompts. EDF consumes them first instead. The
+      per-token staleness invariant is unchanged: any consumed sample still
+      satisfies ``current_version - min_version <= max_staleness``.
+
+    Ties (same priority) are broken by arrival order, so samples of one
+    rollout group — ingested contiguously with the same ``min_version`` —
+    stay contiguous under both orders.
+    """
 
     def __init__(
         self,
@@ -56,6 +83,7 @@ class RolloutBuffer:
         max_staleness: int | None = None,
         replay_max_size: int | None = None,
         replay_selection_fn: ReplaySelectionFn | None = None,
+        queue_order: str = "edf",
     ):
         # Filtering has been moved to data-acquisition layer. Keep this argument
         # for backward compatibility with older call sites.
@@ -67,8 +95,20 @@ class RolloutBuffer:
         self.debug = debug
         self.label = ""
 
-        self._buffer: deque[dict[str, Any]] = deque(maxlen=max_size)
-        self._metadata: deque[dict[str, Any]] = deque(maxlen=max_size)
+        if queue_order not in QUEUE_ORDERS:
+            logger.warning(
+                "Unknown queue_order %r; falling back to 'edf'. Valid: %s",
+                queue_order,
+                QUEUE_ORDERS,
+            )
+            queue_order = "edf"
+        self.queue_order = queue_order
+
+        # Fresh queue: heap of (priority, seq_no, example, metadata).
+        # priority is 0.0 for fifo (order degenerates to arrival seq_no) and
+        # min_version for edf. seq_no is a monotonic arrival counter.
+        self._heap: list[tuple[float, int, dict[str, Any], dict[str, Any]]] = []
+        self._seq_counter = 0
         self._replay_buffer: deque[dict[str, Any]] = deque(maxlen=replay_max_size)
         self._replay_metadata: deque[dict[str, Any]] = deque(maxlen=replay_max_size)
 
@@ -82,8 +122,36 @@ class RolloutBuffer:
         self.replay_selection_fn = (
             replay_selection_fn if replay_selection_fn is not None else select_latest
         )
-        self._put_stats = {"accepted": 0, "filtered": 0, "total": 0}
-        self._consume_stats = {"consumed": 0, "skipped_stale": 0}
+        self._put_stats = {"accepted": 0, "filtered": 0, "total": 0, "evicted": 0}
+        self._consume_stats = {
+            "consumed": 0,
+            "skipped_stale": 0,
+            "consumed_len_sum": 0,
+            "skipped_stale_len_sum": 0,
+        }
+
+    def _priority(self, metadata: dict[str, Any]) -> float:
+        """Heap priority for a fresh example (lower = consumed earlier)."""
+        if self.queue_order == "edf":
+            min_v = metadata.get("min_version")
+            if isinstance(min_v, (int, float)):
+                return float(min_v)
+            # No version info: the sample can never be staleness-dropped, so
+            # consume it eagerly rather than risk starving it behind an
+            # endless stream of versioned samples.
+            return float("-inf")
+        return 0.0
+
+    @staticmethod
+    def _seq_len(example: dict[str, Any]) -> int:
+        """Token length of a single-example dict (0 if unknown)."""
+        mask = example.get("attention_mask")
+        try:
+            if torch.is_tensor(mask):
+                return int(mask.sum().item())
+        except Exception:
+            pass
+        return 0
 
     def _normalize_rewards(self, rewards: torch.Tensor) -> torch.Tensor:
         reward_score = rewards
@@ -123,18 +191,25 @@ class RolloutBuffer:
             inserted_count = 0
             evicted_count = 0
 
+            priority = self._priority(example_metadata)
             for i in range(batch_size):
                 example = _slice_tensor_dict(batch, i, i + 1)
-                if len(self._buffer) >= self.max_size:
-                    self._buffer.popleft()
-                    self._metadata.popleft()
+                if len(self._heap) >= self.max_size:
+                    # Evict the head: under fifo the oldest arrival (historic
+                    # behavior), under edf the most staleness-critical sample
+                    # (the one that would expire soonest anyway).
+                    heapq.heappop(self._heap)
                     evicted_count += 1
-                self._buffer.append(example)
-                self._metadata.append(example_metadata)
+                heapq.heappush(
+                    self._heap,
+                    (priority, self._seq_counter, example, example_metadata),
+                )
+                self._seq_counter += 1
                 inserted_count += 1
 
             self._put_stats["accepted"] += inserted_count
             self._put_stats["total"] += batch_size
+            self._put_stats["evicted"] += evicted_count
 
             if inserted_count > 0:
                 self._not_empty.notify()
@@ -143,13 +218,18 @@ class RolloutBuffer:
     def get_and_reset_put_stats(self) -> dict[str, int]:
         with self._lock:
             stats = dict(self._put_stats)
-            self._put_stats = {"accepted": 0, "filtered": 0, "total": 0}
+            self._put_stats = {"accepted": 0, "filtered": 0, "total": 0, "evicted": 0}
             return stats
 
     def get_and_reset_consume_stats(self) -> dict[str, int]:
         with self._lock:
             stats = dict(self._consume_stats)
-            self._consume_stats = {"consumed": 0, "skipped_stale": 0}
+            self._consume_stats = {
+                "consumed": 0,
+                "skipped_stale": 0,
+                "consumed_len_sum": 0,
+                "skipped_stale_len_sum": 0,
+            }
             return stats
 
     def get(
@@ -165,11 +245,17 @@ class RolloutBuffer:
         batch, _ = result
         return batch
 
-    def get_with_metadata(
+    def _pop_one(
         self,
         timeout: float | None = None,
         current_version: int | None = None,
-    ) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    ) -> tuple[float, int, dict[str, Any], dict[str, Any]] | None:
+        """Pop the highest-priority fresh entry, dropping expired ones.
+
+        Returns the full heap entry ``(priority, seq_no, example, metadata)``
+        so callers can push it back verbatim. Blocks while the queue is
+        empty; returns None only when the buffer is closed.
+        """
         del timeout
         import time as time_module
 
@@ -180,22 +266,24 @@ class RolloutBuffer:
                         print("RolloutBuffer.get: Buffer is closed, returning None")
                     return None
 
-                if len(self._buffer) == 0:
+                if len(self._heap) == 0:
                     if self.debug:
                         print("RolloutBuffer.get: Buffer is empty, waiting...")
                     self._not_empty.wait()
                     time_module.sleep(0.1)
                     continue
 
-                metadata = self._metadata[0]
+                _, _, example, metadata = self._heap[0]
                 if current_version is not None and self.max_staleness is not None:
                     min_v = metadata.get("min_version")
                     if min_v is not None and isinstance(min_v, (int, float)):
                         version_gap = current_version - int(min_v)
                         if version_gap > self.max_staleness:
-                            self._buffer.popleft()
-                            self._metadata.popleft()
+                            heapq.heappop(self._heap)
                             self._consume_stats["skipped_stale"] += 1
+                            self._consume_stats["skipped_stale_len_sum"] += (
+                                self._seq_len(example)
+                            )
                             if self.debug:
                                 print(
                                     f"{self.label}RolloutBuffer: skipped stale example "
@@ -205,11 +293,22 @@ class RolloutBuffer:
                                 )
                             continue
 
-                example = self._buffer.popleft()
-                metadata = self._metadata.popleft()
+                entry = heapq.heappop(self._heap)
                 self._consume_stats["consumed"] += 1
+                self._consume_stats["consumed_len_sum"] += self._seq_len(entry[2])
                 self._not_full.notify()
-                return example, metadata
+                return entry
+
+    def get_with_metadata(
+        self,
+        timeout: float | None = None,
+        current_version: int | None = None,
+    ) -> tuple[dict[str, Any], dict[str, Any]] | None:
+        entry = self._pop_one(timeout=timeout, current_version=current_version)
+        if entry is None:
+            return None
+        _, _, example, metadata = entry
+        return example, metadata
 
     def get_batch(
         self,
@@ -225,17 +324,17 @@ class RolloutBuffer:
         start_time = time_module.time() if timeout is not None else None
 
         if timeout is not None:
-            first_result = self.get_with_metadata(
+            first_entry = self._pop_one(
                 timeout=min(timeout, 5.0),
                 current_version=current_version,
             )
         else:
-            first_result = self.get_with_metadata(
+            first_entry = self._pop_one(
                 timeout=None,
                 current_version=current_version,
             )
 
-        if first_result is None:
+        if first_entry is None:
             if self.debug:
                 print(
                     "RolloutBuffer.get_batch: No examples available, returning None",
@@ -243,12 +342,10 @@ class RolloutBuffer:
                 )
             return None
 
-        first_example, first_metadata = first_result
-        examples = [first_example]
-        metadatas = [first_metadata]
+        entries = [first_entry]
         if self.debug:
             print(
-                f"{self.label}RolloutBuffer.get_batch: Collected {len(examples)}/{batch_size} fresh examples",
+                f"{self.label}RolloutBuffer.get_batch: Collected {len(entries)}/{batch_size} fresh examples",
                 flush=True,
             )
 
@@ -263,42 +360,44 @@ class RolloutBuffer:
                 if remaining_timeout <= 0:
                     break
 
-            result = self.get_with_metadata(
+            entry = self._pop_one(
                 timeout=remaining_timeout,
                 current_version=current_version,
             )
-            if result is None:
+            if entry is None:
                 if self.debug:
                     print(
-                        "RolloutBuffer.get_batch: get_with_metadata returned None while collecting",
+                        "RolloutBuffer.get_batch: _pop_one returned None while collecting",
                         flush=True,
                     )
                 break
 
-            example, metadata = result
-            examples.append(example)
-            metadatas.append(metadata)
-            if self.debug and (len(examples) == batch_size or len(examples) % 10 == 0):
+            entries.append(entry)
+            if self.debug and (len(entries) == batch_size or len(entries) % 10 == 0):
                 print(
-                    f"{self.label}RolloutBuffer.get_batch: Collected {len(examples)}/{batch_size} fresh examples",
+                    f"{self.label}RolloutBuffer.get_batch: Collected {len(entries)}/{batch_size} fresh examples",
                     flush=True,
                 )
 
-            if len(examples) < batch_size and len(examples) % 8 == 0:
+            if len(entries) < batch_size and len(entries) % 8 == 0:
                 time_module.sleep(0.05)
 
-        if len(examples) < batch_size:
+        if len(entries) < batch_size:
             if self.debug:
                 print(
-                    f"RolloutBuffer.get_batch: Only collected {len(examples)}/{batch_size}, putting back",
+                    f"RolloutBuffer.get_batch: Only collected {len(entries)}/{batch_size}, putting back",
                     flush=True,
                 )
             with self._lock:
-                for example, metadata in zip(reversed(examples), reversed(metadatas)):
-                    self._buffer.appendleft(example)
-                    self._metadata.appendleft(metadata)
+                # Push entries back verbatim: original (priority, seq_no) keys
+                # restore the exact consumption order under both queue modes.
+                for entry in entries:
+                    heapq.heappush(self._heap, entry)
                 self._not_empty.notify_all()
             return None
+
+        examples = [entry[2] for entry in entries]
+        metadatas = [entry[3] for entry in entries]
 
         with self._lock:
             for example, metadata in zip(examples, metadatas):
@@ -481,15 +580,23 @@ class RolloutBuffer:
 
     def size(self) -> int:
         with self._lock:
-            return len(self._buffer)
+            return len(self._heap)
 
     def state_dict(self) -> dict[str, Any]:
         with self._lock:
+            # Persist fresh entries in consumption order. Priorities are NOT
+            # persisted — they are recomputed from metadata on load, so a
+            # checkpoint saved under one queue_order loads correctly under
+            # another.
+            ordered = sorted(self._heap, key=lambda e: (e[0], e[1]))
             return {
                 "max_size": self.max_size,
                 "replay_max_size": self.replay_max_size,
-                "buffer": [self._clone_for_state(x) for x in self._buffer],
-                "metadata": [self._clone_for_state(x) for x in self._metadata],
+                "queue_order": self.queue_order,
+                "buffer": [self._clone_for_state(e[2]) for e in ordered],
+                "metadata": [self._clone_for_state(e[3]) for e in ordered],
+                "seq_nos": [e[1] for e in ordered],
+                "seq_counter": self._seq_counter,
                 "replay_buffer": [
                     self._clone_for_state(x) for x in self._replay_buffer
                 ],
@@ -507,14 +614,27 @@ class RolloutBuffer:
             metadata_items = state_dict.get("metadata", [])
             replay_items = state_dict.get("replay_buffer", [])
             replay_metadata_items = state_dict.get("replay_metadata", [])
+            # Old checkpoints (deque era) have no seq_nos: assign arrival
+            # counters in list order, which preserves their FIFO order.
+            seq_nos = state_dict.get("seq_nos")
+            if not seq_nos or len(seq_nos) != len(buffer_items):
+                seq_nos = list(range(len(buffer_items)))
 
-            self._buffer = deque(
-                [self._clone_for_state(x) for x in buffer_items],
-                maxlen=self.max_size,
-            )
-            self._metadata = deque(
-                [self._clone_for_state(x) for x in metadata_items],
-                maxlen=self.max_size,
+            self._heap = []
+            for seq_no, example, metadata in zip(
+                seq_nos, buffer_items, metadata_items
+            ):
+                example = self._clone_for_state(example)
+                metadata = self._clone_for_state(metadata)
+                heapq.heappush(
+                    self._heap,
+                    (self._priority(metadata), int(seq_no), example, metadata),
+                )
+            self._seq_counter = int(
+                state_dict.get(
+                    "seq_counter",
+                    (max(seq_nos) + 1) if seq_nos else 0,
+                )
             )
             self._replay_buffer = deque(
                 [self._clone_for_state(x) for x in replay_items],
@@ -525,16 +645,24 @@ class RolloutBuffer:
                 maxlen=self.replay_max_size,
             )
             self._closed = bool(state_dict.get("closed", False))
-            self._put_stats = dict(
-                state_dict.get("put_stats", {"accepted": 0, "filtered": 0, "total": 0})
-            )
-            self._consume_stats = dict(
-                state_dict.get("consume_stats", {"consumed": 0, "skipped_stale": 0})
-            )
+            self._put_stats = {
+                "accepted": 0,
+                "filtered": 0,
+                "total": 0,
+                "evicted": 0,
+                **dict(state_dict.get("put_stats", {})),
+            }
+            self._consume_stats = {
+                "consumed": 0,
+                "skipped_stale": 0,
+                "consumed_len_sum": 0,
+                "skipped_stale_len_sum": 0,
+                **dict(state_dict.get("consume_stats", {})),
+            }
 
-            if len(self._buffer) > 0:
+            if len(self._heap) > 0:
                 self._not_empty.notify_all()
-            if len(self._buffer) < self.max_size:
+            if len(self._heap) < self.max_size:
                 self._not_full.notify_all()
 
     def close(self) -> None:

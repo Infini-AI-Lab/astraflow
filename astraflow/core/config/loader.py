@@ -294,6 +294,7 @@ def load_dataflow_config(raw: dict) -> dict:
         _set_if_missing(agent_fields, "replay_size", buffer.get("replay_size"))
         _set_if_missing(agent_fields, "replay_ratio", buffer.get("replay_ratio"))
         _set_if_missing(agent_fields, "max_staleness", buffer.get("max_staleness"))
+        _set_if_missing(agent_fields, "queue_order", buffer.get("queue_order"))
         _set_if_missing(agent_fields, "filter_function", buffer.get("filter_function"))
 
     # Extract service-level config from agent_fields (they're in the

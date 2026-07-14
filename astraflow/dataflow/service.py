@@ -176,6 +176,7 @@ class AstraFlowService:
             buffer_debug=True,
             filter_fn=agent_config.filter_function,
             max_staleness=agent_config.max_staleness,
+            queue_order=agent_config.queue_order,
             replay_max_size=agent_config.replay_size,
             replay_selection_fn=agent_config.selection_fn,
             reward_norm=reward_norm,
@@ -663,6 +664,19 @@ class AstraFlowService:
             "buffer/consumed": float(consume.get("consumed", 0)),
             "buffer/skipped_stale": float(consume.get("skipped_stale", 0)),
         }
+        # Length breakdown of consumed vs staleness-dropped samples — the
+        # direct signal for the length/difficulty bias that queue_order=edf
+        # addresses (long generations expiring more often under fifo).
+        consumed_n = int(consume.get("consumed", 0))
+        if consumed_n > 0:
+            buffer_stats["buffer/consumed_len_avg"] = (
+                float(consume.get("consumed_len_sum", 0)) / consumed_n
+            )
+        skipped_n = int(consume.get("skipped_stale", 0))
+        if skipped_n > 0:
+            buffer_stats["buffer/skipped_stale_len_avg"] = (
+                float(consume.get("skipped_stale_len_sum", 0)) / skipped_n
+            )
         # Only include reward means when we have data — avoids logging
         # misleading 0.0 on the first step after recovery (buffer serves
         # pre-loaded data before new acquisition stats accumulate).
