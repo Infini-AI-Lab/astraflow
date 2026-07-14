@@ -51,6 +51,15 @@ This is FlashAttention-**2** (`import flash_attn`), used by the FSDP trainer. It
 is excluded from uv resolution (see `pyproject.toml` `[tool.uv]`) and built from
 source, so it needs the CUDA 13 toolchain and a roomy build-temp directory:
 
+> **Run this install from OUTSIDE the repo directory.** Inside the repo, uv
+> picks up `pyproject.toml`'s `[tool.uv] exclude-dependencies = ["flash-attn"]`
+> (which exists so project installs don't try to resolve/build flash-attn) and
+> applies it to this explicit install too — the command **exits 0 without
+> installing anything**. Worse, `import flash_attn` still appears to succeed
+> afterwards, because the `flash-attn-4` package (pulled in by sglang) leaves a
+> namespace stub at `site-packages/flash_attn/` — see the verification in
+> Step 6 that actually catches this.
+
 ```bash
 # nvcc must be on PATH and match torch's CUDA (13.0 for torch 2.11+cu130)
 export CUDA_HOME=/usr/local/cuda-13.0
@@ -61,7 +70,11 @@ export PATH="$CUDA_HOME/bin:$PATH"
 # "nvFatbin error: empty input" or "Disk quota exceeded" from truncated temps.
 export TMPDIR=/tmp/fa-build && mkdir -p "$TMPDIR"
 
+# IMPORTANT: leave the repo so uv ignores the project's [tool.uv] table
+# (same reason the Dockerfile installs flash-attn from /tmp).
+cd /tmp
 uv pip install "flash-attn==2.8.3" --no-build-isolation
+cd -
 ```
 
 > On a single-GPU-arch box you can speed up the build and shrink its footprint
@@ -155,11 +168,21 @@ Verify Flash Attention and SGLang:
 
 ```bash
 python -c "
-import flash_attn, sglang
-print(f'flash-attn: {flash_attn.__version__}')
+# NOTE: a bare 'import flash_attn' succeeding is NOT proof FA2 is installed —
+# flash-attn-4 (sglang's attention backend) leaves a namespace stub at
+# site-packages/flash_attn/ that imports fine but is empty. Import a real
+# symbol and read the wheel metadata instead.
+from importlib.metadata import version
+from flash_attn import flash_attn_func  # fails if FA2 was silently skipped
+import sglang
+print(f'flash-attn: {version(\"flash-attn\")}')
 print(f'sglang:     {sglang.__version__}')
 "
 ```
+
+If the `flash_attn_func` import fails with `cannot import name ... (unknown
+location)`, flash-attn was silently skipped — re-run the Step 4 install from a
+directory **outside** the repo.
 
 ## Option B: Docker
 
