@@ -22,6 +22,13 @@ class AgentConfig:
     max_staleness: int | None = None
     """Maximum version staleness for samples; older samples are discarded."""
 
+    queue_order: str = "edf"
+    """Fresh-queue consumption order: "edf" (default; earliest staleness
+    deadline first, i.e. ascending min_version) or "fifo" (arrival order,
+    the historical behavior — set explicitly for comparison runs). EDF
+    removes the difficulty bias where long generations expire in the queue
+    more often than short ones. See RolloutBuffer."""
+
     replay_size: int | None = None
     """Maximum number of samples in the replay buffer."""
 

@@ -48,6 +48,7 @@ class AstraFlow:
         max_staleness: int | None = None,
         replay_max_size: int | None = None,
         replay_selection_fn: ReplaySelectionFn | str | None = None,
+        queue_order: str = "edf",
         producer_error_backoff: float = 0.5,
         data_serving: DataServing | None = None,
         data_acquisition: DataAcquisition | None = None,
@@ -71,6 +72,7 @@ class AstraFlow:
                 max_staleness=max_staleness,
                 replay_max_size=replay_max_size,
                 replay_selection_fn=replay_selection_fn,
+                queue_order=queue_order,
                 per_model_config=per_model_buffer_config,
             )
         self.data_serving = data_serving
