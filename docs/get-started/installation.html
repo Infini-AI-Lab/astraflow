@@ -195,6 +195,16 @@ ipython).</p>
 <p>This is FlashAttention-<strong>2</strong> (<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">flash_attn</span></code>), used by the FSDP trainer. It
 is excluded from uv resolution (see <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span></code>) and built from
 source, so it needs the CUDA 13 toolchain and a roomy build-temp directory:</p>
+<blockquote>
+<div><p><strong>Run this install from OUTSIDE the repo directory.</strong> Inside the repo, uv
+picks up <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>’s <code class="docutils literal notranslate"><span class="pre">[tool.uv]</span> <span class="pre">exclude-dependencies</span> <span class="pre">=</span> <span class="pre">[&quot;flash-attn&quot;]</span></code>
+(which exists so project installs don’t try to resolve/build flash-attn) and
+applies it to this explicit install too — the command <strong>exits 0 without
+installing anything</strong>. Worse, <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">flash_attn</span></code> still appears to succeed
+afterwards, because the <code class="docutils literal notranslate"><span class="pre">flash-attn-4</span></code> package (pulled in by sglang) leaves a
+namespace stub at <code class="docutils literal notranslate"><span class="pre">site-packages/flash_attn/</span></code> — see the verification in
+Step 6 that actually catches this.</p>
+</div></blockquote>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># nvcc must be on PATH and match torch&#39;s CUDA (13.0 for torch 2.11+cu130)</span>
 </span><span data-line="2"><span class="nb">export</span><span class="w"> </span><span class="nv">CUDA_HOME</span><span class="o">=</span>/usr/local/cuda-13.0
 </span><span data-line="3"><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$CUDA_HOME</span><span class="s2">/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
@@ -204,7 +214,11 @@ source, so it needs the CUDA 13 toolchain and a roomy build-temp directory:</p>
 </span><span data-line="7"><span class="c1"># &quot;nvFatbin error: empty input&quot; or &quot;Disk quota exceeded&quot; from truncated temps.</span>
 </span><span data-line="8"><span class="nb">export</span><span class="w"> </span><span class="nv">TMPDIR</span><span class="o">=</span>/tmp/fa-build<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TMPDIR</span><span class="s2">&quot;</span>
 </span><span data-line="9">
-</span><span data-line="10">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;flash-attn==2.8.3&quot;</span><span class="w"> </span>--no-build-isolation
+</span><span data-line="10"><span class="c1"># IMPORTANT: leave the repo so uv ignores the project&#39;s [tool.uv] table</span>
+</span><span data-line="11"><span class="c1"># (same reason the Dockerfile installs flash-attn from /tmp).</span>
+</span><span data-line="12"><span class="nb">cd</span><span class="w"> </span>/tmp
+</span><span data-line="13">uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;flash-attn==2.8.3&quot;</span><span class="w"> </span>--no-build-isolation
+</span><span data-line="14"><span class="nb">cd</span><span class="w"> </span>-
 </span></pre></div>
 </div>
 <blockquote>
@@ -295,12 +309,20 @@ skip apex (Transformer Engine is the only hard requirement). The
 </div>
 <p>Verify Flash Attention and SGLang:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
-</span><span data-line="2"><span class="s2">import flash_attn, sglang</span>
-</span><span data-line="3"><span class="s2">print(f&#39;flash-attn: {flash_attn.__version__}&#39;)</span>
-</span><span data-line="4"><span class="s2">print(f&#39;sglang:     {sglang.__version__}&#39;)</span>
-</span><span data-line="5"><span class="s2">&quot;</span>
+</span><span data-line="2"><span class="s2"># NOTE: a bare &#39;import flash_attn&#39; succeeding is NOT proof FA2 is installed —</span>
+</span><span data-line="3"><span class="s2"># flash-attn-4 (sglang&#39;s attention backend) leaves a namespace stub at</span>
+</span><span data-line="4"><span class="s2"># site-packages/flash_attn/ that imports fine but is empty. Import a real</span>
+</span><span data-line="5"><span class="s2"># symbol and read the wheel metadata instead.</span>
+</span><span data-line="6"><span class="s2">from importlib.metadata import version</span>
+</span><span data-line="7"><span class="s2">from flash_attn import flash_attn_func  # fails if FA2 was silently skipped</span>
+</span><span data-line="8"><span class="s2">import sglang</span>
+</span><span data-line="9"><span class="s2">print(f&#39;flash-attn: {version(\&quot;flash-attn\&quot;)}&#39;)</span>
+</span><span data-line="10"><span class="s2">print(f&#39;sglang:     {sglang.__version__}&#39;)</span>
+</span><span data-line="11"><span class="s2">&quot;</span>
 </span></pre></div>
 </div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">flash_attn_func</span></code> import fails with <code class="docutils literal notranslate"><span class="pre">cannot</span> <span class="pre">import</span> <span class="pre">name</span> <span class="pre">...</span> <span class="pre">(unknown</span> <span class="pre">location)</span></code>, flash-attn was silently skipped — re-run the Step 4 install from a
+directory <strong>outside</strong> the repo.</p>
 </section>
 </section>
 <section id="option-b-docker">
