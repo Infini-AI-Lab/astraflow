@@ -19,7 +19,8 @@ recipes are smaller 2xH100 variants.
 ---
 **Attention kernel**
 
-The dense Qwen3 recipes (`qwen3-1.7b-m2po-2gpus-*`, `qwen3-8b-m2po-*`) set
+The dense recipes (`qwen3-1.7b-m2po-2gpus-*`, `qwen3-8b-m2po-*`,
+`llama3-8b-instruct-m2po-*`) set
 `attn_impl: kernels-community/flash-attn2` — a prebuilt, ABI-matched
 FlashAttention-2 kernel pulled from the Hugging Face `kernels` hub (fetched and
 cached on first use; no source build). This is the working FA2 on the validated
