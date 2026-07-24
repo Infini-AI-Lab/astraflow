@@ -116,3 +116,45 @@ bash examples/math/qwen3-8b-m2po-full/scripts/run_qwen3-8b-m2po-full.sh
 | Workflow / reward | `rlvr` / `math_verify` |
 | Train dataset | DeepScaleR |
 | Eval datasets | AIME24, AIME25, AMC, Minerva Math, MATH500 |
+
+## Llama-3-8B-Instruct — 8 GPUs
+
+The same full-scale layout for a non-Qwen dense model. It runs on an 8-GPU node — 4 GPUs for inference, 4 for training — and comes in full and delta transfer variants:
+
+- [`llama3-8b-instruct-m2po-full/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/llama3-8b-instruct-m2po-full) — full weight transfer
+- [`llama3-8b-instruct-m2po-delta/`](https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/llama3-8b-instruct-m2po-delta) — delta weight transfer (`delta_full_sync_interval` 10)
+
+Two Llama-specific choices differ from the Qwen recipes:
+
+- **Native 8192-token context.** Meta-Llama-3-8B's `max_position_embeddings` is 8192 (no `rope_scaling`), so this recipe keeps `context_length` 8192 and `max_new_tokens` 6000 — no RoPE extrapolation. Pushing the output past ~6k (e.g. a 16k-output run) would require `rope_scaling` in **both** the trainer's HF config and sglang, with positions extrapolated beyond what the model was trained on.
+- **`-Instruct` checkpoint.** The `rlvr` workflow applies a chat template, and the base `Meta-Llama-3-8B` ships none — so the recipe points at `Meta-Llama-3-8B-Instruct`, which carries the Llama-3 template. (Both are gated on Hugging Face; set `HF_TOKEN`.)
+
+Attention is `kernels-community/flash-attn2`, the same prebuilt FA2 the dense Qwen3 recipes use.
+
+### Run
+
+```bash
+# full weight transfer
+bash examples/math/llama3-8b-instruct-m2po-full/scripts/run_llama3-8b-instruct-m2po-full.sh
+
+# delta weight transfer
+bash examples/math/llama3-8b-instruct-m2po-delta/scripts/run_llama3-8b-instruct-m2po-delta.sh
+```
+
+### Settings
+
+| Setting | Value |
+|---|---|
+| Model | Meta-Llama-3-8B-Instruct |
+| GPUs | 8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4) |
+| Algorithm | M2PO (`m2_threshold` 0.01) |
+| Weight transfer | TCP — full, or delta (`delta_full_sync_interval` 10) |
+| Context length | 8192 (native; no RoPE scaling) |
+| Max new tokens | 6000 |
+| Rollouts per prompt | 8 (`temperature` 1.0) |
+| Train batch size | 256 |
+| Learning rate | 5e-6 (Adam, constant schedule) |
+| Train steps | 800 |
+| Workflow / reward | `rlvr` / `math_verify` |
+| Train dataset | DeepScaleR |
+| Eval datasets | AIME24, AIME25, AMC, Minerva Math, MATH500 |

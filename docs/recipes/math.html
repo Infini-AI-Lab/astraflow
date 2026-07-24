@@ -111,6 +111,11 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#id4">Settings</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#llama-3-8b-instruct-8-gpus">Llama-3-8B-Instruct &#8212; 8 GPUs</a><ul>
+<li><a class="reference internal" href="#id5">Run</a></li>
+<li><a class="reference internal" href="#id6">Settings</a></li>
+</ul>
+</li>
 </ul>
 </div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
@@ -337,6 +342,83 @@ for the validated stack and results.</p>
 </tr>
 <tr class="row-odd"><td><p>Max new tokens</p></td>
 <td><p>14000</p></td>
+</tr>
+<tr class="row-even"><td><p>Rollouts per prompt</p></td>
+<td><p>8 (<code class="docutils literal notranslate"><span class="pre">temperature</span></code> 1.0)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Train batch size</p></td>
+<td><p>256</p></td>
+</tr>
+<tr class="row-even"><td><p>Learning rate</p></td>
+<td><p>5e-6 (Adam, constant schedule)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Train steps</p></td>
+<td><p>800</p></td>
+</tr>
+<tr class="row-even"><td><p>Workflow / reward</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rlvr</span></code> / <code class="docutils literal notranslate"><span class="pre">math_verify</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Train dataset</p></td>
+<td><p>DeepScaleR</p></td>
+</tr>
+<tr class="row-even"><td><p>Eval datasets</p></td>
+<td><p>AIME24, AIME25, AMC, Minerva Math, MATH500</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="llama-3-8b-instruct-8-gpus">
+<h2>Llama-3-8B-Instruct — 8 GPUs<a class="headerlink" href="#llama-3-8b-instruct-8-gpus" title="Link to this heading">#</a></h2>
+<p>The same full-scale layout for a non-Qwen dense model. It runs on an 8-GPU node — 4 GPUs for inference, 4 for training — and comes in full and delta transfer variants:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/llama3-8b-instruct-m2po-full"><code class="docutils literal notranslate"><span class="pre">llama3-8b-instruct-m2po-full/</span></code></a> — full weight transfer</p></li>
+<li><p><a class="reference external" href="https://github.com/Infini-AI-Lab/astraflow/tree/main/examples/math/llama3-8b-instruct-m2po-delta"><code class="docutils literal notranslate"><span class="pre">llama3-8b-instruct-m2po-delta/</span></code></a> — delta weight transfer (<code class="docutils literal notranslate"><span class="pre">delta_full_sync_interval</span></code> 10)</p></li>
+</ul>
+<p>Two Llama-specific choices differ from the Qwen recipes:</p>
+<ul class="simple">
+<li><p><strong>Native 8192-token context.</strong> Meta-Llama-3-8B’s <code class="docutils literal notranslate"><span class="pre">max_position_embeddings</span></code> is 8192 (no <code class="docutils literal notranslate"><span class="pre">rope_scaling</span></code>), so this recipe keeps <code class="docutils literal notranslate"><span class="pre">context_length</span></code> 8192 and <code class="docutils literal notranslate"><span class="pre">max_new_tokens</span></code> 6000 — no RoPE extrapolation. Pushing the output past ~6k (e.g. a 16k-output run) would require <code class="docutils literal notranslate"><span class="pre">rope_scaling</span></code> in <strong>both</strong> the trainer’s HF config and sglang, with positions extrapolated beyond what the model was trained on.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">-Instruct</span></code> checkpoint.</strong> The <code class="docutils literal notranslate"><span class="pre">rlvr</span></code> workflow applies a chat template, and the base <code class="docutils literal notranslate"><span class="pre">Meta-Llama-3-8B</span></code> ships none — so the recipe points at <code class="docutils literal notranslate"><span class="pre">Meta-Llama-3-8B-Instruct</span></code>, which carries the Llama-3 template. (Both are gated on Hugging Face; set <code class="docutils literal notranslate"><span class="pre">HF_TOKEN</span></code>.)</p></li>
+</ul>
+<p>Attention is <code class="docutils literal notranslate"><span class="pre">kernels-community/flash-attn2</span></code>, the same prebuilt FA2 the dense Qwen3 recipes use.</p>
+<section id="id5">
+<h3>Run<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># full weight transfer</span>
+</span><span data-line="2">bash<span class="w"> </span>examples/math/llama3-8b-instruct-m2po-full/scripts/run_llama3-8b-instruct-m2po-full.sh
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># delta weight transfer</span>
+</span><span data-line="5">bash<span class="w"> </span>examples/math/llama3-8b-instruct-m2po-delta/scripts/run_llama3-8b-instruct-m2po-delta.sh
+</span></pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>Settings<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Model</p></td>
+<td><p>Meta-Llama-3-8B-Instruct</p></td>
+</tr>
+<tr class="row-odd"><td><p>GPUs</p></td>
+<td><p>8 — RaaS ×4 (SGLang, DP=4), Trainer ×4 (FSDP, DP=4)</p></td>
+</tr>
+<tr class="row-even"><td><p>Algorithm</p></td>
+<td><p>M2PO (<code class="docutils literal notranslate"><span class="pre">m2_threshold</span></code> 0.01)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Weight transfer</p></td>
+<td><p>TCP — full, or delta (<code class="docutils literal notranslate"><span class="pre">delta_full_sync_interval</span></code> 10)</p></td>
+</tr>
+<tr class="row-even"><td><p>Context length</p></td>
+<td><p>8192 (native; no RoPE scaling)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Max new tokens</p></td>
+<td><p>6000</p></td>
 </tr>
 <tr class="row-even"><td><p>Rollouts per prompt</p></td>
 <td><p>8 (<code class="docutils literal notranslate"><span class="pre">temperature</span></code> 1.0)</p></td>
