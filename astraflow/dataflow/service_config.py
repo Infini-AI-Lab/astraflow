@@ -29,6 +29,11 @@ class AgentConfig:
     removes the difficulty bias where long generations expire in the queue
     more often than short ones. See RolloutBuffer."""
 
+    max_buffered_samples: int | None = None
+    """Pause prompt submission while the fresh buffer holds this many samples
+    (closed loop; with rollout.max_concurrent_rollouts this bounds staleness).
+    Set >= train_batch_size, 2x recommended. None = open loop (historical)."""
+
     replay_size: int | None = None
     """Maximum number of samples in the replay buffer."""
 

@@ -296,6 +296,9 @@ def load_dataflow_config(raw: dict) -> dict:
         _set_if_missing(agent_fields, "max_staleness", buffer.get("max_staleness"))
         _set_if_missing(agent_fields, "queue_order", buffer.get("queue_order"))
         _set_if_missing(agent_fields, "filter_function", buffer.get("filter_function"))
+        _set_if_missing(
+            agent_fields, "max_buffered_samples", buffer.get("max_buffered_samples")
+        )
 
     # Extract service-level config from agent_fields (they're in the
     # dataflow: YAML section but belong to ServiceConfig, not AgentConfig).

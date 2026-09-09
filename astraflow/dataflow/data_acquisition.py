@@ -7,6 +7,7 @@ and forwards accepted samples to the serving layer.
 from __future__ import annotations
 
 import logging
+import math
 import os
 import threading
 import time
@@ -95,6 +96,7 @@ class AstraDataAcquisition:
         debug: bool = False,
         error_backoff: float = 0.5,
         publish_timeout: float | None = 0.1,
+        max_buffered_samples: int | None = None,
     ):
         self.rollout = rollout
         self.rollout_dataloader = rollout_dataloader
@@ -102,6 +104,7 @@ class AstraDataAcquisition:
 
         self._publish_fn = publish_fn
         self._data_serving = data_serving
+        self._max_buffered_samples = max_buffered_samples
         self._filter_fn = self._resolve_filter_fn(filter_fn)
         self._curator = resolve_curator(curator, curator_args)
         self._curator_lock = threading.Lock()
@@ -661,6 +664,21 @@ class AstraDataAcquisition:
                 )
                 self._producer_stop.wait(self._error_backoff)
 
+    def _submit_budget(self, available: int) -> int:
+        """Prompts to submit this tick: RaaS slots, capped so the fullest fresh
+        buffer stays under ``max_buffered_samples`` (closed loop)."""
+        if self._max_buffered_samples is None:
+            return available
+        buffered = max(self._data_serving.size(mid) for mid in self._data_serving.model_ids)
+        headroom = self._max_buffered_samples - buffered
+        if headroom <= 0:
+            return 0
+        with self._stats_lock:  # accepted samples per ingested prompt so far
+            per_prompt = max(
+                1.0, self._ingest_stats["accepted"] / max(1, self._stats["producer_batches"])
+            )
+        return min(available, math.ceil(headroom / per_prompt))
+
     def _submit_one_auto(self, data: dict[str, Any]) -> None:
         """Submit a single sample via submit_auto. Used as a worker target."""
         if self._paused.is_set() or self._producer_stop.is_set():
@@ -796,6 +814,7 @@ class AstraDataAcquisition:
 
         available_slots = info["available"]
         submit_budget = max(0, min(available_slots, max_submit_per_tick))
+        submit_budget = self._submit_budget(submit_budget)
         batch: list[dict[str, Any]] = []
         # Read current version once per tick (curator may use it).
         with self._version_lock:
@@ -898,6 +917,7 @@ class AstraDataAcquisition:
             self._producer_stop.wait(self._error_backoff)
             return 0
 
+        submit_budget = self._submit_budget(submit_budget)
         # Gather samples first, then submit in parallel.
         batch: list[dict[str, Any]] = []
         while submit_budget > 0 and not self._producer_stop.is_set():

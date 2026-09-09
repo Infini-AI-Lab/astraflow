@@ -91,6 +91,8 @@ class PPOTrainerBase(abc.ABC):
             (config.actor.kl_ctl > 0 or config.actor.kl_penalty_coef > 0)
             and config.ref is not None
         ):
+            # R3: the reference must score the same routing the actor replays.
+            config.ref.megatron.moe_router_replay = config.actor.megatron.moe_router_replay
             self.ref = self._create_actor(config.ref)
 
         self.train_dataset = train_dataset

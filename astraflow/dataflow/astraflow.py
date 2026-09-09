@@ -56,6 +56,7 @@ class AstraFlow:
         per_model_buffer_config: dict[str, dict] | None = None,
         curator: Any = None,
         curator_args: dict[str, Any] | None = None,
+        max_buffered_samples: int | None = None,
     ):
         """Initialize AstraFlow with acquisition and serving components."""
         self.rollout = rollout
@@ -89,6 +90,7 @@ class AstraFlow:
                 data_serving=self.data_serving,
                 debug=buffer_debug,
                 error_backoff=producer_error_backoff,
+                max_buffered_samples=max_buffered_samples,
             )
         self.data_acquisition = data_acquisition
 

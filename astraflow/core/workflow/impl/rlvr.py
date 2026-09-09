@@ -186,6 +186,10 @@ class RLVRWorkflow(RolloutWorkflow):
                 "attention_mask": torch.ones(len(seq), dtype=torch.bool),
                 "rewards": torch.tensor(reward, dtype=torch.float32),
             }
+            if resp.output_routed_experts is not None:
+                # R3: rollout never forwards the final position; repeat the last row.
+                rec = torch.tensor(resp.output_routed_experts)  # int32 [S-1, C], copies
+                res["routed_experts"] = torch.cat([rec, rec[-1:]])  # [S, C]; unsqueeze(0) below adds the batch dim
             res = {k: v.unsqueeze(0) for k, v in res.items()}
             results.append(res)
 

@@ -31,10 +31,14 @@ class VLLMBackend:
         pass
 
     def build_generation_request(
-        self, req: ModelRequest, with_lora: bool
+        self, req: ModelRequest, with_lora: bool, routed_experts_start_len: int = 0
     ) -> HttpRequest:
         """Convert a ModelRequest into a vLLM completions or chat HTTP request."""
         gconfig = req.gconfig
+        if gconfig.return_routed_experts:
+            raise NotImplementedError(
+                "return_routed_experts (R3) is only supported by the SGLang backend."
+            )
         stop_token_ids = gconfig.stop_token_ids
         stop = gconfig.stop
 

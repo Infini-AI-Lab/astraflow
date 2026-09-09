@@ -5,6 +5,9 @@ import sys
 import uuid
 from typing import Any
 
+import numpy as np
+import pybase64
+
 from astraflow.raas.api.cli_args import InferenceEngineConfig, SGLangConfig
 from astraflow.raas.api.io_struct import (
     HttpGenerationResult,
@@ -22,7 +25,7 @@ class SGLangBackend:
     """Backend that translates engine operations into SGLang HTTP API calls."""
 
     def build_generation_request(
-        self, req: ModelRequest, with_lora: bool
+        self, req: ModelRequest, with_lora: bool, routed_experts_start_len: int = 0
     ) -> HttpRequest:
         """Convert a ModelRequest into an SGLang /generate HTTP request."""
         gconfig = req.gconfig
@@ -55,6 +58,10 @@ class SGLangBackend:
             "stream": False,
         }
 
+        if gconfig.return_routed_experts:
+            payload["return_routed_experts"] = True
+            payload["routed_experts_start_len"] = routed_experts_start_len
+
         if with_lora:
             payload["lora_path"] = "lora_1"
 
@@ -78,10 +85,16 @@ class SGLangBackend:
         output_tokens = [x[1] for x in meta_info["output_token_logprobs"]]
         output_logprobs = [x[0] for x in meta_info["output_token_logprobs"]]
 
+        routed_experts = meta_info.get("routed_experts")
+        if routed_experts is not None:
+            # sglang: base64 of little-endian int32, C order of [rows, num_hidden_layers, top_k]
+            routed_experts = np.frombuffer(pybase64.b64decode(routed_experts), dtype="<i4")
+
         return HttpGenerationResult(
             output_tokens=output_tokens,
             output_logprobs=output_logprobs,
             stop_reason=stop_reason,
+            routed_experts=routed_experts,
         )
 
     def get_pause_request(self) -> HttpRequest:

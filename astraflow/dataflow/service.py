@@ -183,6 +183,7 @@ class AstraFlowService:
             expected_model_ids=agent_config.expected_model_ids,
             curator=agent_config.curator,
             curator_args=agent_config.curator_args,
+            max_buffered_samples=agent_config.max_buffered_samples,
         )
         self.flows[agent_name] = flow
 
@@ -664,6 +665,10 @@ class AstraFlowService:
             "buffer/consumed": float(consume.get("consumed", 0)),
             "buffer/skipped_stale": float(consume.get("skipped_stale", 0)),
         }
+        # closed loop: must stay 0
+        buffer_stats["buffer/evicted"] = float(
+            flow.data_serving.get_and_reset_put_stats(model_id).get("evicted", 0)
+        )
         # Length breakdown of consumed vs staleness-dropped samples — the
         # direct signal for the length/difficulty bias that queue_order=edf
         # addresses (long generations expiring more often under fifo).
@@ -1243,10 +1248,10 @@ class AstraFlowService:
                         )
                         eval_results = {}
                     else:
-                        flow.resume()
                         raise
-                # Step 6: Resume data acquisition
-                flow.resume()
+                finally:
+                    # Step 6: Resume data acquisition, on every exit path
+                    flow.resume()
                 # Accumulate eval wall-clock time for the balance report
                 # so the time-based GPU estimator can subtract it.  Also
                 # invalidate _last_batch_t1 so the next get_batch does

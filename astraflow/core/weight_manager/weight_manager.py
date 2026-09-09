@@ -34,6 +34,10 @@ from astraflow.core.weight_manager.transfer.sender_agent import (
 
 logger = logging.getLogger(__name__)
 
+# Weight-sync wait budget. A Qwen3-30B-A3B full sync (~57 GiB HF bytes) takes 76-130 s;
+# the old 60 s was sized for ~8B dense models.
+WEIGHT_SYNC_TIMEOUT_SEC = 300.0
+
 _DTYPE_SIZES = {
     "float32": 4, "float16": 2, "bfloat16": 2,
     "int64": 8, "int32": 4, "int16": 2, "int8": 1, "uint8": 1,
@@ -294,6 +298,8 @@ class WeightManager:
 
         result = self._output_queue.get(timeout=120)
         if isinstance(result, tuple):
+            if result[0] == "__sender_init_error__":  # sender_agent._init failed; its traceback follows
+                raise RuntimeError(f"sender agent failed to start:\n{result[1]}")
             # Accept both 2-tuple and 3-tuple (with delta shm path)
             if len(result) == 3:
                 shm_path, buffer_length, _delta_shm = result
@@ -740,7 +746,7 @@ class WeightManager:
             self._input_queue.put(f"buffer_ready:{version}:{buf_idx}")
             try:
                 # Sender acks immediately after swap (no delta wait)
-                ack = self._output_queue.get(timeout=60.0)
+                ack = self._output_queue.get(timeout=WEIGHT_SYNC_TIMEOUT_SEC)
                 if isinstance(ack, str) and ack.startswith("error:"):
                     logger.error(
                         "[WeightManager] Sender agent error: %s", ack[6:],
@@ -749,7 +755,8 @@ class WeightManager:
             except queue.Empty:
                 logger.warning(
                     "[WeightManager] Sender agent did not acknowledge "
-                    "buffer_ready within 60s"
+                    "buffer_ready within %.0fs",
+                    WEIGHT_SYNC_TIMEOUT_SEC,
                 )
         # ALL ranks flip so the next write targets the other half.
         self._inactive_buf_idx = 1 - buf_idx
@@ -776,7 +783,7 @@ class WeightManager:
                 "[WeightManager] Previous delta did not complete within 120s"
             )
 
-    def wait_delta_ready(self, timeout: float = 60.0) -> None:
+    def wait_delta_ready(self, timeout: float = WEIGHT_SYNC_TIMEOUT_SEC) -> None:
         """Wait for async delta compute to finish and stash metrics.
 
         Called by the trainer before ``notify_version`` to ensure delta
@@ -785,7 +792,8 @@ class WeightManager:
         """
         if self._delta_done_event is None:
             return
-        self._delta_done_event.wait(timeout=timeout)
+        if not self._delta_done_event.wait(timeout=timeout):
+            logger.warning("[WeightManager] delta not ready after %.0fs; notifying anyway", timeout)
         # Read the delta message the sender put on the queue before setting
         # the event.  Use a blocking get() instead of empty() + get_nowait()
         # because mp.Queue.empty() is unreliable across processes.

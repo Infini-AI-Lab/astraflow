@@ -257,7 +257,6 @@ class RolloutBuffer:
         empty; returns None only when the buffer is closed.
         """
         del timeout
-        import time as time_module
 
         with self._not_empty:
             while True:
@@ -270,7 +269,6 @@ class RolloutBuffer:
                     if self.debug:
                         print("RolloutBuffer.get: Buffer is empty, waiting...")
                     self._not_empty.wait()
-                    time_module.sleep(0.1)
                     continue
 
                 _, _, example, metadata = self._heap[0]

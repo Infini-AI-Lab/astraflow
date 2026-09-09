@@ -6,6 +6,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal, Optional
 
+import numpy as np
 from PIL.Image import Image as ImageObject
 from transformers import PreTrainedTokenizerFast
 
@@ -54,6 +55,8 @@ class ModelResponse:
     output_tokens: list[int] = field(default_factory=list)
     output_logprobs: list[float] = field(default_factory=list)
     output_versions: list[int] = field(default_factory=list)
+    # R3: int32 [seq_len - 1, num_hidden_layers * top_k] expert ids per forwarded position; None when off.
+    output_routed_experts: np.ndarray | None = None
     stop_reason: Literal["length", "stop", "interrupt"] = "stop"
     tokenizer: PreTrainedTokenizerFast | None = None
 

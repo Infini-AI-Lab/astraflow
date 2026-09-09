@@ -1,0 +1,171 @@
+# Experiment config — Qwen3-30B-A3B math RL with R3, one 8xB200 node
+# Experiment: math / qwen3-30b-a3b-m2po (M2PO is off; GRPO — see README)
+# Pair with raas_b200_1node.yaml.
+#
+# GPU layout (6 of 8 GPUs):
+#   TRAINER_MODEL0_GPUS=0,1,2,3      -> Megatron TP=1 PP=1 DP=4 EP=4 ETP=1
+#   SERVICE_CUDA_VISIBLE_DEVICES=4,5 -> RaaS (model0 dp=2, tp=1)
+#
+# R3 needs all three: gconfig.return_routed_experts (here),
+# sglang.enable_return_routed_experts (raas yaml), actor.megatron.moe_router_replay (here).
+
+# ── Experiment: identity, model, shared settings ──
+experiment:
+  experiment_name: astraflow-math
+  trial_name: qwen3-30b-a3b-grpo-onpolicy-b200
+  # HF saves are 57 GiB each (8 per run): put this on a filesystem with room.
+  fileroot: ./data-experiments/${experiment.experiment_name}/${experiment.trial_name}
+
+  model_path: "Qwen/Qwen3-30B-A3B"
+  tokenizer_path: "Qwen/Qwen3-30B-A3B"
+  seed: 1
+  dtype: bfloat16
+  weight_transfer_mode: tcp
+  # full, not delta: MoE per-step delta density is unmeasured (delta pre-allocates for <=10% density).
+  weight_transfer_strategies: full
+
+# ── RaaS: what to generate (inference-level config) ──
+raas:
+  models:
+    model0:
+      backend: sglang
+      gconfig:
+        n_samples: 8
+        temperature: 1.0
+        # prompt (<=1024) + 3000 new tokens < 4096.
+        max_new_tokens: 3000
+        min_new_tokens: 0
+        # R3: ask for per-token routed experts (needs sglang.enable_return_routed_experts).
+        return_routed_experts: true
+
+# ── AstraFlow: data pipeline ──
+dataflow:
+  host: "0.0.0.0"
+  port: 8000
+
+  buffer:
+    size: 10000
+    replay_size: 10000
+    replay_ratio: 0
+    # Closed loop: pause prompt submission while >= 2 train batches (512) are buffered;
+    # in-flight (max_concurrent_rollouts x n_samples, raas yaml) is the other half of the bound.
+    # max_staleness 12 is a safety net behind the gate, not the control (buffer/skipped_stale should stay 0).
+    # Trainer logging "Waiting for data" every step => raise max_concurrent_rollouts, not these.
+    max_staleness: 12
+    max_buffered_samples: 512
+    filter_function: filter_zero_adv
+
+  rollout_dataset:
+    dataset_fn: "astraflow.dataflow.dataset.deepscaler:get_deepscaler_rl_dataset"
+    # ctx-4096: keep prompts short.
+    max_length: 1024
+
+  workflow_spec:
+    workflow_cls: "rlvr"
+    reward_fn: "math_verify"
+    enable_thinking: false
+
+  eval_workflows:
+    math_eval:
+      workflow_cls: "rlvr"
+      reward_fn: "math_verify"
+      enable_thinking: false
+      gconfig_overrides:
+        temperature: 0.6
+        n_samples: 1
+        max_new_tokens: 3000
+
+  eval_datasets:
+    math500:
+      dataset_fn: "astraflow.dataflow.dataset.math500:get_math500_test_dataset"
+      max_length: 1000
+      repeat: 4
+      eval_workflow: math_eval
+
+# ── Trainer base: shared config ──
+trainer_base:
+  total_train_steps: 800
+  # 256 = 8 x (dp 4 x n_samples 8): the zero-adv filter rounds survivors down to multiples of 32.
+  train_batch_size: 256
+  n_samples: 8
+  # world = tp*pp*dp = 4 ranks; ep=4 nests in dp (128 experts / 4 = 32 per rank).
+  engine:
+    backend: megatron
+    data_parallel_size: 4
+    tensor_parallel_size: 1
+    pipeline_parallel_size: 1
+    expert_parallel_size: 4
+    expert_tensor_parallel_size: 1
+
+  actor:
+    gradient_checkpointing: true
+    mb_spec:
+      # 4096 ctx + 512 headroom.
+      max_tokens_per_mb: 4608
+    optimizer:
+      type: adam
+      # lr, weight decay, beta2 follow the R3 paper and miles run_qwen3_30b_a3b.py.
+      lr: 1e-6
+      weight_decay: 0.1
+      beta1: 0.9
+      beta2: 0.98
+      eps: 1e-8
+      lr_scheduler_type: constant
+      gradient_clipping: 1.0
+    # GRPO with clip-higher 0.2/0.28, as validated on this model by the R3 paper and miles.
+    # M2PO off: with near-on-policy data its moment-derived clip degenerates to no clipping.
+    m2_threshold: null
+    eps_clip: 0.2
+    eps_clip_higher: 0.28
+    reward_scaling: 1
+    reward_bias: 0
+    kl_ctl: 0.00
+    # No KL term (both references omit it; a ref policy also does not fit beside ep=4).
+    kl_penalty_coef: 0.0
+    # One optimizer step per 256-sample batch, as both references do.
+    ppo_n_minibatches: 1
+    # Group-normalised rewards only; no second batch-level normalisation.
+    reward_norm: { mean_level: group, std_level: group }
+    adv_norm: null
+    megatron:
+      # Precision-aware optimizer so the state fits at ep=4 (expert params do not shard: dp/ep = 1).
+      # fp32 master weights; bf16 grad buffer and both moments (~134 -> ~90 GiB/GPU; all-fp32 OOMed).
+      use_precision_aware_optimizer: true
+      main_params_dtype: float32
+      main_grads_dtype: bfloat16
+      exp_avg_dtype: bfloat16
+      exp_avg_sq_dtype: bfloat16
+      ddp:
+        # DDP owns the grad accumulation buffer; main_grads_dtype alone saved ~3 GiB, this saves 16.
+        grad_reduce_in_fp32: false
+      # Deterministic kernels so the replayed forward is reproducible.
+      use_deterministic_algorithms: true
+      # R3: force the recorded routing in every training forward.
+      moe_router_replay: true
+
+  # No ref: block: both KL terms are 0, so no reference policy is built.
+
+  # HF export every 100 steps (57 GiB each) is the resume path; see README.
+  saver:
+    freq_steps: 100
+
+  recover:
+    # disabled: distributed-checkpoint load fails (Metadata has no mcore_data); resume from HF saves.
+    mode: disabled
+
+  evaluator:
+    # step-0 baseline eval.
+    eval_at_start: true
+    freq_steps: 25
+
+  stats_logger:
+    wandb:
+      mode: online
+      id_suffix: "uid"
+
+# ── Trainer for model0 — only overrides ──
+trainer_model0:
+  model_id: model0
+  stats_logger:
+    wandb:
+      tags: ["grpo", "clip-higher", "onpolicy", "math", "astraflow-v2", "qwen3-30b-a3b", "moe", "tcp", "ctx4k", "full", "megatron", "r3", "b200", "1node"]

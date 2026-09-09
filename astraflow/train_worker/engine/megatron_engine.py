@@ -67,6 +67,11 @@ from astraflow.train_worker.utils.mcore.packed_context_parallel import (
 from astraflow.train_worker.utils.mcore.pipeline_parallel import (
     configure_pipeline_layer_splits,
 )
+from astraflow.train_worker.utils.mcore.routing_replay import (
+    RoutingReplayContext,
+    assert_router_config_supported,
+    install_topk_router_patch,
+)
 from astraflow.train_worker.utils.megatron_checkpointer import MegatronCheckpointManager
 from astraflow.train_worker.utils.model import disable_dropout_in_model
 from astraflow.train_worker.utils.offload import is_tms_enabled
@@ -120,6 +125,7 @@ class MegatronEngine(TrainEngine):
         self.seed: int = 0
         self.own_global_group: bool = False
         self.is_offload: bool = False
+        self.routing_replay_context: RoutingReplayContext | None = None
 
     def create_process_group(self, parallel_strategy: ParallelStrategy | None = None):
         if parallel_strategy is None:
@@ -185,6 +191,9 @@ class MegatronEngine(TrainEngine):
 
         self.tokenizer = load_hf_tokenizer(self.config.path)
         self.bridge = mbridge.AutoBridge.from_pretrained(self.config.path)
+        if not hasattr(self.bridge.hf_config, "rope_theta"):
+            # transformers>=5 moved it into rope_parameters; mbridge 0.1.0 still reads it
+            self.bridge.hf_config.rope_theta = self.bridge.hf_config.rope_parameters["rope_theta"]
         self.bridge.dtype = self.dtype
         # Set gradient checkpointing options
         if self.config.gradient_checkpointing:
@@ -252,6 +261,9 @@ class MegatronEngine(TrainEngine):
         # NOTE: It is recommended to set this option to True for RL training on MoE models for stability.
         if self.mcore_config.use_deterministic_algorithms:
             set_deterministic_algorithms(model_config)
+
+        if self.mcore_config.moe_router_replay:
+            self._init_routing_replay()
 
         # Set vp_stage for DDP models
         for i, model_chunk in enumerate(self.model):
@@ -459,6 +471,41 @@ class MegatronEngine(TrainEngine):
         assert self.lr_scheduler is not None, "LR Scheduler is not initialized."
         self.lr_scheduler.step(1)
 
+    def _init_routing_replay(self) -> None:
+        from megatron.core.transformer.moe.router import TopKRouter
+
+        if mpu.get_context_parallel_world_size() > 1 or (
+            mpu.get_tensor_model_parallel_world_size() > 1
+            and self.tf_config.sequence_parallel
+        ):
+            raise NotImplementedError(
+                "moe_router_replay does not split routed_experts for context "
+                "parallelism or sequence parallelism"
+            )
+        install_topk_router_patch()
+        # the very object every TopKRouter holds (bridge.config)
+        assert_router_config_supported(self.tf_config)
+        # SGLang records [tokens, num_hidden_layers, top_k] indexed by decoder layer id;
+        # megatron layer_number is the 1-based global decoder index.
+        chunk_layer_maps: list[dict[int, int]] = []
+        for model_chunk in self.model:
+            module = model_chunk.module if isinstance(model_chunk, DDP) else model_chunk
+            chunk_layer_maps.append(
+                {
+                    m.layer_number: m.layer_number - 1
+                    for m in module.modules()
+                    if isinstance(m, TopKRouter)
+                }
+            )
+        self.routing_replay_context = RoutingReplayContext(
+            chunk_layer_maps,
+            self.hf_config.num_hidden_layers,
+            self.hf_config.num_experts_per_tok,
+        )
+        self.logger.info(
+            f"R3 routing replay enabled for megatron layers {[sorted(m) for m in chunk_layer_maps]}"
+        )
+
     def forward_backward_batch(
         self,
         mb_list: MicroBatchList,
@@ -468,11 +515,17 @@ class MegatronEngine(TrainEngine):
         forward_only: bool = False,
     ) -> None:
         self._ensure_ready()
+        replay_context = self.routing_replay_context
 
         def forward_step(batch_iter, model):
             mb_input: MicroBatchItem = next(batch_iter)
 
             cu_seqlens = mb_input.padded_mb["cu_seqlens"]
+            if replay_context is not None:
+                # read, never pop: under VPP every model chunk gets the same mb dict
+                replay_context.install_packed(
+                    mb_input.padded_mb["routed_experts"], self.model.index(model)
+                )
             output = packed_context_parallel_forward(model, mb_input.padded_mb)
 
             def _process_output(input_, output_):
@@ -499,6 +552,8 @@ class MegatronEngine(TrainEngine):
                 data_iterator = [iter(mb_list) for _ in range(len(self.model))]
             else:
                 data_iterator = iter(mb_list)
+            if replay_context is not None:
+                replay_context.begin_pass(forward_only=forward_only)
             forward_backward_func(
                 forward_step_func=forward_step,
                 data_iterator=data_iterator,
@@ -508,6 +563,9 @@ class MegatronEngine(TrainEngine):
                 micro_batch_size=1,  # no use when input_shapes was set
                 forward_only=forward_only,
             )
+            if replay_context is not None:
+                replay_context.assert_all_consumed()
+                replay_context.end_pass()
 
     def train_batch(
         self,

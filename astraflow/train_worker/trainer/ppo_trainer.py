@@ -145,9 +145,7 @@ class AstraFlowPPOTrainer(PPOTrainerBase):
             # notify_version triggers notify_all_versions to pull weights.
             # Drain the delta/no_delta message left by the initial offload
             # so it doesn't shift the queue for subsequent steps.
-            # Use 180s timeout: first delta after recovery compares against
-            # uninitialized buffer and can take ~85s for a 4B model.
-            self.weight_manager.wait_delta_ready(timeout=180.0)
+            self.weight_manager.wait_delta_ready()
 
         # Signal readiness — AstraFlow starts data acquisition only
         # after both RaaS and trainer are ready.

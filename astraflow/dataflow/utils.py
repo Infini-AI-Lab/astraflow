@@ -134,9 +134,9 @@ def concat_padded_tensors(
                     )
 
                 else:
-                    # Pad feature tensors with pad_value
+                    # pad along seq, keep trailing dims (ND routed_experts)
                     padding = torch.full(
-                        (tensor.shape[0], pad_width),
+                        (tensor.shape[0], pad_width, *tensor.shape[2:]),
                         pad_value,
                         dtype=tensor.dtype,
                         device=tensor.device,

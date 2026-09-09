@@ -20,6 +20,10 @@ logger = logging.getLogger("CLI args")
 
 ConfigT = TypeVar("ConfigT")
 
+# sglang MoE runner backends that bypass select_experts, where the R3 capture hook lives
+# ("auto" resolves to one of them on sm_100): the server starts and records nothing.
+_NON_CAPTURING_MOE_BACKENDS = ("auto", "flashinfer_trtllm", "experimental_sgl_trtllm", "flashinfer_mxfp4", "triton_kernel")
+
 
 @dataclass
 class GenerationHyperparameters:
@@ -99,6 +103,12 @@ class GenerationHyperparameters:
             "help": "Enable beam search in the vLLM engine. When enabled, sampling parameters like temperature, top-p, and top-k are auto ignored."
         },
     )
+    return_routed_experts: bool = field(
+        default=False,
+        metadata={
+            "help": "R3: return per-token MoE routed expert ids (SGLang only)."
+        },
+    )
     # NOTE: to add new parameters, please correctly handle them in the `to_openai_args_dict` method.
 
     def new(self, **kwargs):
@@ -155,6 +165,7 @@ class GenerationHyperparameters:
         "lora_name",  # Not supported by OpenAI
         "use_beam_search",  # Not supported by OpenAI
         "max_tokens",  # deprecated by "completions", not used in "responses", should be `max_new_tokens` in "openai-agents"
+        "return_routed_experts",  # Not supported by OpenAI
     }
 
     def to_openai_args_dict(
@@ -398,6 +409,10 @@ class SGLangConfig:
     # and passed as `model_loader_extra_config` to SGLang.
     enable_multithread_load: bool = False
     enable_fast_load: bool = False
+    # R3: capture per-token MoE routed expert ids on the server (sglang>=0.5.13).
+    enable_return_routed_experts: bool = False
+    # sglang MoE runner backend; None = sglang's "auto". R3 needs an explicit capturing one (e.g. "triton").
+    moe_runner_backend: str | None = None
 
     # Use staticmethod to make OmegaConf happy.
     @staticmethod
@@ -488,6 +503,20 @@ class SGLangConfig:
             raise RuntimeError("Needs sglang>=0.4.9.post2 to run the code.")
         if is_version_less("sglang", "0.4.10.post2"):
             args.pop("max_loaded_loras", None)
+        if sglang_config.enable_return_routed_experts:
+            if not pkg_version.is_version_greater_or_equal("sglang", "0.5.13"):
+                raise RuntimeError("enable_return_routed_experts requires sglang>=0.5.13.")
+            # "" is dropped by get_py_cmd and means "auto" to sglang
+            if (args.get("moe_runner_backend") or "auto") in _NON_CAPTURING_MOE_BACKENDS:
+                raise ValueError(
+                    "enable_return_routed_experts requires an explicit capturing "
+                    f"moe_runner_backend (e.g. 'triton'), got {args.get('moe_runner_backend')!r}."
+                )
+            if (args.get("chunked_prefill_size") or 0) <= 0:
+                raise ValueError(
+                    "enable_return_routed_experts requires chunked_prefill_size > 0 "
+                    "(sglang sizes the capturer buffer from it)."
+                )
         return args
 
 

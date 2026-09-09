@@ -1304,12 +1304,9 @@ class RaaS3Manager:
     # eventually-200 /health resets the counter) while catching a real death
     # in ~50s.
     _HEALTH_MONITOR_MAX_FAILURES = 5  # consecutive failures before exit
-    # Maximum time a weight update is allowed to legitimately stall the
-    # engine before the monitor force-probes anyway. A normal full pull +
-    # apply + load runs ~60-70s end-to-end, deltas ~30-40s; 90s is a
-    # generous upper bound — anything beyond it suggests the workers
-    # died silently mid-update and the flag will never clear.
-    _WEIGHT_UPDATE_GRACE_SEC = 90.0
+    # Max time a weight update may stall the engine before the monitor force-probes.
+    # A 30B-A3B full pull + load takes 76-130 s (dense 8B: ~60-70 s); keep in step with WEIGHT_SYNC_TIMEOUT_SEC.
+    _WEIGHT_UPDATE_GRACE_SEC = 300.0
 
     async def _engine_health_monitor(self) -> None:
         """Periodically check SGLang engine health. Exit process if dead.
@@ -1806,6 +1803,10 @@ class RaaS3Manager:
             )
 
         # Update per-model version tracking
+        served = pull_result.get("version", version)
+        if served > version:  # the sender serves its newest buffer; queued requests get newer weights than asked for
+            logger.info("notify_version: model=%s requested v=%d, sender served v=%d", model_id, version, served)
+            version = served
         self._weight_versions[model_id] = version
         try:
             engine.set_version(version)

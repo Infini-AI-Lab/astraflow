@@ -15,6 +15,7 @@ from threading import Lock
 from typing import Any, Protocol
 
 import aiohttp
+import numpy as np
 import requests
 import torch.distributed as dist
 import uvloop
@@ -148,7 +149,7 @@ class RemoteInfBackendProtocol(Protocol):
     """
 
     def build_generation_request(
-        self, req: ModelRequest, with_lora: bool
+        self, req: ModelRequest, with_lora: bool, routed_experts_start_len: int = 0
     ) -> HttpRequest:
         """Build HTTP request for text generation.
 
@@ -158,6 +159,8 @@ class RemoteInfBackendProtocol(Protocol):
             The generation request containing input and parameters
         with_lora : bool
             Whether to specify a LoRA to use
+        routed_experts_start_len : int
+            R3: first sequence position to capture routed experts for
 
         Returns
         -------
@@ -602,6 +605,8 @@ class RemoteInfEngine:
         accumulated_output_tokens = []
         accumulated_output_logprobs = []
         accumulated_versions = []
+        accumulated_routed_experts: list[np.ndarray] = []  # R3 chunks across interrupt/resume iterations
+        routed_experts_start_len = 0
 
         # A single "rid" shares the same server to allow KV cache reuse
         if req.rid in self.rid_to_address:
@@ -654,7 +659,9 @@ class RemoteInfEngine:
                     f"agenerate() building HTTP request, rid={req.rid}, "
                     f"iteration={iteration}, server_addr={server_addr}"
                 )
-                http_req = self.backend.build_generation_request(req, self.lora_initialized)
+                http_req = self.backend.build_generation_request(
+                    req, self.lora_initialized, routed_experts_start_len
+                )
 
                 # Loop until the generation is complete
                 logger.debug(
@@ -672,7 +679,7 @@ class RemoteInfEngine:
                 )
                 logger.debug(
                     f"agenerate() received HTTP response, rid={req.rid}, "
-                    f"iteration={iteration}, response_size={len(str(result))}"
+                    f"iteration={iteration}"
                 )
 
                 # Parse response using backend
@@ -688,6 +695,9 @@ class RemoteInfEngine:
 
                 # Update request for next iteration
                 req.input_ids += gen_result.output_tokens
+                if gen_result.routed_experts is not None:
+                    accumulated_routed_experts.append(gen_result.routed_experts)
+                    routed_experts_start_len = len(req.input_ids) - 1  # rows captured so far
                 req.gconfig.max_new_tokens -= len(gen_result.output_tokens)
                 assert req.gconfig.max_new_tokens >= 0, (
                     req.gconfig.max_new_tokens,
@@ -707,6 +717,13 @@ class RemoteInfEngine:
 
             latency = time.perf_counter() - start_time
 
+            output_routed_experts = None
+            if accumulated_routed_experts:
+                # one row per forwarded position; numpy raises if the payload does not divide
+                output_routed_experts = np.concatenate(accumulated_routed_experts).reshape(
+                    len(req.input_ids) - 1, -1
+                )
+
             response = ModelResponse(
                 input_tokens=req.input_ids[
                     : len(req.input_ids) - len(accumulated_output_tokens)
@@ -715,6 +732,7 @@ class RemoteInfEngine:
                 output_tokens=accumulated_output_tokens,
                 output_logprobs=accumulated_output_logprobs,
                 output_versions=accumulated_versions,
+                output_routed_experts=output_routed_experts,
                 stop_reason=stop_reason,
                 latency=latency,
                 ttft=latency,  # Simplified for non-streaming

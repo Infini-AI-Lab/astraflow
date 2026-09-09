@@ -87,6 +87,12 @@ class GenerationHyperparameters:
             "help": "Enable beam search in the vLLM engine. When enabled, sampling parameters like temperature, top-p, and top-k are auto ignored."
         },
     )
+    return_routed_experts: bool = field(
+        default=False,
+        metadata={
+            "help": "R3: return per-token MoE routed expert ids (SGLang only)."
+        },
+    )
 
     def new(self, **kwargs):
         args = asdict(self)
